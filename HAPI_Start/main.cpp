@@ -94,8 +94,11 @@ void HAPI_Main()
 	BYTE* screen = HAPI.GetScreenPointer();
 
 	//Test variables
-	bool clear_screen_to_color{ false };
-	bool random_star_colors{ true };
+	bool clear_screen_to_color { false };
+	bool random_star_colors { true };
+	bool stars_as_textures{ false };
+	const unsigned int max_textured_stars{ 500 };
+
 
 	//Start the game loop
 	while (HAPI.Update())
@@ -120,6 +123,7 @@ void HAPI_Main()
 		HAPI.RenderText(10, 30, HAPI_TColour::WHITE, HAPI_TColour::BLACK, 1.0f, "Press '3' to clear screen to random colours");
 		HAPI.RenderText(10, 40, HAPI_TColour::WHITE, HAPI_TColour::BLACK, 1.0f, "Press '4' to set star colour to random colours");
 		HAPI.RenderText(10, 50, HAPI_TColour::WHITE, HAPI_TColour::BLACK, 1.0f, "Press '5' to set star colour to cyan");
+		HAPI.RenderText(10, 60, HAPI_TColour::WHITE, HAPI_TColour::BLACK, 1.0f, "Press '6' to set stars to textures");
 
 		//Keyboard inputs
 		//Increase/Decrease eye distance with W and S
@@ -143,10 +147,15 @@ void HAPI_Main()
 		if (key_data.scanCode['4'])
 		{
 			random_star_colors = true;
+			stars_as_textures = false;
 		}
 		else if (key_data.scanCode['5'])
 		{
 			random_star_colors = false;
+			stars_as_textures = false;
+		}else if(key_data.scanCode['6'])
+		{
+			stars_as_textures = true;
 		}
 
 		//loop through all the stars
@@ -158,19 +167,25 @@ void HAPI_Main()
 			else //else decrement the star Z by the stars speed
 				stars[i].position.z -= stars[i].speed;
 
-			//Calulate the projected pixel from 3D space to screen Space
-			auto projectedPixel = ProjectPixel(eye_distance, screen_size, Vector3f(stars[i].position.x,
-				stars[i].position.y, stars[i].position.z));
+			//check whether to render the stars as pixels of textures
+			if (!stars_as_textures) {
+				//Calulate the projected pixel from 3D space to screen Space
+				auto projectedPixel = ProjectPixel(eye_distance, screen_size, Vector3f(stars[i].position.x,
+					stars[i].position.y, stars[i].position.z));
 
-			//Set the pixel either to a random or set colour at the projected pixel position
-			if(random_star_colors)
-				SetPixel(projectedPixel, screen_size, stars[i].colour);
-			else
-				SetPixel(projectedPixel, screen_size, HAPI_TColour::CYAN);
-
-			//Stars as textures WIP
-			//tex.Blit(screen, screen_size, projectedPixel);
-			//tex.Blit(screen, screen_size, stars[i].position,eye_distance);
+				//Set the pixel either to a random or set colour at the projected pixel position
+				if (random_star_colors)
+					SetPixel(projectedPixel, screen_size, stars[i].colour);
+				else
+					SetPixel(projectedPixel, screen_size, HAPI_TColour::CYAN);
+			}
+			else {
+				//Stars as textures WIP
+				if(i >= max_textured_stars) //cap stars with textured stars
+					break;
+				//tex.Blit(screen, screen_size, projectedPixel);
+				tex.Blit(screen, screen_size, stars[i].position,eye_distance);
+			}
 		}
 	}
 
