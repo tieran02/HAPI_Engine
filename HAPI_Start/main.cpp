@@ -124,14 +124,16 @@ void HAPI_Main()
 		HAPI.RenderText(10, 40, HAPI_TColour::WHITE, HAPI_TColour::BLACK, 1.0f, "Press '4' to set star colour to random colours");
 		HAPI.RenderText(10, 50, HAPI_TColour::WHITE, HAPI_TColour::BLACK, 1.0f, "Press '5' to set star colour to cyan");
 		HAPI.RenderText(10, 60, HAPI_TColour::WHITE, HAPI_TColour::BLACK, 1.0f, "Press '6' to set stars to textures");
+		HAPI.RenderText(10, 70, HAPI_TColour::WHITE, HAPI_TColour::BLACK, 1.0f, "Press 'W/S' change the eye distance");
 
 		//Keyboard inputs
 		//Increase/Decrease eye distance with W and S
 		if (key_data.scanCode['W']) {
-			eye_distance += 10;
+			eye_distance += 10.0f;
 		}
 		if (key_data.scanCode['S']) {
-			eye_distance -= 10;
+			if(eye_distance > 10.0f )
+				eye_distance -= 10.0f;
 		}
 		//Set the clear screen to color to True if 1 or false if 2
 		if(key_data.scanCode['1'])
