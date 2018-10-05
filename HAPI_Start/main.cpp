@@ -100,16 +100,26 @@ void HAPI_Main()
 	//Start the game loop
 	while (HAPI.Update())
 	{
-		if(clear_screen_to_color)
+		if (key_data.scanCode['3'])
+		{
+			//Calculate a random colour
+			const HAPI_TColour random_color = { static_cast<BYTE>(rand() % 255),
+												static_cast<BYTE>(rand() % 255),
+												static_cast<BYTE>(rand() % 255) };
+
+			ClearScreen(screen_size, random_color);
+		}
+		else if(clear_screen_to_color)
 			ClearScreen(screen_size, HAPI_TColour::YELLOW);
 		else //Clear screen to a grayscale value (Fastest)
 			ClearScreen(screen_size, 50);
 
 		//Debug text
-		HAPI.RenderText(10, 10, HAPI_TColour::WHITE, HAPI_TColour::BLACK, 1.0f, "Press '1' to clear screen to colour");
+		HAPI.RenderText(10, 10, HAPI_TColour::WHITE, HAPI_TColour::BLACK, 1.0f, "Press '1' to clear screen to Yellow");
 		HAPI.RenderText(10, 20, HAPI_TColour::WHITE, HAPI_TColour::BLACK, 1.0f, "Press '2' to clear screen to grayscale");
-		HAPI.RenderText(10, 30, HAPI_TColour::WHITE, HAPI_TColour::BLACK, 1.0f, "Press '3' to set star colour to random colours");
-		HAPI.RenderText(10, 40, HAPI_TColour::WHITE, HAPI_TColour::BLACK, 1.0f, "Press '4' to set star colour to cyan");
+		HAPI.RenderText(10, 30, HAPI_TColour::WHITE, HAPI_TColour::BLACK, 1.0f, "Press '3' to clear screen to random colours");
+		HAPI.RenderText(10, 40, HAPI_TColour::WHITE, HAPI_TColour::BLACK, 1.0f, "Press '4' to set star colour to random colours");
+		HAPI.RenderText(10, 50, HAPI_TColour::WHITE, HAPI_TColour::BLACK, 1.0f, "Press '5' to set star colour to cyan");
 
 		//Keyboard inputs
 		//Increase/Decrease eye distance with W and S
@@ -128,12 +138,13 @@ void HAPI_Main()
 		{
 			clear_screen_to_color = false;
 		}
+
 		//Set the stars to random colours to True if 3 or false if 4
-		if (key_data.scanCode['3'])
+		if (key_data.scanCode['4'])
 		{
 			random_star_colors = true;
 		}
-		else if (key_data.scanCode['4'])
+		else if (key_data.scanCode['5'])
 		{
 			random_star_colors = false;
 		}
