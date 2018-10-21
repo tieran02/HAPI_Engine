@@ -329,3 +329,7 @@ ASALocalRun/
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
 /HAPI_Start/HAPI_Log.html
+
+Demo/Data/
+
+Demo/
