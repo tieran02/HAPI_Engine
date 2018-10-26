@@ -86,177 +86,6 @@ Vector2i Renderer::projectPosition(const Vector3f& sourcePos)
 	return projection;
 }
 
-void Renderer::Blit(const Sprite& texture, const Vector2i& pos)
-{
-	const auto& width = texture.GetWidth();
-	const auto& height = texture.GetHeight();
-
-	BYTE* screenPnter = m_screen + (pos.x + pos.y * m_screenSize.x) * 4;
-	const BYTE* texturePnter = texture.GetTexture();
-
-	for (size_t y = 0; y < height; y++)
-	{
-		memcpy(screenPnter, texturePnter, width * 4);
-		//move texture pointer to next line
-		texturePnter += width * 4;
-		//move screen to pointer
-		screenPnter += m_screenSize.x * 4;
-	}
-}
-
-void Renderer::Blit(const Sprite& sprite, const Vector2i& pos, const Rect& area)
-{
-	const BYTE* currentTexturePixel = sprite.GetTexture();
-	currentTexturePixel += (area.Left + (sprite.GetHeight() * area.Top)) * 4;
-	const Vector2i center_screen = m_screenSize / 2;
-
-	const int width = area.Right - area.Left;
-	const int height = area.Bottom - area.Top;
-
-	BYTE* currentScreenPixel = m_screen + (std::clamp(pos.x, 0, m_screenSize.x) + std::clamp(pos.y, 0, m_screenSize.y) * m_screenSize.x) * 4;
-
-	for (size_t y = 0; y < height; y++)
-	{
-		memcpy(currentScreenPixel, currentTexturePixel, width * 4);
-		//add the rest of the sprite width to get to the next line of the texture
-		currentTexturePixel += sprite.GetWidth() * 4;
-		//move screen to pointer
-		currentScreenPixel += m_screenSize.x * 4;
-	}
-}
-
-void Renderer::Blit3D(const Sprite& texture, const Vector3f& pos)
-{
-	const BYTE* currentTexturePixel = texture.GetTexture();
-	const Vector2i center_screen = m_screenSize / 2;
-
-	//for each pixel
-	int currentPixelOnRow = 0;
-	int currentHeight = 0;
-
-	const int width = texture.GetWidth();
-	const int height = texture.GetHeight();
-	for (int i = 0; i < width*height * 4; i += 4)
-	{
-		//project
-		Vector2i projection;
-		projection.x = static_cast<int>(m_eyeDistance * (pos.x + currentPixelOnRow - center_screen.x) / (pos.z + m_eyeDistance) + center_screen.x);
-		projection.y = static_cast<int>(m_eyeDistance * (pos.y + currentHeight - center_screen.y) / (pos.z + m_eyeDistance) + center_screen.y);
-
-		BYTE* currentScreenPixel = m_screen + ((projection.x) + (projection.y) * m_screenSize.x) * 4;
-
-		//Get screen and texture pointer
-		if (projection.x >= 0 && projection.x + width < m_screenSize.x && projection.y >= 0 && projection.y + height < m_screenSize.y) {
-			memcpy(currentScreenPixel, currentTexturePixel, 4);
-		}
-
-		currentPixelOnRow++;
-		if (currentPixelOnRow >= width)
-		{
-			currentHeight++;
-			currentPixelOnRow = 0;
-		}
-			currentTexturePixel += 4;
-	}
-}
-
-void Renderer::BlitAlpha(const Sprite& sprite, const Vector2i& pos)
-{
-	const BYTE* currentTexturePixel = sprite.GetTexture();
-	const Vector2i center_screen = m_screenSize / 2;
-
-	const int width = sprite.GetWidth();
-	const int height = sprite.GetHeight();
-
-	BYTE* currentScreenPixel = m_screen + (pos.x+ pos.y * m_screenSize.x) * 4;
-	int endOfLineScreenIncrement = (m_screenSize.x - width) * 4;
-
-	for (int i = 0; i < (width*height * 4); i += 4)
-	{
-		if (i != 0 && i % (width * 4) == 0)
-		{
-			currentScreenPixel += endOfLineScreenIncrement;
-		}
-
-		//Get screen and texture pointer
-		BYTE blue = currentTexturePixel[0];
-		BYTE green = currentTexturePixel[1];
-		BYTE red = currentTexturePixel[2];
-		BYTE alpha = currentTexturePixel[3];
-
-		if(alpha == (BYTE)0)
-		{
-			//do nothing
-		}
-		else if (alpha == (BYTE)255)
-		{
-			//set screen pixel to texture
-			currentScreenPixel[0] = currentTexturePixel[0];
-			currentScreenPixel[1] = currentTexturePixel[1];
-			currentScreenPixel[2] = currentTexturePixel[2];
-		}
-		else 
-		{
-			currentScreenPixel[0] = currentScreenPixel[0] + ((alpha*(blue - currentScreenPixel[0])) >> 8);
-			currentScreenPixel[1] = currentScreenPixel[1] + ((alpha*(green - currentScreenPixel[1])) >> 8);
-			currentScreenPixel[2] = currentScreenPixel[2] + ((alpha*(red - currentScreenPixel[2])) >> 8);
-		}
-
-		currentScreenPixel += 4;
-		currentTexturePixel += 4;
-	}
-}
-
-void Renderer::BlitAlpha(const Sprite& sprite, const Vector2i& pos, const Rect& area)
-{
-	const BYTE* currentTexturePixel = sprite.GetTexture();
-	currentTexturePixel += (area.Left + (sprite.GetHeight() * area.Top)) * 4;
-	const Vector2i center_screen = m_screenSize / 2;
-
-	const int width = area.Right - area.Left;
-	const int height = area.Bottom - area.Top;
-
-	BYTE* currentScreenPixel = m_screen + (std::clamp(pos.x,0,m_screenSize.x) + std::clamp(pos.y, 0, m_screenSize.y) * m_screenSize.x) * 4;
-	int endOfLineScreenIncrement = (m_screenSize.x - width) * 4;
-
-	for (int i = 0; i < (width*height * 4); i += 4)
-	{
-		if (i != 0 && i % (width * 4) == 0)
-		{
-			currentScreenPixel += endOfLineScreenIncrement;
-			//add the rest of the sprite width to get to the next line of the texture
-			currentTexturePixel += (sprite.GetWidth() - width) * 4;
-		}
-
-		//Get screen and texture pointer
-		BYTE blue = currentTexturePixel[0];
-		BYTE green = currentTexturePixel[1];
-		BYTE red = currentTexturePixel[2];
-		BYTE alpha = currentTexturePixel[3];
-
-		if (alpha == (BYTE)0)
-		{
-			//do nothing
-		}
-		else if (alpha == (BYTE)255)
-		{
-			//set screen pixel to texture
-			currentScreenPixel[0] = currentTexturePixel[0];
-			currentScreenPixel[1] = currentTexturePixel[1];
-			currentScreenPixel[2] = currentTexturePixel[2];
-		}
-		else
-		{
-			currentScreenPixel[0] = currentScreenPixel[0] + ((alpha*(blue - currentScreenPixel[0])) >> 8);
-			currentScreenPixel[1] = currentScreenPixel[1] + ((alpha*(green - currentScreenPixel[1])) >> 8);
-			currentScreenPixel[2] = currentScreenPixel[2] + ((alpha*(red - currentScreenPixel[2])) >> 8);
-		}
-
-		currentScreenPixel += 4;
-		currentTexturePixel += 4;
-	}
-}
-
 void Renderer::Draw(const Sprite& sprite, const Vector2i& pos)
 {
 	Rect screenRect(0, m_screenSize.x, 0, m_screenSize.y);
@@ -271,11 +100,11 @@ void Renderer::Draw(const Sprite& sprite, const Vector2i& pos)
 	{
 		if (sprite.HasAlpha()) 
 		{
-			BlitAlpha(sprite, pos);
+			sprite.BlitAlpha(m_screen,m_screenSize,pos);
 		}
 		else
 		{
-			Blit(sprite, pos);
+			sprite.Blit(m_screen, m_screenSize, pos);
 		}
 	}
 	else
@@ -289,11 +118,11 @@ void Renderer::Draw(const Sprite& sprite, const Vector2i& pos)
 
 		if (sprite.HasAlpha()) 
 		{
-			BlitAlpha(sprite, pos, sourceSpace);
+			sprite.BlitAlpha(m_screen, m_screenSize, pos, sourceSpace);
 		}
 		else
 		{
-			Blit(sprite, pos, sourceSpace);
+			sprite.Blit(m_screen, m_screenSize, pos, sourceSpace);
 		}
 	}
 }
@@ -307,6 +136,15 @@ void Renderer::Draw(const Sprite& sprite, const Vector2f& pos)
 void Renderer::Draw(const Sprite& sprite, const Vector3f& pos)
 {
 	Draw(sprite, projectPosition(pos));
+}
+
+void Renderer::DrawAnimation(const Sprite & sprite, const Vector2i & pos, int numRows, int numCols, int startFrame, int endFrame, int& currentFrame, float speed)
+{
+	int frameWidth = sprite.GetWidth() / numRows;
+	int frameHeight = sprite.GetHeight() / numCols;
+
+	int currentRow = currentFrame;
+
 }
 
 Sprite* Renderer::LoadSprite(std::string name, const std::string& path)

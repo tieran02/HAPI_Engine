@@ -30,25 +30,15 @@ public:
 	//Set a specific pixel on the screen to a certain colour (Pass in position as int)
 	void SetPixel(int x, int y, const HAPISPACE::HAPI_TColour& colour);
 
-	//blit Texture
-	void Blit(const Sprite& sprite ,const Vector2i& pos);
-	//Blit texture and only render a region of the sprite
-	void Blit(const Sprite& sprite, const Vector2i& pos, const Rect& area);
-
-	//Blit texture using perspective scaling (SLOW, NO ALPHA)
-	void Blit3D(const Sprite& sprite, const Vector3f& pos);
-
-	//Blit texture with alpha blending
-	void BlitAlpha(const Sprite& sprite, const Vector2i& pos);
-	//Blit texture with alpha blending and only render a region of the sprite
-	void BlitAlpha(const Sprite& sprite, const Vector2i& pos, const Rect& area);
-
 	//Draw a sprite and clip it to the screen (Vector2i as pos)
 	void Draw(const Sprite& sprite, const Vector2i& pos);
 	//Draw a sprite and clip it to the screen (Vector2f as pos)
 	void Draw(const Sprite& sprite, const Vector2f& pos);
 	//Draw a sprite and clip it to the screen (Vector3f as pos)
 	void Draw(const Sprite& sprite, const Vector3f& pos);
+
+	//Draw a animated sprite
+	void DrawAnimation(const Sprite & sprite, const Vector2i & pos, int numRows, int numCols, int startFrame, int endFrame, int& currentFrame, float speed);
 
 	//Load a sprite into the sprite map
 	Sprite* LoadSprite(std::string name, const std::string& path);

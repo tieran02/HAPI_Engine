@@ -13,8 +13,11 @@ void SceneManager::LoadScene(const std::string& sceneName, Renderer& renderer)
 	m_currentScene = m_scenes[sceneName].get();
 	//set renderer
 	m_currentScene->m_renderer = &renderer;
+	//set scene mangager
+	m_currentScene->m_sceneManager = this;
 
 	m_currentScene->OnLoad();
+	std::cout << "SCENE_MANAGER Loaded Scene: " + m_currentScene->m_sceneName << std::endl;
 	m_currentScene->OnStart();
 }
 

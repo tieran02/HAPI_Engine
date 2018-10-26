@@ -17,7 +17,10 @@ public:
 private:
 	Sprite* m_playerSprite{nullptr};
 	Sprite* m_backgroundSprite{nullptr};
+	Sprite* m_animatedSprite{ nullptr };
 
 	Vector2f m_pos{ 10,128 };
+
+	float m_lastTime{ 0.0f };
 };
 

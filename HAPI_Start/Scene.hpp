@@ -19,6 +19,10 @@ public:
 	virtual void OnRender() = 0;
 protected:
 	std::string m_sceneName;
+
+	//Pointer to the instance of the scene manager 
+	SceneManager* m_sceneManager;
+	//Pointer to the instance of the renderer 
 	Renderer* m_renderer;
 };
 

@@ -1,5 +1,7 @@
 #pragma once
 #include <HAPI_lib.h>
+#include "Vector2.hpp"
+#include "Rect.hpp"
 
 class Sprite
 {
@@ -13,7 +15,17 @@ public:
 	const int& GetWidth() const { return m_width; }
 	const int& GetHeight() const { return m_height; }
 
-	const HAPISPACE::BYTE* GetTexture() const { return m_texture; }
+
+	//blit Texture
+	void Blit(HAPISPACE::BYTE* screen, Vector2i screenSize, const Vector2i& pos) const;
+	//Blit texture and only render a region of the sprite
+	void Blit(HAPISPACE::BYTE* screen, Vector2i screenSize, const Vector2i& pos, const Rect& area) const;
+
+	//Blit texture with alpha blending
+	void BlitAlpha(HAPISPACE::BYTE* screen, Vector2i screenSize, const Vector2i& pos) const;
+	//Blit texture with alpha blending and only render a region of the sprite
+	void BlitAlpha(HAPISPACE::BYTE* screen, Vector2i screenSize, const Vector2i& pos, const Rect& area) const;
+
 	bool HasAlpha() const { return m_hasAlpha; }
 
 private:
