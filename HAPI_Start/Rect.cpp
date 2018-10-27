@@ -26,6 +26,26 @@ bool Rect::Intersect(const Rect & otherRect)
 	return false;
 }
 
+bool Rect::Intersect(const Vector2i& point)
+{
+	//get bottom right
+	Vector2i min = Vector2i(Left, Top);
+	Vector2i max = Vector2i(Right, Bottom);
+
+	return (point.x < max.x && point.x > min.x &&
+		point.y < max.y && point.y > min.y);
+}
+
+bool Rect::Intersect(const Vector2f& point)
+{
+	//get bottom right
+	Vector2i min = Vector2i(Left, Top);
+	Vector2i max = Vector2i(Right, Bottom);
+
+	return (point.x < max.x && point.x > min.x &&
+		point.y < max.y && point.y > min.y);
+}
+
 bool Rect::Contains(const Rect & otherRect)
 {
 	if (otherRect.Right <= Right && otherRect.Left >= Left && otherRect.Top >= Top && otherRect.Bottom <= Bottom)

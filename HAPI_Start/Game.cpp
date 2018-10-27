@@ -1,5 +1,6 @@
 #include "Game.hpp"
 #include <HAPI_lib.h>
+#include "Input.h"
 
 using namespace HAPISPACE;
 

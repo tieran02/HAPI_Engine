@@ -1,5 +1,6 @@
 #include "GameScene.hpp"
 #include "SceneManager.hpp"
+#include "Input.h"
 
 using namespace HAPISPACE;
 
@@ -18,11 +19,17 @@ void GameScene::OnUnload()
 
 void GameScene::OnStart()
 {
+	m_center = Rect(m_renderer->GetSize().x / 2 - 100, m_renderer->GetSize().x / 2 + 100, m_renderer->GetSize().y / 2 - 100, m_renderer->GetSize().y / 2 + 100);
+
 	m_pos = { 0,0 };
 }
 
 void GameScene::OnUpdate()
 {
+	//check for controller input
+	if (HAPI.GetTime() % 5000 == 0)
+		Input::CheckControllers();
+
 
 	float deltaTime = (HAPI.GetTime() / 1000.0f) - m_lastTime;
 
@@ -40,6 +47,21 @@ void GameScene::OnUpdate()
 		m_pos.y += movespeed * deltaTime;
 	else if (keyboard_data.scanCode['W'])
 		m_pos.y -= movespeed * deltaTime;
+
+	int playerControllerID = Input::GetPlayerControllerID(1);
+
+	if (playerControllerID != -1) {
+		Vector2f dir = Input::JoystickDirection(playerControllerID, 1);
+		m_pos += dir * movespeed * deltaTime;
+
+		//center rect
+		if (m_center.Intersect(m_pos))
+		{
+			HAPI.SetControllerRumble(Input::GetPlayerControllerID(1), 65535, 65535);
+		}
+		else
+			HAPI.SetControllerRumble(Input::GetPlayerControllerID(1), 0, 0);
+	}
 
 
 	m_lastTime = HAPI.GetTime() / 1000.0f;

@@ -19,6 +19,7 @@ private:
 	Sprite* m_backgroundSprite{nullptr};
 	Sprite* m_animatedSprite{ nullptr };
 
+	Rect m_center;
 	Vector2f m_pos{ 10,128 };
 
 	float m_lastTime{ 0.0f };

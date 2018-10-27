@@ -26,8 +26,10 @@ public:
 	//Normalise the vector using its own magnitude
 	void Normalise()
 	{
-		x / Magnitude();
-		y / Magnitude();
+		if(std::abs(x) > 0.0f)
+			x /= Magnitude();
+		if (std::abs(y) > 0.0f)
+			y /= Magnitude();
 	}
 
 	//Add a vector to the current vector

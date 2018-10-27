@@ -17,6 +17,10 @@ struct Rect
 	void Clamp(const Rect& clampRect);
 	//One or more points intersect
 	bool Intersect(const Rect& otherRect);
+	//A single point intersects
+	bool Intersect(const Vector2i& point);
+	//A single point intersects
+	bool Intersect(const Vector2f& point);
 	//Rectangle COMPLETELY contains OTHER_Rect 
 	bool Contains(const Rect& otherRect);
 	//Check of THIS rect is outide OTHER_Rect

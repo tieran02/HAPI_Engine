@@ -7,6 +7,7 @@ class SceneManager
 	friend Game;
 public:
 	SceneManager() {}
+	~SceneManager();
 
 	template<typename T>
 	void AddScene();

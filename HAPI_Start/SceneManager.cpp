@@ -1,4 +1,9 @@
 #include "SceneManager.hpp"
+#include "Input.h"
+
+SceneManager::~SceneManager()
+{
+}
 
 void SceneManager::LoadScene(const std::string& sceneName, Renderer& renderer)
 {
@@ -19,6 +24,9 @@ void SceneManager::LoadScene(const std::string& sceneName, Renderer& renderer)
 	m_currentScene->OnLoad();
 	std::cout << "SCENE_MANAGER Loaded Scene: " + m_currentScene->m_sceneName << std::endl;
 	m_currentScene->OnStart();
+
+	//check for controllers
+	Input::CheckControllers();
 }
 
 void SceneManager::ReloadScene()
@@ -40,6 +48,10 @@ void SceneManager::unloadCurrentScene()
 	m_currentScene->OnUnload();
 	//unload renderer
 	m_currentScene->m_renderer->Cleanup();
+
+	//Reset input
+	Input::ResetControllers();
+
 	std::cout << "SCENE_MANAGER Unloaded Scene: " + m_currentScene->m_sceneName << std::endl;
 
 	m_currentScene = nullptr;
