@@ -8,7 +8,7 @@ void GameScene::OnLoad()
 	//Load game sprites
 	m_playerSprite = m_renderer->LoadSprite("player", "Data\\alphaThing.tga");
 	m_backgroundSprite = m_renderer->LoadSprite("background","Data\\gameBackground.jpg");
-
+	m_animatedSprite = m_renderer->LoadSprite("animated", "Data\\animatedSpritesheet.png");
 }
 
 void GameScene::OnUnload()
@@ -45,9 +45,13 @@ void GameScene::OnUpdate()
 	m_lastTime = HAPI.GetTime() / 1000.0f;
 }
 
+int currentFrame = 0;
 void GameScene::OnRender()
 {
 	m_renderer->Draw(*m_backgroundSprite, Vector2i(0, 0));
 
-	m_renderer->Draw(*m_playerSprite, m_pos);
+	//m_renderer->Draw(*m_playerSprite, m_pos);
+
+	Vector2i pos = Vector2i{ (int)m_pos.x,(int)m_pos.y };
+	m_renderer->DrawAnimation(*m_animatedSprite, pos, 8, 9, 4, 11, currentFrame, .075f);
 }

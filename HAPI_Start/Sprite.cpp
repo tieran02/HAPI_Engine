@@ -32,7 +32,7 @@ void Sprite::Blit(HAPISPACE::BYTE* screen, Vector2i screenSize, const Vector2i& 
 void Sprite::Blit(HAPISPACE::BYTE* screen, Vector2i screenSize, const Vector2i& pos, const Rect& area) const
 {
 	const BYTE* currentTexturePixel = m_texture;
-	currentTexturePixel += (area.Left + (m_height * area.Top)) * 4;
+	currentTexturePixel += (area.Left + (m_width * area.Top)) * 4;
 	const Vector2i center_screen = screenSize / 2;
 
 	const int width = area.Right - area.Left;
@@ -58,7 +58,8 @@ void Sprite::BlitAlpha(HAPISPACE::BYTE* screen, Vector2i screenSize, const Vecto
 void Sprite::BlitAlpha(HAPISPACE::BYTE* screen, Vector2i screenSize, const Vector2i& pos, const Rect& area) const
 {
 	const BYTE* currentTexturePixel = m_texture;
-	currentTexturePixel += (area.Left + (m_height * area.Top)) * 4;
+	auto offset = (area.Left + (m_width * area.Top));
+	currentTexturePixel += offset * 4;
 	const Vector2i center_screen = screenSize / 2;
 
 	const int width = area.Right - area.Left;

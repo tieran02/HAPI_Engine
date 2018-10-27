@@ -89,7 +89,8 @@ Vector2i Renderer::projectPosition(const Vector3f& sourcePos)
 void Renderer::Draw(const Sprite& sprite, const Vector2i& pos)
 {
 	Rect screenRect(0, m_screenSize.x, 0, m_screenSize.y);
-	Rect spriteRect(pos.x, pos.x + 64, pos.y, pos.y + 64);
+	Rect spriteRect(0, sprite.GetWidth(), 0, sprite.GetHeight());
+	spriteRect.Translate(pos);
 
 	//Clipping
 	if (spriteRect.Outside(screenRect))
@@ -110,19 +111,17 @@ void Renderer::Draw(const Sprite& sprite, const Vector2i& pos)
 	else
 	{
 		spriteRect.ClipTo(screenRect);
+		spriteRect.Translate(-pos);
 
-		Rect sourceSpace = Rect(std::clamp(spriteRect.Left - pos.x, 0, screenRect.Right),
-								std::clamp(spriteRect.Right - pos.x, 0, screenRect.Right),
-								std::clamp(spriteRect.Top - pos.y, 0, screenRect.Bottom),
-								std::clamp(spriteRect.Bottom - pos.y, 0, screenRect.Bottom));
+		spriteRect.Clamp(screenRect);
 
 		if (sprite.HasAlpha()) 
 		{
-			sprite.BlitAlpha(m_screen, m_screenSize, pos, sourceSpace);
+			sprite.BlitAlpha(m_screen, m_screenSize, pos, spriteRect);
 		}
 		else
 		{
-			sprite.Blit(m_screen, m_screenSize, pos, sourceSpace);
+			sprite.Blit(m_screen, m_screenSize, pos, spriteRect);
 		}
 	}
 }
@@ -143,8 +142,55 @@ void Renderer::DrawAnimation(const Sprite & sprite, const Vector2i & pos, int nu
 	int frameWidth = sprite.GetWidth() / numRows;
 	int frameHeight = sprite.GetHeight() / numCols;
 
-	int currentRow = currentFrame;
+	Rect screenRect(0, m_screenSize.x, 0, m_screenSize.y);
+	Rect spriteRect(0, frameWidth, 0, frameHeight);
+	spriteRect.Translate(pos);
 
+	//Clipping
+	if (spriteRect.Outside(screenRect))
+	{
+		return;
+	}
+	
+	int currentRow = int((startFrame + currentFrame) / numRows);
+	int currentColumn = (startFrame + currentFrame) % numRows;
+
+	//speed to milliseconds
+	int milliSpeed = speed * 1000.0f;
+	int currentTime = HAPI.GetTime();
+	if (currentTime % milliSpeed == 0)
+		currentFrame = (currentFrame + 1) % (endFrame - startFrame + 1);
+
+	Rect rect(currentColumn*frameWidth, (currentColumn + 1) * frameWidth, currentRow*frameHeight, (currentRow + 1) * frameHeight);
+	
+	if (screenRect.Contains(spriteRect))
+	{
+		if (sprite.HasAlpha())
+		{
+			sprite.BlitAlpha(m_screen, m_screenSize, pos, rect);
+		}
+		else
+		{
+			sprite.Blit(m_screen, m_screenSize, pos,rect);
+		}
+	}
+	else
+	{
+		spriteRect.ClipTo(screenRect);
+		spriteRect.Translate(-pos);
+
+		spriteRect.Translate(Vector2i(currentColumn * frameWidth, currentRow * frameHeight));
+		spriteRect.Clamp(screenRect);
+
+		if (sprite.HasAlpha())
+		{
+			sprite.BlitAlpha(m_screen, m_screenSize, pos, spriteRect);
+		}
+		else
+		{
+			sprite.Blit(m_screen, m_screenSize, pos, spriteRect);
+		}
+	}
 }
 
 Sprite* Renderer::LoadSprite(std::string name, const std::string& path)

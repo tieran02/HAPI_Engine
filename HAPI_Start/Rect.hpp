@@ -1,4 +1,5 @@
 #pragma once
+#include "Vector2.hpp"
 
 struct Rect
 {
@@ -10,6 +11,10 @@ struct Rect
 	int Width() { return (Right - Left); }
 	int Height() { return (Bottom - Top); }
 
+	//Translate rect by a vector position
+	void Translate(const Vector2i& pos);
+	//Clamp rect values
+	void Clamp(const Rect& clampRect);
 	//One or more points intersect
 	bool Intersect(const Rect& otherRect);
 	//Rectangle COMPLETELY contains OTHER_Rect 
@@ -17,5 +22,15 @@ struct Rect
 	//Check of THIS rect is outide OTHER_Rect
 	bool Outside(const Rect& otherRect);
 	void ClipTo(const Rect& otherRect);
+
+	//Add a vector to the current vector
+	Rect& operator+=(const Rect& rhs)
+	{
+		Left += rhs.Left;
+		Right += rhs.Right;
+		Top += rhs.Top;
+		Bottom += rhs.Bottom;
+		return *this;
+	}
 };
 
