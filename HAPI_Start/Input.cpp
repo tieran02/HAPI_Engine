@@ -4,6 +4,8 @@
 using namespace HAPISPACE;
 
 bool Input::m_controllers[4];
+float Input::m_horizontal{};
+float Input::m_vertical{};
 
 Input::Input()
 {
@@ -79,4 +81,12 @@ Vector2f Input::JoystickDirection(int controllerID, int joystick)
 	return direction;
 	}
 	return Vector2f(0.0f, 0.0f);
+}
+
+const float& Input::GetAxis(std::string axisName)
+{
+	if (axisName == "Horizontal")
+		return m_horizontal;
+	else if(axisName == "Vertical")
+		return m_vertical;
 }

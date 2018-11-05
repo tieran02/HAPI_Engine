@@ -2,6 +2,7 @@
 #include <string>
 #include "Renderer.hpp"
 
+class Game;
 class SceneManager;
 
 class Scene

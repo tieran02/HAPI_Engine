@@ -7,9 +7,13 @@ using namespace HAPISPACE;
 void GameScene::OnLoad()
 {
 	//Load game sprites
-	m_playerSprite = m_renderer->LoadSprite("player", "Data\\alphaThing.tga");
-	m_backgroundSprite = m_renderer->LoadSprite("background","Data\\gameBackground.jpg");
-	m_animatedSprite = m_renderer->LoadSprite("animated", "Data\\animatedSpritesheet.png");
+	m_renderer->LoadTexture("player", "Data\\alphaThing.tga");
+	m_renderer->LoadTexture("background","Data\\gameBackground.jpg");
+	m_renderer->LoadTexture("animated", "Data\\animatedSpritesheet.png");
+
+	m_renderer->LoadSprite("player", m_playerSprite);
+	m_renderer->LoadSprite("background", m_backgroundSprite);
+	m_renderer->LoadAnimatedSprite("animated", m_runAnimation, 8, 9, 4, 8);
 }
 
 void GameScene::OnUnload()
@@ -63,17 +67,13 @@ void GameScene::OnUpdate()
 			HAPI.SetControllerRumble(Input::GetPlayerControllerID(1), 0, 0);
 	}
 
-
 	m_lastTime = HAPI.GetTime() / 1000.0f;
 }
 
-int currentFrame = 0;
 void GameScene::OnRender()
 {
-	m_renderer->Draw(*m_backgroundSprite, Vector2i(0, 0));
+	m_renderer->Draw(m_backgroundSprite, Vector2i(0, 0));
 
-	//m_renderer->Draw(*m_playerSprite, m_pos);
 
-	Vector2i pos = Vector2i{ (int)m_pos.x,(int)m_pos.y };
-	m_renderer->DrawAnimation(*m_animatedSprite, pos, 8, 9, 4, 11, currentFrame, .075f);
+	m_renderer->Draw(m_runAnimation, m_pos, m_currentFrame, .075f);
 }

@@ -2,6 +2,9 @@
 #include <HAPI_lib.h>
 #include <algorithm>
 
+#include "Sprite.hpp"
+#include "AnimatedSprite.hpp"
+
 using namespace HAPISPACE;
 
 Renderer::Renderer()
@@ -69,6 +72,16 @@ void Renderer::SetPixel(int x, int y, const HAPISPACE::HAPI_TColour& colour)
 	}
 }
 
+void Renderer::LoadSprite(std::string name, Sprite & sprite)
+{
+	sprite.Load(m_textures[name]);
+}
+
+void Renderer::LoadAnimatedSprite(std::string name, AnimatedSprite & animatedSprite, int rows, int columns, int startFrame, int endFrame)
+{
+	animatedSprite.Load(m_textures[name], rows, columns, startFrame, endFrame);
+}
+
 Vector2i Renderer::projectPosition(const Vector3f& sourcePos)
 {
 	//Check if the Z is less than or equal to 0, If true then return the source position without doing any calculation
@@ -99,14 +112,7 @@ void Renderer::Draw(const Sprite& sprite, const Vector2i& pos)
 	}
 	else if (screenRect.Contains(spriteRect))
 	{
-		if (sprite.HasAlpha()) 
-		{
-			sprite.BlitAlpha(m_screen,m_screenSize,pos);
-		}
-		else
-		{
-			sprite.Blit(m_screen, m_screenSize, pos);
-		}
+		sprite.Draw(m_screen,m_screenSize,pos);
 	}
 	else
 	{
@@ -115,14 +121,7 @@ void Renderer::Draw(const Sprite& sprite, const Vector2i& pos)
 
 		spriteRect.Clamp(screenRect);
 
-		if (sprite.HasAlpha()) 
-		{
-			sprite.BlitAlpha(m_screen, m_screenSize, pos, spriteRect);
-		}
-		else
-		{
-			sprite.Blit(m_screen, m_screenSize, pos, spriteRect);
-		}
+		sprite.Draw(m_screen, m_screenSize, pos, spriteRect);
 	}
 }
 
@@ -137,13 +136,10 @@ void Renderer::Draw(const Sprite& sprite, const Vector3f& pos)
 	Draw(sprite, projectPosition(pos));
 }
 
-void Renderer::DrawAnimation(const Sprite & sprite, const Vector2i & pos, int numRows, int numCols, int startFrame, int endFrame, int& currentFrame, float speed)
+void Renderer::Draw(const AnimatedSprite& sprite, const Vector2i& pos, int& currentFrame, float speed)
 {
-	int frameWidth = sprite.GetWidth() / numRows;
-	int frameHeight = sprite.GetHeight() / numCols;
-
 	Rect screenRect(0, m_screenSize.x, 0, m_screenSize.y);
-	Rect spriteRect(0, frameWidth, 0, frameHeight);
+	Rect spriteRect(0, sprite.GetWidth(), 0, sprite.GetHeight());
 	spriteRect.Translate(pos);
 
 	//Clipping
@@ -151,67 +147,49 @@ void Renderer::DrawAnimation(const Sprite & sprite, const Vector2i & pos, int nu
 	{
 		return;
 	}
-	
-	int currentRow = int((startFrame + currentFrame) / numRows);
-	int currentColumn = (startFrame + currentFrame) % numRows;
-
-	//speed to milliseconds
-	int milliSpeed = speed * 1000.0f;
-	int currentTime = HAPI.GetTime();
-	if (currentTime % milliSpeed == 0)
-		currentFrame = (currentFrame + 1) % (endFrame - startFrame + 1);
-
-	Rect rect(currentColumn*frameWidth, (currentColumn + 1) * frameWidth, currentRow*frameHeight, (currentRow + 1) * frameHeight);
-	
-	if (screenRect.Contains(spriteRect))
+	else if (screenRect.Contains(spriteRect))
 	{
-		if (sprite.HasAlpha())
-		{
-			sprite.BlitAlpha(m_screen, m_screenSize, pos, rect);
-		}
-		else
-		{
-			sprite.Blit(m_screen, m_screenSize, pos,rect);
-		}
+		sprite.Draw(m_screen, m_screenSize, pos,currentFrame,speed);
 	}
 	else
 	{
 		spriteRect.ClipTo(screenRect);
 		spriteRect.Translate(-pos);
 
-		spriteRect.Translate(Vector2i(currentColumn * frameWidth, currentRow * frameHeight));
 		spriteRect.Clamp(screenRect);
 
-		if (sprite.HasAlpha())
-		{
-			sprite.BlitAlpha(m_screen, m_screenSize, pos, spriteRect);
-		}
-		else
-		{
-			sprite.Blit(m_screen, m_screenSize, pos, spriteRect);
-		}
+		sprite.Draw(m_screen, m_screenSize, pos,currentFrame,speed, spriteRect);
 	}
 }
 
-Sprite* Renderer::LoadSprite(std::string name, const std::string& path)
+void Renderer::Draw(const AnimatedSprite& sprite, const Vector2f& pos, int& currentFrame, float speed)
 {
-	if(m_sprites.find(name) == m_sprites.end())
+	Vector2i veci = { (int)pos.x,(int)pos.y };
+	Draw(sprite, veci,currentFrame,speed);
+}
+
+void Renderer::Draw(const AnimatedSprite& sprite, const Vector3f& pos, int& currentFrame, float speed)
+{
+	Draw(sprite, projectPosition(pos), currentFrame, speed);
+}
+
+void Renderer::LoadTexture(std::string name, const std::string& path)
+{
+	if(m_textures.find(name) == m_textures.end())
 	{
 		//add new sprite
-		Sprite* sprite = new Sprite();
-		sprite->Load(path);
-		m_sprites[name] = sprite;
-
-		return sprite;
+		Texture* texture = new Texture();
+		texture->Load(path);
+		m_textures[name] = texture;
 	}
-	return m_sprites[name];
+
 }
 
 void Renderer::Cleanup()
 {
-	for (auto& sprite : m_sprites)
+	for (auto& texture : m_textures)
 	{
-		delete sprite.second;
+		delete texture.second;
 	}
-	m_sprites.clear();
+	m_textures.clear();
 }

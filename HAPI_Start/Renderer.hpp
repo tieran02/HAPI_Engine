@@ -1,14 +1,15 @@
 #pragma once
 #include "Vector2.hpp"
 #include "Vector3.hpp"
-#include "Sprite.hpp"
-#include "Rect.hpp"
 #include <unordered_map>
 
-#include <HAPI_Types.h>
+#include <HAPI_lib.h>
+#include "Texture.hpp"
 
 
-class Game;
+class Tilesheet;
+class AnimatedSprite;
+class Sprite;
 
 class Renderer
 {
@@ -30,28 +31,36 @@ public:
 	//Set a specific pixel on the screen to a certain colour (Pass in position as int)
 	void SetPixel(int x, int y, const HAPISPACE::HAPI_TColour& colour);
 
+	void LoadSprite(std::string name, Sprite& sprite);
+	void LoadAnimatedSprite(std::string name, AnimatedSprite& animatedSprite, int rows, int columns, int startFrame, int endFrame);
+
+	///Sprites
 	//Draw a sprite and clip it to the screen (Vector2i as pos)
 	void Draw(const Sprite& sprite, const Vector2i& pos);
 	//Draw a sprite and clip it to the screen (Vector2f as pos)
 	void Draw(const Sprite& sprite, const Vector2f& pos);
 	//Draw a sprite and clip it to the screen (Vector3f as pos)
 	void Draw(const Sprite& sprite, const Vector3f& pos);
-
-	//Draw a animated sprite
-	void DrawAnimation(const Sprite & sprite, const Vector2i & pos, int numRows, int numCols, int startFrame, int endFrame, int& currentFrame, float speed);
+	///Animated Sprites
+	//Draw a animated sprite and clip it to the screen (Vector2i as pos)
+	void Draw(const AnimatedSprite& sprite, const Vector2i& pos, int& currentFrame, float speed);
+	//Draw a animated sprite and clip it to the screen (Vector2f as pos)
+	void Draw(const AnimatedSprite& sprite, const Vector2f& pos, int& currentFrame, float speed);
+	//Draw a animated sprite and clip it to the screen (Vector3f as pos)
+	void Draw(const AnimatedSprite& sprite, const Vector3f& pos, int& currentFrame, float speed);
 
 	//Load a sprite into the sprite map
-	Sprite* LoadSprite(std::string name, const std::string& path);
+	void LoadTexture(std::string name, const std::string& path);
 
 	void Cleanup();
 
 private:
 	Vector2i m_screenSize;
-	HAPISPACE::BYTE* m_screen;
+	HAPISPACE::BYTE* m_screen{nullptr};
 	float m_eyeDistance{ 100.0f };
 
-	//sprite map
-	std::unordered_map<std::string, Sprite*> m_sprites;
+	//texture map
+	std::unordered_map<std::string, Texture*> m_textures;
 
 	//Project a 3D world space to the Screen space
 	Vector2i projectPosition(const Vector3f& sourcePos);
