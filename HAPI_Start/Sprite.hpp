@@ -8,16 +8,16 @@ class Sprite
 {
 public:
 	Sprite();
-	~Sprite();
+	virtual ~Sprite();
 
 	void Load(Texture* texture);
 
 	virtual int GetWidth() const { return m_texture->GetWidth(); }
 	virtual int GetHeight() const { return  m_texture->GetHeight(); }
 
-	//Draw texture (detects whether to use Alpha or not automatically)
+	//DrawAnimation texture (detects whether to use Alpha or not automatically)
 	void Draw(HAPISPACE::BYTE* screen, Vector2i screenSize, const Vector2i& pos) const;
-	//Draw specific area of texture (detects whether to use Alpha or not automatically)
+	//DrawAnimation specific area of texture (detects whether to use Alpha or not automatically)
 	void Draw(HAPISPACE::BYTE* screen, Vector2i screenSize, const Vector2i& pos, const Rect& area) const;
 
 protected:

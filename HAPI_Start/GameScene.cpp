@@ -7,13 +7,13 @@ using namespace HAPISPACE;
 void GameScene::OnLoad()
 {
 	//Load game sprites
-	m_renderer->LoadTexture("player", "Data\\alphaThing.tga");
-	m_renderer->LoadTexture("background","Data\\gameBackground.jpg");
-	m_renderer->LoadTexture("animated", "Data\\animatedSpritesheet.png");
+	m_renderer->LoadTexture("playerTexture", "Data\\alphaThing.tga");
+	m_renderer->LoadTexture("backgroundTexture","Data\\gameBackground.jpg");
+	m_renderer->LoadTexture("animatedTexture", "Data\\animatedSpritesheet.png");
 
-	m_renderer->LoadSprite("player", m_playerSprite);
-	m_renderer->LoadSprite("background", m_backgroundSprite);
-	m_renderer->LoadAnimatedSprite("animated", m_runAnimation, 8, 9, 4, 8);
+	m_renderer->LoadSprite("playerSprite", "playerTexture");
+	m_renderer->LoadSprite("backgroundSprite", "backgroundTexture");
+	m_renderer->LoadAnimatedSprite("runAnimation", "animatedTexture", 8, 9, 4, 8);
 }
 
 void GameScene::OnUnload()
@@ -72,8 +72,8 @@ void GameScene::OnUpdate()
 
 void GameScene::OnRender()
 {
-	m_renderer->Draw(m_backgroundSprite, Vector2i(0, 0));
+	m_renderer->Draw("backgroundSprite", Vector2i(0, 0));
 
 
-	m_renderer->Draw(m_runAnimation, m_pos, m_currentFrame, .075f);
+	m_renderer->DrawAnimation("runAnimation", m_pos, m_currentFrame, .075f);
 }

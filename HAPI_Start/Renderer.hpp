@@ -31,23 +31,23 @@ public:
 	//Set a specific pixel on the screen to a certain colour (Pass in position as int)
 	void SetPixel(int x, int y, const HAPISPACE::HAPI_TColour& colour);
 
-	void LoadSprite(std::string name, Sprite& sprite);
-	void LoadAnimatedSprite(std::string name, AnimatedSprite& animatedSprite, int rows, int columns, int startFrame, int endFrame);
+	void LoadSprite(const std::string& spriteName, const std::string& textureName);
+	void LoadAnimatedSprite(const std::string& animationName, const std::string& textureName, int rows, int columns, int startFrame, int endFrame);
 
 	///Sprites
-	//Draw a sprite and clip it to the screen (Vector2i as pos)
-	void Draw(const Sprite& sprite, const Vector2i& pos);
-	//Draw a sprite and clip it to the screen (Vector2f as pos)
-	void Draw(const Sprite& sprite, const Vector2f& pos);
-	//Draw a sprite and clip it to the screen (Vector3f as pos)
-	void Draw(const Sprite& sprite, const Vector3f& pos);
+	//DrawAnimation a sprite and clip it to the screen (Vector2i as pos)
+	void Draw(const std::string& spriteName, const Vector2i& pos);
+	//DrawAnimation a sprite and clip it to the screen (Vector2f as pos)
+	void Draw(const std::string& spriteName, const Vector2f& pos);
+	//DrawAnimation a sprite and clip it to the screen (Vector3f as pos)
+	void Draw(const std::string& spriteName, const Vector3f& pos);
 	///Animated Sprites
-	//Draw a animated sprite and clip it to the screen (Vector2i as pos)
-	void Draw(const AnimatedSprite& sprite, const Vector2i& pos, int& currentFrame, float speed);
-	//Draw a animated sprite and clip it to the screen (Vector2f as pos)
-	void Draw(const AnimatedSprite& sprite, const Vector2f& pos, int& currentFrame, float speed);
-	//Draw a animated sprite and clip it to the screen (Vector3f as pos)
-	void Draw(const AnimatedSprite& sprite, const Vector3f& pos, int& currentFrame, float speed);
+	//DrawAnimation a animated sprite and clip it to the screen (Vector2i as pos)
+	void DrawAnimation(const std::string& animationName, const Vector2i& pos, int& currentFrame, float speed);
+	//DrawAnimation a animated sprite and clip it to the screen (Vector2f as pos)
+	void DrawAnimation(const std::string& animationName, const Vector2f& pos, int& currentFrame, float speed);
+	//DrawAnimation a animated sprite and clip it to the screen (Vector3f as pos)
+	void DrawAnimation(const std::string& animationName, const Vector3f& pos, int& currentFrame, float speed);
 
 	//Load a sprite into the sprite map
 	void LoadTexture(std::string name, const std::string& path);
@@ -61,6 +61,7 @@ private:
 
 	//texture map
 	std::unordered_map<std::string, Texture*> m_textures;
+	std::unordered_map<std::string, Sprite*> m_sprites;
 
 	//Project a 3D world space to the Screen space
 	Vector2i projectPosition(const Vector3f& sourcePos);

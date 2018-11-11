@@ -22,7 +22,7 @@ public:
 
 	HAPISPACE::BYTE* Data() const { return m_texture; }
 
-	//Draw texture without alpha and only render a region of the sprite
+	//DrawAnimation texture without alpha and only render a region of the sprite
 	void BlitFast(HAPISPACE::BYTE* screen, Vector2i screenSize, const Vector2i& pos, const Rect& area) const;
 
 	//BlitFast texture with alpha blending and only render a region of the sprite

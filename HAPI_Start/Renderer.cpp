@@ -72,14 +72,23 @@ void Renderer::SetPixel(int x, int y, const HAPISPACE::HAPI_TColour& colour)
 	}
 }
 
-void Renderer::LoadSprite(std::string name, Sprite & sprite)
+void Renderer::LoadSprite(const std::string& spriteName, const std::string& textureName)
 {
-	sprite.Load(m_textures[name]);
+	if (m_sprites.find(spriteName) == m_sprites.end()) {
+		Sprite* sprite = new Sprite;
+		sprite->Load(m_textures[textureName]);
+		m_sprites[spriteName] = sprite;
+	}
 }
 
-void Renderer::LoadAnimatedSprite(std::string name, AnimatedSprite & animatedSprite, int rows, int columns, int startFrame, int endFrame)
+void Renderer::LoadAnimatedSprite(const std::string& animationName, const std::string& textureName, int rows, int columns, int startFrame, int endFrame)
 {
-	animatedSprite.Load(m_textures[name], rows, columns, startFrame, endFrame);
+	if (m_sprites.find(animationName) == m_sprites.end()) {
+		//create new sprite
+		AnimatedSprite* animated_sprite = new AnimatedSprite;
+		animated_sprite->Load(m_textures[textureName], rows, columns, startFrame, endFrame);
+		m_sprites[animationName] = animated_sprite;
+	}
 }
 
 Vector2i Renderer::projectPosition(const Vector3f& sourcePos)
@@ -99,10 +108,15 @@ Vector2i Renderer::projectPosition(const Vector3f& sourcePos)
 	return projection;
 }
 
-void Renderer::Draw(const Sprite& sprite, const Vector2i& pos)
+void Renderer::Draw(const std::string& spriteName, const Vector2i& pos)
 {
+	Sprite* sprite = m_sprites[spriteName];
+	//check if sprite is null and if so return out of this function
+	if (sprite == nullptr)
+		return;
+
 	Rect screenRect(0, m_screenSize.x, 0, m_screenSize.y);
-	Rect spriteRect(0, sprite.GetWidth(), 0, sprite.GetHeight());
+	Rect spriteRect(0, sprite->GetWidth(), 0, sprite->GetHeight());
 	spriteRect.Translate(pos);
 
 	//Clipping
@@ -112,7 +126,7 @@ void Renderer::Draw(const Sprite& sprite, const Vector2i& pos)
 	}
 	else if (screenRect.Contains(spriteRect))
 	{
-		sprite.Draw(m_screen,m_screenSize,pos);
+		sprite->Draw(m_screen,m_screenSize,pos);
 	}
 	else
 	{
@@ -121,25 +135,30 @@ void Renderer::Draw(const Sprite& sprite, const Vector2i& pos)
 
 		spriteRect.Clamp(screenRect);
 
-		sprite.Draw(m_screen, m_screenSize, pos, spriteRect);
+		sprite->Draw(m_screen, m_screenSize, pos, spriteRect);
 	}
 }
 
-void Renderer::Draw(const Sprite& sprite, const Vector2f& pos)
+void Renderer::Draw(const std::string& spriteName, const Vector2f& pos)
 {
 	Vector2i veci = { (int)pos.x,(int)pos.y };
-	Draw(sprite, veci);
+	Draw(spriteName, veci);
 }
 
-void Renderer::Draw(const Sprite& sprite, const Vector3f& pos)
+void Renderer::Draw(const std::string& spriteName, const Vector3f& pos)
 {
-	Draw(sprite, projectPosition(pos));
+	Draw(spriteName, projectPosition(pos));
 }
 
-void Renderer::Draw(const AnimatedSprite& sprite, const Vector2i& pos, int& currentFrame, float speed)
+void Renderer::DrawAnimation(const std::string& animationName, const Vector2i& pos, int& currentFrame, float speed)
 {
+	AnimatedSprite* sprite = (AnimatedSprite*)m_sprites[animationName];
+	//check if sprite is null and if so return out of this function
+	if (sprite == nullptr)
+		return;
+
 	Rect screenRect(0, m_screenSize.x, 0, m_screenSize.y);
-	Rect spriteRect(0, sprite.GetWidth(), 0, sprite.GetHeight());
+	Rect spriteRect(0, sprite->GetWidth(), 0, sprite->GetHeight());
 	spriteRect.Translate(pos);
 
 	//Clipping
@@ -149,7 +168,7 @@ void Renderer::Draw(const AnimatedSprite& sprite, const Vector2i& pos, int& curr
 	}
 	else if (screenRect.Contains(spriteRect))
 	{
-		sprite.Draw(m_screen, m_screenSize, pos,currentFrame,speed);
+		sprite->Draw(m_screen, m_screenSize, pos,currentFrame,speed);
 	}
 	else
 	{
@@ -158,19 +177,19 @@ void Renderer::Draw(const AnimatedSprite& sprite, const Vector2i& pos, int& curr
 
 		spriteRect.Clamp(screenRect);
 
-		sprite.Draw(m_screen, m_screenSize, pos,currentFrame,speed, spriteRect);
+		sprite->Draw(m_screen, m_screenSize, pos,currentFrame,speed, spriteRect);
 	}
 }
 
-void Renderer::Draw(const AnimatedSprite& sprite, const Vector2f& pos, int& currentFrame, float speed)
+void Renderer::DrawAnimation(const std::string& animationName, const Vector2f& pos, int& currentFrame, float speed)
 {
 	Vector2i veci = { (int)pos.x,(int)pos.y };
-	Draw(sprite, veci,currentFrame,speed);
+	DrawAnimation(animationName, veci,currentFrame,speed);
 }
 
-void Renderer::Draw(const AnimatedSprite& sprite, const Vector3f& pos, int& currentFrame, float speed)
+void Renderer::DrawAnimation(const std::string& animationName, const Vector3f& pos, int& currentFrame, float speed)
 {
-	Draw(sprite, projectPosition(pos), currentFrame, speed);
+	DrawAnimation(animationName, projectPosition(pos), currentFrame, speed);
 }
 
 void Renderer::LoadTexture(std::string name, const std::string& path)
@@ -187,9 +206,17 @@ void Renderer::LoadTexture(std::string name, const std::string& path)
 
 void Renderer::Cleanup()
 {
+	//delete Textures
 	for (auto& texture : m_textures)
 	{
 		delete texture.second;
 	}
 	m_textures.clear();
+	//delete sprites
+	for (auto& sprite : m_sprites)
+	{
+		delete sprite.second;
+	}
+	m_sprites.clear();
+
 }

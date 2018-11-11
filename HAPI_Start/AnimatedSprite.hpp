@@ -5,13 +5,13 @@ class AnimatedSprite : public Sprite
 {
 public:
 	AnimatedSprite();
-	~AnimatedSprite();
+	~AnimatedSprite() override;
 
 	void Load(Texture* texture,int rows, int columns, int startFrame, int endFrame);
 
-	//Draw animation at the correct speed and frame
+	//DrawAnimation animation at the correct speed and frame
 	void Draw(HAPISPACE::BYTE* screen, Vector2i screenSize, const Vector2i& pos, int& currentFrame, float speed) const;
-	//Draw animation at the correct speed and frame with clipping area
+	//DrawAnimation animation at the correct speed and frame with clipping area
 	void Draw(HAPISPACE::BYTE* screen, Vector2i screenSize, const Vector2i& pos, int& currentFrame, float speed, Rect area) const;
 
 	int GetWidth() const override { return m_frameSize.x; }
