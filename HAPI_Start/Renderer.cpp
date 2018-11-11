@@ -74,21 +74,29 @@ void Renderer::SetPixel(int x, int y, const HAPISPACE::HAPI_TColour& colour)
 
 void Renderer::LoadSprite(const std::string& spriteName, const std::string& textureName)
 {
-	if (m_sprites.find(spriteName) == m_sprites.end()) {
+	if (m_sprites.find(spriteName) == m_sprites.end() && m_textures.find(textureName) != m_textures.end()) {
 		Sprite* sprite = new Sprite;
 		sprite->Load(m_textures[textureName]);
 		m_sprites[spriteName] = sprite;
 	}
+	else if (m_sprites.find(spriteName) != m_sprites.end())
+		std::cout << "Can't load sprite as it already exists with the name '" << spriteName << "'\n";
+	else
+		std::cout << "Can't load sprite as the texture with the name '" << textureName << "' doesn't exist!\n";
 }
 
 void Renderer::LoadAnimatedSprite(const std::string& animationName, const std::string& textureName, int rows, int columns, int startFrame, int endFrame)
 {
-	if (m_sprites.find(animationName) == m_sprites.end()) {
+	if (m_sprites.find(animationName) == m_sprites.end() && m_textures.find(textureName) != m_textures.end()) {
 		//create new sprite
 		AnimatedSprite* animated_sprite = new AnimatedSprite;
 		animated_sprite->Load(m_textures[textureName], rows, columns, startFrame, endFrame);
 		m_sprites[animationName] = animated_sprite;
 	}
+	else if (m_sprites.find(animationName) != m_sprites.end())
+		std::cout << "Can't load animated sprite as it already exists with the name '" << animationName << "'\n";
+	else
+		std::cout << "Can't load animated sprite as the texture with the name '" << textureName << "' doesn't exist!\n";
 }
 
 Vector2i Renderer::projectPosition(const Vector3f& sourcePos)
@@ -112,8 +120,10 @@ void Renderer::Draw(const std::string& spriteName, const Vector2i& pos)
 {
 	Sprite* sprite = m_sprites[spriteName];
 	//check if sprite is null and if so return out of this function
-	if (sprite == nullptr)
+	if (sprite == nullptr) {
+		std::cout << "Can't draw sprite '" << spriteName << "' as it doesn't exist (Make sure you're loading the sprite before)\n";
 		return;
+	}
 
 	Rect screenRect(0, m_screenSize.x, 0, m_screenSize.y);
 	Rect spriteRect(0, sprite->GetWidth(), 0, sprite->GetHeight());
@@ -154,8 +164,10 @@ void Renderer::DrawAnimation(const std::string& animationName, const Vector2i& p
 {
 	AnimatedSprite* sprite = (AnimatedSprite*)m_sprites[animationName];
 	//check if sprite is null and if so return out of this function
-	if (sprite == nullptr)
+	if (sprite == nullptr) {
+		std::cout << "Can't draw animated sprite '" << animationName << "' as it doesn't exist (Make sure you're loading the sprite before)\n";
 		return;
+	}
 
 	Rect screenRect(0, m_screenSize.x, 0, m_screenSize.y);
 	Rect spriteRect(0, sprite->GetWidth(), 0, sprite->GetHeight());
