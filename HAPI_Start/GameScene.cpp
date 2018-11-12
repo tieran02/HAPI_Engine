@@ -10,10 +10,13 @@ void GameScene::OnLoad()
 	m_renderer->LoadTexture("playerTexture", "Data\\alphaThing.tga");
 	m_renderer->LoadTexture("backgroundTexture","Data\\gameBackground.jpg");
 	m_renderer->LoadTexture("animatedTexture", "Data\\animatedSpritesheet.png");
+	m_renderer->LoadTexture("terrainTexture", "Data\\terrain.png");
+
 
 	m_renderer->LoadSprite("playerSprite", "playerTexture");
 	m_renderer->LoadSprite("backgroundSprite", "backgroundTexture");
-	m_renderer->LoadAnimatedSprite("runAnimation", "animatedTexture", 8, 9, 4, 8);
+	m_renderer->LoadAnimatedSprite("runAnimation", "animatedTexture", 8, 9, 4, 11);
+	m_renderer->LoadTilesheet("terrainTilesheet", "terrainTexture", 2, 1);
 }
 
 void GameScene::OnUnload()
@@ -26,6 +29,7 @@ void GameScene::OnStart()
 	m_center = Rect(m_renderer->GetSize().x / 2 - 100, m_renderer->GetSize().x / 2 + 100, m_renderer->GetSize().y / 2 - 100, m_renderer->GetSize().y / 2 + 100);
 
 	m_pos = { 0,0 };
+	m_currentFrame = 0;
 }
 
 void GameScene::OnUpdate()
@@ -72,8 +76,8 @@ void GameScene::OnUpdate()
 
 void GameScene::OnRender()
 {
-	m_renderer->Draw("backgroundSprite", Vector2i(0, 0));
+	m_renderer->ClearScreen(50);
 
-
+	m_renderer->DrawTile("terrainTilesheet", Vector2i(100,100), 0);
 	m_renderer->DrawAnimation("runAnimation", m_pos, m_currentFrame, .075f);
 }

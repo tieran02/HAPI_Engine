@@ -34,6 +34,7 @@
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="Tilesheet.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AnimatedSprite.hpp" />
@@ -46,6 +47,7 @@
     <ClInclude Include="SceneManager.hpp" />
     <ClInclude Include="Sprite.hpp" />
     <ClInclude Include="Texture.hpp" />
+    <ClInclude Include="Tilesheet.hpp" />
     <ClInclude Include="Vector2.hpp" />
     <ClInclude Include="Vector3.hpp" />
   </ItemGroup>

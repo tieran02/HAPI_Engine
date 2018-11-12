@@ -1,4 +1,5 @@
 #include "AnimatedSprite.hpp"
+#include <algorithm>
 
 using namespace HAPISPACE;
 
@@ -17,13 +18,13 @@ void AnimatedSprite::Load(Texture* texture, int rows, int columns, int startFram
 	m_texture = texture;
 
 	m_startFrame = startFrame;
-	m_endFrame = endFrame;
+	m_endFrame = std::clamp(endFrame + 1, 0, rows*columns);
 
 	m_frameSize.x = texture->GetWidth() / rows;
 	m_frameSize.y = texture->GetHeight() / columns;
 
 
-	int frameLength = endFrame - startFrame;
+	int frameLength = m_endFrame - m_startFrame;
 	m_subTextures.resize(frameLength);
 	for (int i = 0; i < frameLength; ++i)
 	{
@@ -31,9 +32,10 @@ void AnimatedSprite::Load(Texture* texture, int rows, int columns, int startFram
 		int currentColumn = (startFrame + i) % rows;
 
 		Rect rect(currentColumn*m_frameSize.x, (currentColumn + 1) * m_frameSize.x, currentRow*m_frameSize.y, (currentRow + 1) * m_frameSize.y);
-		int offset = (rect.Left + rect.Top)* 4;
+		int offset = rect.Left * 4;
+		int heightOffset = currentRow * texture->GetWidth() * m_frameSize.y * 4;;
 		Texture subTexture;
-		subTexture.Load(texture,offset);
+		subTexture.Load(texture,offset + heightOffset);
 		m_subTextures[i] = subTexture;
 	}
 }

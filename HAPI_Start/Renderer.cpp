@@ -4,6 +4,7 @@
 
 #include "Sprite.hpp"
 #include "AnimatedSprite.hpp"
+#include "Tilesheet.hpp"
 
 using namespace HAPISPACE;
 
@@ -48,6 +49,15 @@ void Renderer::ClearScreen(HAPISPACE::BYTE grayScale)
 	BYTE* screen = HAPI.GetScreenPointer();
 	//set the full screen buffer with the grayscale value
 	memset(screen, grayScale, m_screenSize.x * m_screenSize.y * 4);
+}
+
+void Renderer::ClearScreen(const std::string& spriteName)
+{
+	//check if sprite is in the sprite map
+	if(m_sprites.find(spriteName) != m_sprites.end())
+	{
+		m_sprites[spriteName]->Draw(m_screen, m_screenSize, Vector2i(0, 0));
+	}
 }
 
 void Renderer::SetPixel(const Vector2i& vec, const HAPISPACE::HAPI_TColour& colour)
@@ -99,6 +109,20 @@ void Renderer::LoadAnimatedSprite(const std::string& animationName, const std::s
 		std::cout << "Can't load animated sprite as the texture with the name '" << textureName << "' doesn't exist!\n";
 }
 
+void Renderer::LoadTilesheet(const std::string& tilesheetName, const std::string& textureName, int rows, int columns)
+{
+	if (m_sprites.find(tilesheetName) == m_sprites.end() && m_textures.find(textureName) != m_textures.end()) {
+		//create new sprite
+		Tilesheet* tilesheet = new Tilesheet;
+		tilesheet->Load(m_textures[textureName], rows, columns);
+		m_sprites[tilesheetName] = tilesheet;
+	}
+	else if (m_sprites.find(tilesheetName) != m_sprites.end())
+		std::cout << "Can't load tilesheet as it already exists with the name '" << tilesheetName << "'\n";
+	else
+		std::cout << "Can't load tilesheet as the texture with the name '" << textureName << "' doesn't exist!\n";
+}
+
 Vector2i Renderer::projectPosition(const Vector3f& sourcePos)
 {
 	//Check if the Z is less than or equal to 0, If true then return the source position without doing any calculation
@@ -127,7 +151,7 @@ void Renderer::Draw(const std::string& spriteName, const Vector2i& pos)
 
 	Rect screenRect(0, m_screenSize.x, 0, m_screenSize.y);
 	Rect spriteRect(0, sprite->GetWidth(), 0, sprite->GetHeight());
-	spriteRect.Translate(pos);
+	spriteRect.Translate(pos + m_offset);
 
 	//Clipping
 	if (spriteRect.Outside(screenRect))
@@ -136,16 +160,16 @@ void Renderer::Draw(const std::string& spriteName, const Vector2i& pos)
 	}
 	else if (screenRect.Contains(spriteRect))
 	{
-		sprite->Draw(m_screen,m_screenSize,pos);
+		sprite->Draw(m_screen,m_screenSize,pos + m_offset);
 	}
 	else
 	{
 		spriteRect.ClipTo(screenRect);
-		spriteRect.Translate(-pos);
+		spriteRect.Translate(-pos - m_offset);
 
 		spriteRect.Clamp(screenRect);
 
-		sprite->Draw(m_screen, m_screenSize, pos, spriteRect);
+		sprite->Draw(m_screen, m_screenSize, pos + m_offset, spriteRect);
 	}
 }
 
@@ -171,7 +195,7 @@ void Renderer::DrawAnimation(const std::string& animationName, const Vector2i& p
 
 	Rect screenRect(0, m_screenSize.x, 0, m_screenSize.y);
 	Rect spriteRect(0, sprite->GetWidth(), 0, sprite->GetHeight());
-	spriteRect.Translate(pos);
+	spriteRect.Translate(pos + m_offset);
 
 	//Clipping
 	if (spriteRect.Outside(screenRect))
@@ -180,16 +204,16 @@ void Renderer::DrawAnimation(const std::string& animationName, const Vector2i& p
 	}
 	else if (screenRect.Contains(spriteRect))
 	{
-		sprite->Draw(m_screen, m_screenSize, pos,currentFrame,speed);
+		sprite->Draw(m_screen, m_screenSize, pos + m_offset,currentFrame,speed);
 	}
 	else
 	{
 		spriteRect.ClipTo(screenRect);
-		spriteRect.Translate(-pos);
+		spriteRect.Translate(-pos - m_offset);
 
 		spriteRect.Clamp(screenRect);
 
-		sprite->Draw(m_screen, m_screenSize, pos,currentFrame,speed, spriteRect);
+		sprite->Draw(m_screen, m_screenSize, pos  + m_offset,currentFrame,speed, spriteRect);
 	}
 }
 
@@ -202,6 +226,50 @@ void Renderer::DrawAnimation(const std::string& animationName, const Vector2f& p
 void Renderer::DrawAnimation(const std::string& animationName, const Vector3f& pos, int& currentFrame, float speed)
 {
 	DrawAnimation(animationName, projectPosition(pos), currentFrame, speed);
+}
+
+void Renderer::DrawTile(const std::string& tilesheetName, const Vector2i& pos, int tileIndex)
+{
+	Tilesheet* sprite = (Tilesheet*)m_sprites[tilesheetName];
+	//check if sprite is null and if so return out of this function
+	if (sprite == nullptr) {
+		std::cout << "Can't draw animated sprite '" << tilesheetName << "' as it doesn't exist (Make sure you're loading the sprite before)\n";
+		return;
+	}
+
+	Rect screenRect(0, m_screenSize.x, 0, m_screenSize.y);
+	Rect spriteRect(0, sprite->GetWidth(), 0, sprite->GetHeight());
+	spriteRect.Translate(pos + m_offset);
+
+	//Clipping
+	if (spriteRect.Outside(screenRect))
+	{
+		return;
+	}
+	else if (screenRect.Contains(spriteRect))
+	{
+		sprite->Draw(m_screen, m_screenSize, pos + m_offset, tileIndex);
+	}
+	else
+	{
+		spriteRect.ClipTo(screenRect);
+		spriteRect.Translate(-pos - m_offset);
+
+		spriteRect.Clamp(screenRect);
+
+		sprite->Draw(m_screen, m_screenSize, pos + m_offset, tileIndex, spriteRect);
+	}
+}
+
+void Renderer::DrawTile(const std::string& tilesheetName, const Vector2f& pos, int tileIndex)
+{
+	Vector2i veci = { (int)pos.x,(int)pos.y };
+	DrawTile(tilesheetName, veci, tileIndex);
+}
+
+void Renderer::DrawTile(const std::string& tilesheetName, const Vector3f& pos, int tileIndex)
+{
+	DrawTile(tilesheetName, projectPosition(pos), tileIndex);
 }
 
 void Renderer::LoadTexture(std::string name, const std::string& path)

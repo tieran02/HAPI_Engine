@@ -25,6 +25,8 @@ public:
 	void ClearScreen(const HAPISPACE::HAPI_TColour& colour);
 	//Clear the screen buffer to a gray scale value (Between 0-255)
 	void ClearScreen(HAPISPACE::BYTE grayScale);
+	//Clear the screen buffer to a gray scale value (Between 0-255)
+	void ClearScreen(const std::string& spriteName);
 
 	//Set a specific pixel on the screen to a certain colour (Pass in position Vector2i)
 	void SetPixel(const Vector2i& vec, const HAPISPACE::HAPI_TColour& colour);
@@ -33,6 +35,7 @@ public:
 
 	void LoadSprite(const std::string& spriteName, const std::string& textureName);
 	void LoadAnimatedSprite(const std::string& animationName, const std::string& textureName, int rows, int columns, int startFrame, int endFrame);
+	void LoadTilesheet(const std::string& tilesheetName, const std::string& textureName, int rows, int columns);
 
 	///Sprites
 	//DrawAnimation a sprite and clip it to the screen (Vector2i as pos)
@@ -48,6 +51,13 @@ public:
 	void DrawAnimation(const std::string& animationName, const Vector2f& pos, int& currentFrame, float speed);
 	//DrawAnimation a animated sprite and clip it to the screen (Vector3f as pos)
 	void DrawAnimation(const std::string& animationName, const Vector3f& pos, int& currentFrame, float speed);
+	///Tiles
+	//Draw a single tile from a tilesheet and clip it to the screen (Vector2i as pos)
+	void DrawTile(const std::string& tilesheetName, const Vector2i& pos, int tileIndex);
+	//Draw a single tile from a tilesheet and clip it to the screen (Vector2f as pos)
+	void DrawTile(const std::string& tilesheetName, const Vector2f& pos, int tileIndex);
+	//Draw a single tile from a tilesheet and clip it to the screen (Vector3f as pos)
+	void DrawTile(const std::string& tilesheetName, const Vector3f& pos, int tileIndex);
 
 	//Load a sprite into the sprite map
 	void LoadTexture(std::string name, const std::string& path);
@@ -58,6 +68,7 @@ private:
 	Vector2i m_screenSize;
 	HAPISPACE::BYTE* m_screen{nullptr};
 	float m_eyeDistance{ 100.0f };
+	Vector2i m_offset{100,100};
 
 	//texture map
 	std::unordered_map<std::string, Texture*> m_textures;
