@@ -1,5 +1,5 @@
 #include "SceneManager.hpp"
-#include "Input.h"
+#include "Input.hpp"
 
 SceneManager::~SceneManager()
 {

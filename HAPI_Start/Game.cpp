@@ -1,6 +1,7 @@
 #include "Game.hpp"
 #include <HAPI_lib.h>
-#include "Input.h"
+#include "Input.hpp"
+#include "Time.hpp"
 
 using namespace HAPISPACE;
 
@@ -19,7 +20,9 @@ void Game::Start()
 {
 	while(HAPI.Update())
 	{
+		Time::Instance().startUpdateTime();
 		update();
+		Time::Instance().endUpdateTime();
 	}
 }
 
@@ -33,5 +36,4 @@ void Game::update()
 	m_sceneMangager.updateCurrentScene();
 	m_sceneMangager.renderCurrentScene();
 
-	//m_sceneMangager.ReloadScene();
 }

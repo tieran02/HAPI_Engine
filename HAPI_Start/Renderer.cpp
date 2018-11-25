@@ -5,6 +5,7 @@
 #include "Sprite.hpp"
 #include "AnimatedSprite.hpp"
 #include "Tilesheet.hpp"
+#include "Time.h"
 
 using namespace HAPISPACE;
 
@@ -184,7 +185,7 @@ void Renderer::Draw(const std::string& spriteName, const Vector3f& pos)
 	Draw(spriteName, projectPosition(pos));
 }
 
-void Renderer::DrawAnimation(const std::string& animationName, const Vector2i& pos, int& currentFrame, float speed)
+void Renderer::DrawAnimation(const std::string& animationName, const Vector2i& pos, int& currentFrame, HAPISPACE::DWORD& lastTime, float speed)
 {
 	AnimatedSprite* sprite = (AnimatedSprite*)m_sprites[animationName];
 	//check if sprite is null and if so return out of this function
@@ -195,7 +196,10 @@ void Renderer::DrawAnimation(const std::string& animationName, const Vector2i& p
 
 	Rect screenRect(0, m_screenSize.x, 0, m_screenSize.y);
 	Rect spriteRect(0, sprite->GetWidth(), 0, sprite->GetHeight());
-	spriteRect.Translate(pos + m_offset);
+
+	//Draw from center of the sprite
+	Vector2i centerPos = { pos.x - sprite->GetWidth() / 2,pos.y - sprite->GetHeight() / 2 };
+	spriteRect.Translate(centerPos + m_offset);
 
 	//Clipping
 	if (spriteRect.Outside(screenRect))
@@ -204,28 +208,28 @@ void Renderer::DrawAnimation(const std::string& animationName, const Vector2i& p
 	}
 	else if (screenRect.Contains(spriteRect))
 	{
-		sprite->Draw(m_screen, m_screenSize, pos + m_offset,currentFrame,speed);
+		sprite->Draw(m_screen, m_screenSize, centerPos + m_offset,currentFrame,lastTime,speed);
 	}
 	else
 	{
 		spriteRect.ClipTo(screenRect);
-		spriteRect.Translate(-pos - m_offset);
+		spriteRect.Translate(-centerPos - m_offset);
 
 		spriteRect.Clamp(screenRect);
 
-		sprite->Draw(m_screen, m_screenSize, pos  + m_offset,currentFrame,speed, spriteRect);
+		sprite->Draw(m_screen, m_screenSize, centerPos + m_offset, currentFrame, lastTime, speed, spriteRect);
 	}
 }
 
-void Renderer::DrawAnimation(const std::string& animationName, const Vector2f& pos, int& currentFrame, float speed)
+void Renderer::DrawAnimation(const std::string& animationName, const Vector2f& pos, int& currentFrame, HAPISPACE::DWORD& lastTime, float speed)
 {
 	Vector2i veci = { (int)pos.x,(int)pos.y };
-	DrawAnimation(animationName, veci,currentFrame,speed);
+	DrawAnimation(animationName, veci,currentFrame,lastTime,speed);
 }
 
-void Renderer::DrawAnimation(const std::string& animationName, const Vector3f& pos, int& currentFrame, float speed)
+void Renderer::DrawAnimation(const std::string& animationName, const Vector3f& pos, int& currentFrame, HAPISPACE::DWORD& lastTime, float speed)
 {
-	DrawAnimation(animationName, projectPosition(pos), currentFrame, speed);
+	DrawAnimation(animationName, projectPosition(pos), currentFrame, lastTime, speed);
 }
 
 void Renderer::DrawTile(const std::string& tilesheetName, const Vector2i& pos, int tileIndex)
@@ -272,6 +276,88 @@ void Renderer::DrawTile(const std::string& tilesheetName, const Vector3f& pos, i
 	DrawTile(tilesheetName, projectPosition(pos), tileIndex);
 }
 
+void Renderer::InstanceDraw(int id, const std::string& spriteName, Vector2i& pos)
+{
+	if(m_sprites.find(spriteName) == m_sprites.end())
+	{
+		std::cout << "Can not queue draw sprite '" << spriteName << "' as it doesn't the sprite doesn't exist\n";
+		return;
+	}
+
+	//check if sprite exists
+	if (m_instancedSprites.find(id) == m_instancedSprites.end())
+	{
+		//Insert new instance sprite to be drawn
+		m_instancedSprites.emplace(id, InstancedSprite(InstancedSprite::Sprite, spriteName, pos));
+	}
+	else
+	{
+		//update existing sprite position
+		m_instancedSprites.at(id).position = pos;
+	}
+}
+
+void Renderer::InstanceDrawAnimation(int id, const std::string& spriteName, Vector2i& pos, int& frame, HAPISPACE::DWORD& lastTime, float& speed, bool loop, int& endFrame)
+{
+	if (m_sprites.find(spriteName) == m_sprites.end())
+	{
+		std::cout << "Can not queue draw sprite '" << spriteName << "' as it doesn't the sprite doesn't exist\n";
+		return;
+	}
+	//auto animatedSprite = std::forward_as_tuple(m_sprites.at(spriteName), spriteName, position, frame, lastTime, speed);
+
+	endFrame = ((AnimatedSprite*)m_sprites.at(spriteName))->GetEndFrame() - ((AnimatedSprite*)m_sprites.at(spriteName))->GetStartFrame() - 1;
+
+	//check if animiated exists
+	if (m_instancedSprites.find(id) == m_instancedSprites.end())
+	{
+		//Insert new instance sprite to be drawn
+		m_instancedSprites.emplace(id, InstancedSprite(InstancedSprite::Animated, spriteName, pos, &frame, &lastTime, &speed, loop,&endFrame));
+	}
+	else
+	{
+		//update existing sprite position
+		m_instancedSprites.at(id).position = pos;
+		m_instancedSprites.at(id).loop = loop;
+		m_instancedSprites.at(id).endFrame = &endFrame;
+	}
+}
+
+void Renderer::RemoveInstance(int id)
+{
+	flaggedInstances.push_back(id);
+}
+
+void Renderer::DrawInstancedSprites()
+{
+	//loop through all flagged sprites and remove them
+	for (auto& flagged_instance : flaggedInstances)
+	{
+		m_instancedSprites.erase(flagged_instance);
+	}
+	flaggedInstances.clear();
+
+	//Loop through all instance sprite and draw them
+	for (auto& queued_sprite : m_instancedSprites)
+	{
+		if (queued_sprite.second.spriteType == InstancedSprite::Sprite)
+		{
+			Draw(*queued_sprite.second.spriteName, queued_sprite.second.position);
+		}
+		else if (queued_sprite.second.spriteType == InstancedSprite::Animated)
+		{
+			int& frame = *queued_sprite.second.frame;
+			DWORD& lastTime = *queued_sprite.second.lastTime;
+			float& speed = *queued_sprite.second.speed;
+			//Pass the current frame, lastTime, speed as pointer
+			DrawAnimation(*queued_sprite.second.spriteName, queued_sprite.second.position, frame, lastTime, speed);
+
+			if (!queued_sprite.second.loop && frame == *queued_sprite.second.endFrame)
+				flaggedInstances.push_back(queued_sprite.first);
+		}
+	}
+}
+
 void Renderer::LoadTexture(std::string name, const std::string& path)
 {
 	if(m_textures.find(name) == m_textures.end())
@@ -286,6 +372,8 @@ void Renderer::LoadTexture(std::string name, const std::string& path)
 
 void Renderer::Cleanup()
 {
+	m_instancedSprites.clear();
+
 	//delete Textures
 	for (auto& texture : m_textures)
 	{

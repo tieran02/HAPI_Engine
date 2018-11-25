@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include "Renderer.hpp"
+#include "World.hpp"
 
 class Game;
 class SceneManager;
@@ -25,5 +26,8 @@ protected:
 	SceneManager* m_sceneManager;
 	//Pointer to the instance of the renderer 
 	Renderer* m_renderer;
+
+	//World object (Simulation)
+	World m_world;
 };
 

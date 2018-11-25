@@ -1,5 +1,5 @@
-#include "Input.h"
 #include <HAPI_lib.h>
+#include "Input.hpp"
 
 using namespace HAPISPACE;
 

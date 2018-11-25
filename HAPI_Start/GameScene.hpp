@@ -14,12 +14,6 @@ public:
 	void OnRender() override;
 
 private:
-	Rect m_center;
-	Vector2f m_pos{ 10,128 };
-
-	float m_lastTime{ 0.0f };
-
-	int m_currentFrame = 0;
-
+	
 };
 

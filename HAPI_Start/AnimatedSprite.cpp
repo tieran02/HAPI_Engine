@@ -40,16 +40,14 @@ void AnimatedSprite::Load(Texture* texture, int rows, int columns, int startFram
 	}
 }
 
-void AnimatedSprite::Draw(HAPISPACE::BYTE* screen, Vector2i screenSize, const Vector2i& pos, int& currentFrame,
-	float speed) const
+void AnimatedSprite::Draw(HAPISPACE::BYTE* screen, Vector2i screenSize, const Vector2i& pos, int& currentFrame, HAPISPACE::DWORD& lastTime, float speed) const
 {
 	Rect rect(0, m_frameSize.x, 0, m_frameSize.y);
-	Draw(screen, screenSize, pos, currentFrame, speed, rect);
+	Draw(screen, screenSize, pos, currentFrame, lastTime, speed, rect);
 }
 
-int lastTime = 0;
-void AnimatedSprite::Draw(HAPISPACE::BYTE* screen, Vector2i screenSize, const Vector2i& pos, int& currentFrame,
-	float speed, Rect area) const
+
+void AnimatedSprite::Draw(HAPISPACE::BYTE* screen, Vector2i screenSize, const Vector2i& pos, int& currentFrame, HAPISPACE::DWORD& lastTime, float speed, Rect area) const
 {
 	//speed to milliseconds
 	int milliSpeed = speed * 1000.0f;
@@ -59,8 +57,12 @@ void AnimatedSprite::Draw(HAPISPACE::BYTE* screen, Vector2i screenSize, const Ve
 		lastTime = HAPI.GetTime();
 	}
 
-	if (m_subTextures[currentFrame].HasAlpha())
-		m_subTextures[currentFrame].BlitAlpha(screen, screenSize, pos, area);
-	else
-		m_subTextures[currentFrame].BlitFast(screen, screenSize, pos, area);
+	//TODO: when animation changes mid animation it crashes
+	if (currentFrame < m_subTextures.size())
+	{
+		if (m_subTextures[currentFrame].HasAlpha())
+			m_subTextures[currentFrame].BlitAlpha(screen, screenSize, pos, area);
+		else
+			m_subTextures[currentFrame].BlitFast(screen, screenSize, pos, area);
+	}
 }

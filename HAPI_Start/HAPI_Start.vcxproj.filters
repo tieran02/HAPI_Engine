@@ -43,6 +43,27 @@
     <Filter Include="Header Files\Scenes">
       <UniqueIdentifier>{908524f2-f80d-4efb-9635-d4d84c69ddee}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\World">
+      <UniqueIdentifier>{40c515e3-dfd2-431b-aab4-f76dad5858c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\World">
+      <UniqueIdentifier>{957a8990-dfb9-47e2-b903-4e4c794e14e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\World\ECS">
+      <UniqueIdentifier>{b0555643-25f3-473c-9c19-ab5e5a7b42d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\World\ECS">
+      <UniqueIdentifier>{f7f6e1a2-b567-40ee-abe9-17e519214e33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\World\ECS\Components">
+      <UniqueIdentifier>{41034610-6976-4c06-9eb3-1117e2710842}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\World\ECS\Systems">
+      <UniqueIdentifier>{7c7cb06a-7b3e-44fb-aa77-7cfd9631ffc5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\World\ECS\Systems">
+      <UniqueIdentifier>{9d282d8f-96ba-421f-ac22-f559baed2438}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -78,6 +99,36 @@
     <ClCompile Include="Tilesheet.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="World.cpp">
+      <Filter>Source Files\World</Filter>
+    </ClCompile>
+    <ClCompile Include="Component.cpp">
+      <Filter>Source Files\World\ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="ECSManager.cpp">
+      <Filter>Source Files\World\ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentFactory.cpp">
+      <Filter>Source Files\World\ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityFactory.cpp">
+      <Filter>Source Files\World\ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="MovementSystem.cpp">
+      <Filter>Source Files\World\ECS\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystem.cpp">
+      <Filter>Source Files\World\ECS\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="Time.cpp">
+      <Filter>Source Files\World</Filter>
+    </ClCompile>
+    <ClCompile Include="ControllerSystem.cpp">
+      <Filter>Source Files\World\ECS\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationSystem.cpp">
+      <Filter>Source Files\World\ECS\Systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.hpp">
@@ -107,9 +158,6 @@
     <ClInclude Include="GameScene.hpp">
       <Filter>Header Files\Scenes</Filter>
     </ClInclude>
-    <ClInclude Include="Input.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
     <ClInclude Include="AnimatedSprite.hpp">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
@@ -118,6 +166,60 @@
     </ClInclude>
     <ClInclude Include="Tilesheet.hpp">
       <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="World.hpp">
+      <Filter>Header Files\World</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.hpp">
+      <Filter>Header Files\World\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.hpp">
+      <Filter>Header Files\World\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="System.hpp">
+      <Filter>Header Files\World\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="ECSManager.hpp">
+      <Filter>Header Files\World\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentFactory.hpp">
+      <Filter>Header Files\World\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityFactory.hpp">
+      <Filter>Header Files\World\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="MotionComponent.hpp">
+      <Filter>Header Files\World\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="TransformComponent.hpp">
+      <Filter>Header Files\World\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="SpriteComponent.hpp">
+      <Filter>Header Files\World\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem.hpp">
+      <Filter>Header Files\World\ECS\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="MovementSystem.hpp">
+      <Filter>Header Files\World\ECS\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Time.hpp">
+      <Filter>Header Files\World</Filter>
+    </ClInclude>
+    <ClInclude Include="Input.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="ControllerComponent.hpp">
+      <Filter>Header Files\World\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ControllerSystem.hpp">
+      <Filter>Header Files\World\ECS\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationComponent.hpp">
+      <Filter>Header Files\World\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationSystem.hpp">
+      <Filter>Header Files\World\ECS\Systems</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
