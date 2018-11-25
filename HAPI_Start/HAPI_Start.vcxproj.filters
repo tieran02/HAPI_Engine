@@ -129,6 +129,9 @@
     <ClCompile Include="AnimationSystem.cpp">
       <Filter>Source Files\World\ECS\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="Tilemap.cpp">
+      <Filter>Source Files\World</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.hpp">
@@ -220,6 +223,9 @@
     </ClInclude>
     <ClInclude Include="AnimationSystem.hpp">
       <Filter>Header Files\World\ECS\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Tilemap.hpp">
+      <Filter>Header Files\World</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

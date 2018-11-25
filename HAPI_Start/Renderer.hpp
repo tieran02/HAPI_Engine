@@ -51,6 +51,8 @@ public:
 	void Intialise(const Vector2i& screenSize, const std::string& windowName);
 
 	const Vector2i& GetSize() const { return m_screenSize; };
+	const Vector2i& GetOffset() const { return m_offset; };
+	void SetOffset(const Vector2i& offset) { m_offset = offset; }
 
 	//Clear the screen buffer to a a colour value (4 bytes)
 	void ClearScreen(const HAPISPACE::HAPI_TColour& colour);

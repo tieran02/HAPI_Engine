@@ -42,6 +42,7 @@
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="Tilemap.cpp" />
     <ClCompile Include="Tilesheet.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="World.cpp" />
@@ -71,6 +72,7 @@
     <ClInclude Include="SpriteComponent.hpp" />
     <ClInclude Include="System.hpp" />
     <ClInclude Include="Texture.hpp" />
+    <ClInclude Include="Tilemap.hpp" />
     <ClInclude Include="Tilesheet.hpp" />
     <ClInclude Include="Time.hpp" />
     <ClInclude Include="TransformComponent.hpp" />

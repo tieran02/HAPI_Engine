@@ -23,7 +23,12 @@ World::~World()
 void World::Load(Renderer* renderer)
 {
 	m_renderer = renderer;
+
+	//load tilemap
+	m_tilemap.LoadFromFile("Data\\Level1.xml");
+
 	m_ecsManager.SetRenderer(m_renderer);
+
 
 	//ADD ECS components
 	m_ecsManager.AddComponentToFactory<TransformComponent>("TransformComponent");
@@ -92,6 +97,11 @@ void World::Update()
 
 		m_lastTime = HAPI.GetTime();
 	}
+}
+
+void World::Render()
+{
+	m_tilemap.Draw(*m_renderer);
 }
 
 

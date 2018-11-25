@@ -13,7 +13,7 @@ void GameScene::OnLoad()
 	m_renderer->LoadTexture("mageWalkTexture", "Data\\MageWalk.png");
 	m_renderer->LoadTexture("mageAttackTexture", "Data\\MageAttack.png");
 
-	//m_renderer->LoadTexture("terrainTexture", "Data\\terrain.png");
+	m_renderer->LoadTexture("dungeonTexture", "Data\\tiles_dungeon_v1.1.png");
 
 
 	m_renderer->LoadSprite("playerSprite", "playerTexture");
@@ -24,7 +24,7 @@ void GameScene::OnLoad()
 	m_renderer->LoadAnimatedSprite("mageWalkRight", "mageWalkTexture", 8, 2, 8, 16);
 	m_renderer->LoadAnimatedSprite("mageAttackLeft", "mageAttackTexture", 17, 2, 0, 16);
 	m_renderer->LoadAnimatedSprite("mageAttackRight", "mageAttackTexture", 17, 2, 17, 34);
-	m_renderer->LoadTilesheet("terrainTilesheet", "terrainTexture", 2, 1);
+	m_renderer->LoadTilesheet("dungeonTilesheet", "dungeonTexture", 20, 24);
 
 	m_world.Load(m_renderer);
 }
@@ -56,5 +56,6 @@ void GameScene::OnRender()
 {
 	m_renderer->ClearScreen(50);
 
+	m_world.Render();
 	m_renderer->DrawInstancedSprites();
 }
