@@ -20,12 +20,12 @@ void Texture::Load(const std::string& path)
 	m_hasAlpha = checkAlpha();
 }
 
-void Texture::Load(Texture* mainTexture, int offset)
+void Texture::Load(Texture* mainTexture, int offset, int width, int height)
 {
 	m_texture = mainTexture->m_texture + offset;
 	m_width = mainTexture->m_width;
-	m_height = mainTexture->m_height;;
-	m_hasAlpha = mainTexture->m_hasAlpha;;
+	m_height = mainTexture->m_height;
+	m_hasAlpha = checkAlpha(offset,width,height);
 	m_isSubTexture = true;
 }
 
@@ -106,21 +106,50 @@ bool Texture::loadTexture(const std::string& path)
 	return HAPI.LoadTexture(path, &m_texture, m_width, m_height);
 }
 
-bool Texture::checkAlpha()
+bool Texture::checkAlpha(BYTE offset, int width, int height)
 {
 	//check each pixel for alpha
 	if (m_texture == nullptr)
 		return false;
 
-	const BYTE* currentTexturePixel = m_texture;
-	for (int i = 0; i < (m_width*m_height * 4); i += 4)
-	{
-		BYTE alpha = currentTexturePixel[3];
+	//Check Whole texture
+	if (width <= 0 || height <= 0) {
+		const BYTE* currentTexturePixel = m_texture;
+		for (int i = 0; i < (m_width*m_height * 4); i += 4)
+		{
+			BYTE alpha = currentTexturePixel[3];
 
-		if (alpha < 255)
-			return true;
+			if (alpha < 255)
+				return true;
 
-		currentTexturePixel += 4;
+			currentTexturePixel += 4;
+		}
+		return false;
 	}
-	return false;
+	else
+	{
+		//check sub texture
+		const BYTE* currentTexturePixel = m_texture + offset;
+		for (int i = 0; i < (width*height * 4); i += 4)
+		{
+			BYTE alpha = currentTexturePixel[3];
+
+			if (alpha < 255)
+				return true;
+
+
+			if (i != 0 && i % (width * 4) == 0)
+			{
+				//add the rest of the sprite width to get to the next line of the texture
+				currentTexturePixel += (m_width - width) * 4;
+			}
+
+			currentTexturePixel += 4;
+		}
+	}
+}
+
+void Texture::setAlpha()
+{
+	m_hasAlpha = checkAlpha();
 }

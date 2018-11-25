@@ -35,7 +35,7 @@ void AnimatedSprite::Load(Texture* texture, int rows, int columns, int startFram
 		int offset = rect.Left * 4;
 		int heightOffset = currentRow * texture->GetWidth() * m_frameSize.y * 4;;
 		Texture subTexture;
-		subTexture.Load(texture,offset + heightOffset);
+		subTexture.Load(texture,offset + heightOffset,m_frameSize.x,m_frameSize.y);
 		m_subTextures[i] = subTexture;
 	}
 }

@@ -13,11 +13,12 @@ public:
 	//load texture from file
 	void Load(const std::string& path);
 	//Load texture as a sub texture
-	void Load(Texture* mainTexture, int offset);
+	void Load(Texture* mainTexture, int offset, int width, int height);
 
 	int GetWidth() const { return m_width; }
 	int GetHeight() const { return m_height; }
 
+	void setAlpha();
 	bool HasAlpha() const { return m_hasAlpha; }
 
 	HAPISPACE::BYTE* Data() const { return m_texture; }
@@ -36,6 +37,6 @@ private:
 
 	bool loadTexture(const std::string& path);
 	//Go through each pixel of the texture and check if it has an alpha channel
-	bool checkAlpha();
+	bool checkAlpha(HAPISPACE::BYTE offset = 0, int width = 0, int height = 0);
 };
 
