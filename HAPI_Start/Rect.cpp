@@ -65,3 +65,10 @@ void Rect::ClipTo(const Rect& otherRect)
 	Top = std::max(Top, otherRect.Top);
 	Bottom = std::min(Bottom, otherRect.Bottom);
 }
+
+Vector2i Rect::Center()
+{
+	int x = Left + (Width() / 2);
+	int y = Top + (Height() / 2);
+	return Vector2i(x, y);
+}

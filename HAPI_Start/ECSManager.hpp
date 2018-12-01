@@ -6,6 +6,7 @@
 #include "System.hpp"
 #include "EntityFactory.hpp"
 #include "Renderer.hpp"
+#include "CollisionManager.hpp"
 
 
 class ECSManager {
@@ -18,6 +19,8 @@ public:
 
 	void SetRenderer(Renderer* renderer) { m_renderer = renderer; }
 	Renderer* GetRenderer() const { return m_renderer; }
+	void SetCollisionSystem(CollisionManager* collision_system) { m_collision_system = collision_system; }
+	CollisionManager* GetCollisionSystem() const { return m_collision_system; }
 
 	//Add a component to the component factory
 	template <class T>
@@ -38,18 +41,29 @@ public:
 	void LoadEntitiesFromXML(const std::string& path);
 	//Remove entity from the ECS
 	void RemoveEntity(int entityID);
+	//Remove entity by name (ONLY the first entity with that name will be removed)
+	void RemoveEntityByName(const std::string& name);
 	//Update all systems
 	void UpdateSystems();
+
+	//Add entity to the collision map
+	void AddEntityToCollisionMap(int collisonID, int entityID);
+
+	void UpdateCollisionPositions();
 	
 private:
 	ComponentFactory m_componentFactory;
 	EntityFactory m_entityFactory;
 
 	std::vector<std::shared_ptr<Entity>> m_entities;
+	//Seperate unoreded map for colliable entites with the collidable id as the key
+	std::unordered_map<int, std::shared_ptr<Entity>> m_collidableEntities;
 	std::vector<std::unique_ptr<System>> m_systems;
 
 	//Pointer to the render for systems to access
 	Renderer* m_renderer;
+	CollisionManager* m_collision_system;
+
 
 };
 

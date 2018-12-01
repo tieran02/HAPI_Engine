@@ -13,6 +13,10 @@ public:
 	void Draw(HAPISPACE::BYTE* screen, Vector2i screenSize, const Vector2i& pos, int& currentFrame, HAPISPACE::DWORD& lastTime, float speed) const;
 	//DrawAnimation animation at the correct speed and frame with clipping area
 	void Draw(HAPISPACE::BYTE* screen, Vector2i screenSize, const Vector2i& pos, int& currentFrame, HAPISPACE::DWORD& lastTime, float speed, Rect area) const;
+	//DrawAnimation animation at one given frame with clipping area
+	void Draw(HAPISPACE::BYTE* screen, Vector2i screenSize, const Vector2i& pos, int currentFrame) const;
+	//DrawAnimation animation at one given frame with clipping area
+	void Draw(HAPISPACE::BYTE* screen, Vector2i screenSize, const Vector2i& pos, int currentFrame, Rect area) const;
 
 	int GetWidth() const override { return m_frameSize.x; }
 	int GetHeight() const override { return m_frameSize.y; }

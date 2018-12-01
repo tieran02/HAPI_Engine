@@ -27,6 +27,8 @@ struct Rect
 	bool Outside(const Rect& otherRect);
 	void ClipTo(const Rect& otherRect);
 
+	Vector2i Center();
+
 	//Add a vector to the current vector
 	Rect& operator+=(const Rect& rhs)
 	{
@@ -36,5 +38,7 @@ struct Rect
 		Bottom += rhs.Bottom;
 		return *this;
 	}
+
+
 };
 

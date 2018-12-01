@@ -20,26 +20,20 @@ struct InstancedSprite
 		Tile
 	};
 
-	InstancedSprite(Type spriteType, const std::string& sprite_name, const Vector2i& pos, int* frame = nullptr, HAPISPACE::DWORD* last_time = nullptr,
-		float* speed = nullptr, bool loop = true, int* endFrame = nullptr)
+	InstancedSprite(Type spriteType, const std::string& sprite_name, const Vector2i& pos, float rotation, int frame = -1, int* endFrame = nullptr)
 		: spriteType(spriteType),
 		  spriteName(&sprite_name),
 		  position(pos),
-		  frame(frame), loop(loop), endFrame(endFrame),
-		  lastTime(last_time),
-		  speed(speed)
+		  frame(frame),
+		  Rotation()
 	{
 	}
 
 	const Type spriteType;
 	const std::string* spriteName;
 	Vector2i position;
-	int* frame;
-
-	bool loop;
-	int* endFrame;
-	HAPISPACE::DWORD* lastTime;
-	float* speed;
+	int frame;
+	float Rotation;
 };
 
 class Renderer
@@ -77,6 +71,7 @@ public:
 	void Draw(const std::string& spriteName, const Vector2f& pos);
 	//DrawAnimation a sprite and clip it to the screen (Vector3f as position)
 	void Draw(const std::string& spriteName, const Vector3f& pos);
+
 	///Animated Sprites
 	//DrawAnimation a animated sprite and clip it to the screen (Vector2i as position)
 	void DrawAnimation(const std::string& animationName, const Vector2i& pos, int& currentFrame, HAPISPACE::DWORD& lastTime, float speed);
@@ -84,6 +79,12 @@ public:
 	void DrawAnimation(const std::string& animationName, const Vector2f& pos, int& currentFrame, HAPISPACE::DWORD& lastTime, float speed);
 	//DrawAnimation a animated sprite and clip it to the screen (Vector3f as position)
 	void DrawAnimation(const std::string& animationName, const Vector3f& pos, int& currentFrame, HAPISPACE::DWORD& lastTime, float speed);
+	//Draw Animation at one given frame
+	void DrawAnimation(const std::string& animationName, const Vector2i& pos, int currentFrame);
+	//Retrieve common data about the animation
+	void GetAnimationFrameData(const std::string& animationName, int& StartFrame, int& EndFrame);
+
+
 	///Tiles
 	//Draw a single tile from a tilesheet and clip it to the screen (Vector2i as position)
 	void DrawTile(const std::string& tilesheetName, const Vector2i& pos, int tileIndex);
@@ -93,9 +94,9 @@ public:
 	void DrawTile(const std::string& tilesheetName, const Vector3f& pos, int tileIndex);
 
 	//Add a new sprite to always be drawn on each frame.
-	void InstanceDraw(int id,const std::string& spriteName, Vector2i& pos);
+	void InstanceDraw(int id,const std::string& spriteName, Vector2i& pos, float rotation);
 	//Add a new animated sprite to always be drawn on each frame.
-	void InstanceDrawAnimation(int id, const std::string& spriteName, Vector2i& pos, int& frame, HAPISPACE::DWORD& lastTime, float& speed, bool loop, int& endFrame);
+	void InstanceDrawAnimation(int id, const std::string& spriteName, Vector2i& pos, int frame, int& startFrame, int& endFrame, float rotation);
 
 	//Remove instance which will get deleted at the beginning of the next draw stage
 	void RemoveInstance(int id);
@@ -121,8 +122,6 @@ private:
 
 	//Instance sprite a sprites that will always be drawn if they exist in the map ( used to sync the ECS with the render system)
 	std::unordered_map<int, InstancedSprite> m_instancedSprites;
-	//Flagged instances will get deleted at the beginning of the next draw stage
-	std::vector<int> flaggedInstances;
 
 	//Project a 3D world space to the Screen space
 	Vector2i projectPosition(const Vector3f& sourcePos);

@@ -21,6 +21,8 @@
   <ItemGroup>
     <ClCompile Include="AnimatedSprite.cpp" />
     <ClCompile Include="AnimationSystem.cpp" />
+    <ClCompile Include="CollisionManager.cpp" />
+    <ClCompile Include="CollisionSystem.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ComponentFactory.cpp" />
     <ClCompile Include="ControllerSystem.cpp" />
@@ -51,6 +53,9 @@
     <ClInclude Include="AnimatedSprite.hpp" />
     <ClInclude Include="AnimationComponent.hpp" />
     <ClInclude Include="AnimationSystem.hpp" />
+    <ClInclude Include="CollidableComponent.hpp" />
+    <ClInclude Include="CollisionManager.hpp" />
+    <ClInclude Include="CollisionSystem.hpp" />
     <ClInclude Include="Component.hpp" />
     <ClInclude Include="ComponentFactory.hpp" />
     <ClInclude Include="ControllerComponent.hpp" />

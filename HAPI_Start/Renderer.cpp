@@ -232,6 +232,55 @@ void Renderer::DrawAnimation(const std::string& animationName, const Vector3f& p
 	DrawAnimation(animationName, projectPosition(pos), currentFrame, lastTime, speed);
 }
 
+void Renderer::DrawAnimation(const std::string& animationName, const Vector2i& pos, int currentFrame)
+{
+	AnimatedSprite* sprite = (AnimatedSprite*)m_sprites[animationName];
+	//check if sprite is null and if so return out of this function
+	if (sprite == nullptr) {
+		std::cout << "Can't draw animated sprite '" << animationName << "' as it doesn't exist (Make sure you're loading the sprite before)\n";
+		return;
+	}
+
+	Rect screenRect(0, m_screenSize.x, 0, m_screenSize.y);
+	Rect spriteRect(0, sprite->GetWidth(), 0, sprite->GetHeight());
+
+	//Draw from center of the sprite
+	Vector2i centerPos = { pos.x - sprite->GetWidth() / 2,pos.y - sprite->GetHeight() / 2 };
+	spriteRect.Translate(centerPos + m_offset);
+
+	//Clipping
+	if (spriteRect.Outside(screenRect))
+	{
+		return;
+	}
+	else if (screenRect.Contains(spriteRect))
+	{
+		sprite->Draw(m_screen,m_screenSize, centerPos + m_offset, currentFrame);
+	}
+	else
+	{
+		spriteRect.ClipTo(screenRect);
+		spriteRect.Translate(-centerPos - m_offset);
+
+		spriteRect.Clamp(screenRect);
+
+		sprite->Draw(m_screen, m_screenSize, centerPos + m_offset, currentFrame, spriteRect);
+	}
+}
+
+void Renderer::GetAnimationFrameData(const std::string& animationName, int& StartFrame, int& EndFrame)
+{
+	AnimatedSprite* sprite = (AnimatedSprite*)m_sprites[animationName];
+	//check if sprite is null and if so return out of this function
+	if (sprite == nullptr) {
+		std::cout << "Can't get animated sprite '" << animationName << "' as it doesn't exist (Make sure you're loading the sprite before)\n";
+		return;
+	}
+
+	StartFrame = sprite->GetStartFrame();
+	EndFrame = sprite->GetEndFrame();
+}
+
 void Renderer::DrawTile(const std::string& tilesheetName, const Vector2i& pos, int tileIndex)
 {
 	Tilesheet* sprite = (Tilesheet*)m_sprites[tilesheetName];
@@ -243,7 +292,10 @@ void Renderer::DrawTile(const std::string& tilesheetName, const Vector2i& pos, i
 
 	Rect screenRect(0, m_screenSize.x, 0, m_screenSize.y);
 	Rect spriteRect(0, sprite->GetWidth(), 0, sprite->GetHeight());
-	spriteRect.Translate(pos + m_offset);
+
+	//Draw from center of the sprite
+	Vector2i centerPos = { pos.x - sprite->GetWidth() / 2,pos.y - sprite->GetHeight() / 2 };
+	spriteRect.Translate(centerPos + m_offset);
 
 	//Clipping
 	if (spriteRect.Outside(screenRect))
@@ -252,16 +304,16 @@ void Renderer::DrawTile(const std::string& tilesheetName, const Vector2i& pos, i
 	}
 	else if (screenRect.Contains(spriteRect))
 	{
-		sprite->Draw(m_screen, m_screenSize, pos + m_offset, tileIndex);
+		sprite->Draw(m_screen, m_screenSize, centerPos + m_offset, tileIndex);
 	}
 	else
 	{
 		spriteRect.ClipTo(screenRect);
-		spriteRect.Translate(-pos - m_offset);
+		spriteRect.Translate(-centerPos - m_offset);
 
 		spriteRect.Clamp(screenRect);
 
-		sprite->Draw(m_screen, m_screenSize, pos + m_offset, tileIndex, spriteRect);
+		sprite->Draw(m_screen, m_screenSize, centerPos + m_offset, tileIndex, spriteRect);
 	}
 }
 
@@ -276,7 +328,7 @@ void Renderer::DrawTile(const std::string& tilesheetName, const Vector3f& pos, i
 	DrawTile(tilesheetName, projectPosition(pos), tileIndex);
 }
 
-void Renderer::InstanceDraw(int id, const std::string& spriteName, Vector2i& pos)
+void Renderer::InstanceDraw(int id, const std::string& spriteName, Vector2i& pos, float rotation)
 {
 	if(m_sprites.find(spriteName) == m_sprites.end())
 	{
@@ -288,7 +340,7 @@ void Renderer::InstanceDraw(int id, const std::string& spriteName, Vector2i& pos
 	if (m_instancedSprites.find(id) == m_instancedSprites.end())
 	{
 		//Insert new instance sprite to be drawn
-		m_instancedSprites.emplace(id, InstancedSprite(InstancedSprite::Sprite, spriteName, pos));
+		m_instancedSprites.emplace(id, InstancedSprite(InstancedSprite::Sprite, spriteName, pos, rotation));
 	}
 	else
 	{
@@ -297,7 +349,7 @@ void Renderer::InstanceDraw(int id, const std::string& spriteName, Vector2i& pos
 	}
 }
 
-void Renderer::InstanceDrawAnimation(int id, const std::string& spriteName, Vector2i& pos, int& frame, HAPISPACE::DWORD& lastTime, float& speed, bool loop, int& endFrame)
+void Renderer::InstanceDrawAnimation(int id, const std::string& spriteName, Vector2i& pos, int frame, int& startFrame, int& endFrame, float rotation)
 {
 	if (m_sprites.find(spriteName) == m_sprites.end())
 	{
@@ -306,36 +358,32 @@ void Renderer::InstanceDrawAnimation(int id, const std::string& spriteName, Vect
 	}
 	//auto animatedSprite = std::forward_as_tuple(m_sprites.at(spriteName), spriteName, position, frame, lastTime, speed);
 
-	endFrame = ((AnimatedSprite*)m_sprites.at(spriteName))->GetEndFrame() - ((AnimatedSprite*)m_sprites.at(spriteName))->GetStartFrame() - 1;
+	endFrame = ((AnimatedSprite*)m_sprites.at(spriteName))->GetEndFrame();
+	startFrame = ((AnimatedSprite*)m_sprites.at(spriteName))->GetStartFrame();
 
 	//check if animiated exists
 	if (m_instancedSprites.find(id) == m_instancedSprites.end())
 	{
 		//Insert new instance sprite to be drawn
-		m_instancedSprites.emplace(id, InstancedSprite(InstancedSprite::Animated, spriteName, pos, &frame, &lastTime, &speed, loop,&endFrame));
+		m_instancedSprites.emplace(id, InstancedSprite(InstancedSprite::Animated, spriteName, pos,rotation, frame));
 	}
 	else
 	{
 		//update existing sprite position
 		m_instancedSprites.at(id).position = pos;
-		m_instancedSprites.at(id).loop = loop;
-		m_instancedSprites.at(id).endFrame = &endFrame;
+		m_instancedSprites.at(id).frame = frame;
 	}
 }
 
 void Renderer::RemoveInstance(int id)
 {
-	flaggedInstances.push_back(id);
+	if (m_instancedSprites.find(id) != m_instancedSprites.end())
+		m_instancedSprites.erase(id);
 }
 
 void Renderer::DrawInstancedSprites()
 {
-	//loop through all flagged sprites and remove them
-	for (auto& flagged_instance : flaggedInstances)
-	{
-		m_instancedSprites.erase(flagged_instance);
-	}
-	flaggedInstances.clear();
+
 
 	//Loop through all instance sprite and draw them
 	for (auto& queued_sprite : m_instancedSprites)
@@ -346,14 +394,9 @@ void Renderer::DrawInstancedSprites()
 		}
 		else if (queued_sprite.second.spriteType == InstancedSprite::Animated)
 		{
-			int& frame = *queued_sprite.second.frame;
-			DWORD& lastTime = *queued_sprite.second.lastTime;
-			float& speed = *queued_sprite.second.speed;
 			//Pass the current frame, lastTime, speed as pointer
-			DrawAnimation(*queued_sprite.second.spriteName, queued_sprite.second.position, frame, lastTime, speed);
-
-			if (!queued_sprite.second.loop && frame == *queued_sprite.second.endFrame)
-				flaggedInstances.push_back(queued_sprite.first);
+			int& frame = queued_sprite.second.frame;
+			DrawAnimation(*queued_sprite.second.spriteName, queued_sprite.second.position,queued_sprite.second.frame);
 		}
 	}
 }

@@ -10,8 +10,7 @@ public:
 	Vector2() : x(0), y(0) {}
 	//Initialise vector with given values
 	Vector2(T x, T y) : x(x), y(y) {};
-	//copy constructor for the vector
-	Vector2(const Vector2& other) : x(other.x), y(other.y) {}
+
 	//vector destructor
 	~Vector2() {}
 

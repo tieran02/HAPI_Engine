@@ -1,6 +1,8 @@
 #include "MovementSystem.hpp"
 #include "TransformComponent.hpp"
 #include "MotionComponent.hpp"
+#include "Rect.hpp"
+#include "ECSManager.hpp"
 
 
 MovementSystem::MovementSystem(): System(TransformComponent::ID | MotionComponent::ID)
@@ -24,7 +26,7 @@ void MovementSystem::Update(ECSManager& ecsManager, const Entity& entity)
 
 	if (motion_component->Velocity > 0.0f) 
 	{
-		transform_component->Position += Vector3f(motion_component->Direction.x, motion_component->Direction.y, 0.0f) * motion_component->Velocity;
+		transform_component->Position += Vector2f(motion_component->Direction.x, motion_component->Direction.y) * motion_component->Velocity;
 		transform_component->Direction = motion_component->Direction;
 	}
 }

@@ -57,7 +57,24 @@ void AnimatedSprite::Draw(HAPISPACE::BYTE* screen, Vector2i screenSize, const Ve
 		lastTime = HAPI.GetTime();
 	}
 
-	//TODO: when animation changes mid animation it crashes
+	if (currentFrame < m_subTextures.size())
+	{
+		if (m_subTextures[currentFrame].HasAlpha())
+			m_subTextures[currentFrame].BlitAlpha(screen, screenSize, pos, area);
+		else
+			m_subTextures[currentFrame].BlitFast(screen, screenSize, pos, area);
+	}
+}
+
+void AnimatedSprite::Draw(HAPISPACE::BYTE* screen, Vector2i screenSize, const Vector2i& pos, int currentFrame) const
+{
+	Rect rect(0, m_frameSize.x, 0, m_frameSize.y);
+	Draw(screen, screenSize, pos, currentFrame, rect);
+}
+
+void AnimatedSprite::Draw(HAPISPACE::BYTE* screen, Vector2i screenSize, const Vector2i& pos, int currentFrame,
+	Rect area) const
+{
 	if (currentFrame < m_subTextures.size())
 	{
 		if (m_subTextures[currentFrame].HasAlpha())

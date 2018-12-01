@@ -2,6 +2,7 @@
 #include "SpriteComponent.hpp"
 #include "TransformComponent.hpp"
 #include "ECSManager.hpp"
+#include "AnimationComponent.hpp"
 
 
 RenderSystem::RenderSystem(): System(TransformComponent::ID | SpriteComponent::ID)
@@ -19,10 +20,16 @@ void RenderSystem::Update(ECSManager& ecsManager, const Entity& entity)
 	SpriteComponent* sprite_component = (SpriteComponent*)entity.GetComponent(SpriteComponent::ID).get();
 	Vector2i pos = Vector2i((int)transform_component->Position.x, (int)transform_component->Position.y);
 
-	if(sprite_component->Type == SpriteType::Sprite)
-		ecsManager.GetRenderer()->InstanceDraw(entity.ID(), sprite_component->SpriteName, pos);
-	else if (sprite_component->Type == SpriteType::Animated)
+	//check if the entity has a animation component
+	AnimationComponent* animation_component = (AnimationComponent*)entity.GetComponent(AnimationComponent::ID).get();
+	bool isAnimation = false;
+	if (animation_component != nullptr)
+		isAnimation = true;
+
+	if(!isAnimation)
+		ecsManager.GetRenderer()->InstanceDraw(entity.ID(), sprite_component->SpriteName, pos, transform_component->Rotation);
+	else
 	{
-		ecsManager.GetRenderer()->InstanceDrawAnimation(entity.ID(), sprite_component->SpriteName, pos, sprite_component->Frame, sprite_component->LastTime, sprite_component->Speed, sprite_component->Loop, sprite_component->EndFrame);
+		ecsManager.GetRenderer()->InstanceDrawAnimation(entity.ID(), animation_component->currentAnimation, pos, animation_component->Frame, animation_component->StartFrame, animation_component->EndFrame, transform_component->Rotation);
 	}
 }

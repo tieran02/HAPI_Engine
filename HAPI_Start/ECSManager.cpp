@@ -1,4 +1,6 @@
 #include "ECSManager.hpp"
+#include "TransformComponent.hpp"
+#include "CollidableComponent.hpp"
 
 ECSManager::~ECSManager()
 {
@@ -12,6 +14,7 @@ void ECSManager::Clear()
 		entity->components.clear();
 	}
 	m_entities.clear();
+	m_collidableEntities.clear();
 	m_systems.clear();
 
 	m_entityFactory.Clear();
@@ -63,9 +66,36 @@ void ECSManager::RemoveEntity(int entityID)
 	{
 		if(m_entities[i]->ID() == entityID)
 		{
+			//check if the entity is also in the 
+			CollidableComponent* collidable_component = (CollidableComponent*)m_entities[i]->GetComponent(CollidableComponent::ID).get();
+			if (collidable_component != nullptr) {
+				if (m_collidableEntities.find(collidable_component->CollisionID) != m_collidableEntities.end())
+					m_collidableEntities.erase(collidable_component->CollisionID);
+			}
 			//Remove instance sprite from renderer if it has one
 			m_renderer->RemoveInstance(m_entities[i]->ID());
 			m_entities.erase(m_entities.begin() + i);
+			return;
+		}
+	}
+}
+
+void ECSManager::RemoveEntityByName(const std::string& name)
+{
+	for (int i = 0; i < m_entities.size(); ++i)
+	{
+		if(m_entities[i]->GetName() == name)
+		{
+			//check if the entity is also in the 
+			CollidableComponent* collidable_component = (CollidableComponent*)m_entities[i]->GetComponent(CollidableComponent::ID).get();
+			if (collidable_component != nullptr) {
+				if (m_collidableEntities.find(collidable_component->CollisionID) != m_collidableEntities.end())
+					m_collidableEntities.erase(collidable_component->CollisionID);
+			}
+			//Remove instance sprite from renderer if it has one
+			m_renderer->RemoveInstance(m_entities[i]->ID());
+			m_entities.erase(m_entities.begin() + i);
+			return;
 		}
 	}
 }
@@ -79,6 +109,35 @@ void ECSManager::UpdateSystems()
 			if (entity != nullptr && (system->GetSignature() & ~entity->GetKey()).none()) {
 				system->Update((*this), *entity.get());
 			}
+		}
+	}
+}
+
+void ECSManager::AddEntityToCollisionMap(int collisonID, int entityID)
+{
+	for (auto& entity : m_entities)
+	{
+		if(entity->ID() == entityID)
+		{
+			m_collidableEntities[collisonID] = m_entities[entityID];
+			return;
+		}
+	}
+}
+
+void ECSManager::UpdateCollisionPositions()
+{
+	for (auto& collisonRect : GetCollisionSystem()->GetUpdatedRects())
+	{
+		if(m_collidableEntities.find(collisonRect.first) == m_collidableEntities.end())
+			continue;
+
+		TransformComponent* transform_component = (TransformComponent*)m_collidableEntities[collisonRect.first]->GetComponent(TransformComponent::ID).get();
+
+		if(transform_component != nullptr)
+		{
+			Vector2i center = collisonRect.second.Center();
+			transform_component->Position = Vector2f(collisonRect.second.Left, collisonRect.second.Top);
 		}
 	}
 }

@@ -64,6 +64,12 @@
     <Filter Include="Source Files\World\ECS\Systems">
       <UniqueIdentifier>{9d282d8f-96ba-421f-ac22-f559baed2438}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Physics">
+      <UniqueIdentifier>{751a043a-a441-4cfa-ab83-8b199a345233}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Physics">
+      <UniqueIdentifier>{a877b61d-a2ef-40ec-8b3a-2353a89d2dc7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -83,9 +89,6 @@
     </ClCompile>
     <ClCompile Include="Rect.cpp">
       <Filter>Source Files\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="GameScene.cpp">
-      <Filter>Source Files\Scenes</Filter>
     </ClCompile>
     <ClCompile Include="Input.cpp">
       <Filter>Source Files\Core</Filter>
@@ -131,6 +134,15 @@
     </ClCompile>
     <ClCompile Include="Tilemap.cpp">
       <Filter>Source Files\World</Filter>
+    </ClCompile>
+    <ClCompile Include="GameScene.cpp">
+      <Filter>Source Files\World</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionManager.cpp">
+      <Filter>Source Files\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionSystem.cpp">
+      <Filter>Source Files\World\ECS\Systems</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -226,6 +238,15 @@
     </ClInclude>
     <ClInclude Include="Tilemap.hpp">
       <Filter>Header Files\World</Filter>
+    </ClInclude>
+    <ClInclude Include="CollidableComponent.hpp">
+      <Filter>Header Files\World\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionManager.hpp">
+      <Filter>Header Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionSystem.hpp">
+      <Filter>Header Files\World\ECS\Systems</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
