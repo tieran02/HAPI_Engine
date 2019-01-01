@@ -11,12 +11,15 @@ void GameScene::OnLoad()
 	//m_renderer->LoadTexture("backgroundTexture","Data\\gameBackground.jpg");
 	m_renderer->LoadTexture("rifleMovementTexture", "Data\\RifleMovement.png");
 	m_renderer->LoadTexture("testTexture", "Data\\testTiles.png");
+	m_renderer->LoadTexture("bulletTexture", "Data\\bullet.png");
 
 	m_renderer->LoadTexture("dungeonTexture", "Data\\tiles_dungeon_v1.1.png");
 
 
 	m_renderer->LoadSprite("playerSprite", "playerTexture");
 	m_renderer->LoadSprite("backgroundSprite", "backgroundTexture");
+	m_renderer->LoadSprite("bulletSprite", "bulletTexture");
+
 	m_renderer->LoadAnimatedSprite("rifleIdle", "rifleMovementTexture", 6, 9, 0, 19);
 	m_renderer->LoadAnimatedSprite("rifleMove", "rifleMovementTexture", 6, 9, 20, 39);
 	m_renderer->LoadAnimatedSprite("rifleAttack", "rifleMovementTexture", 6, 9, 40, 42);
@@ -54,7 +57,5 @@ void GameScene::OnUpdate()
 void GameScene::OnRender()
 {
 	m_renderer->ClearScreen(50);
-
 	m_world.Render();
-	m_renderer->DrawInstancedSprites();
 }

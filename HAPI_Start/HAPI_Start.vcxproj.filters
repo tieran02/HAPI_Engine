@@ -144,6 +144,9 @@
     <ClCompile Include="CollisionSystem.cpp">
       <Filter>Source Files\World\ECS\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="DamageSystem.cpp">
+      <Filter>Source Files\World\ECS\Systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.hpp">
@@ -246,6 +249,12 @@
       <Filter>Header Files\Physics</Filter>
     </ClInclude>
     <ClInclude Include="CollisionSystem.hpp">
+      <Filter>Header Files\World\ECS\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="DamageComponent.hpp">
+      <Filter>Header Files\World\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="DamageSystem.hpp">
       <Filter>Header Files\World\ECS\Systems</Filter>
     </ClInclude>
   </ItemGroup>

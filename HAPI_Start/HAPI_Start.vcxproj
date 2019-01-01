@@ -26,6 +26,7 @@
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ComponentFactory.cpp" />
     <ClCompile Include="ControllerSystem.cpp" />
+    <ClCompile Include="DamageSystem.cpp" />
     <ClCompile Include="ECSManager.cpp" />
     <ClCompile Include="EntityFactory.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -53,6 +54,7 @@
     <ClInclude Include="AnimatedSprite.hpp" />
     <ClInclude Include="AnimationComponent.hpp" />
     <ClInclude Include="AnimationSystem.hpp" />
+    <ClInclude Include="DamageComponent.hpp" />
     <ClInclude Include="CollidableComponent.hpp" />
     <ClInclude Include="CollisionManager.hpp" />
     <ClInclude Include="CollisionSystem.hpp" />
@@ -60,6 +62,7 @@
     <ClInclude Include="ComponentFactory.hpp" />
     <ClInclude Include="ControllerComponent.hpp" />
     <ClInclude Include="ControllerSystem.hpp" />
+    <ClInclude Include="DamageSystem.hpp" />
     <ClInclude Include="ECSManager.hpp" />
     <ClInclude Include="Entity.hpp" />
     <ClInclude Include="EntityFactory.hpp" />

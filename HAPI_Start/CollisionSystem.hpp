@@ -6,6 +6,6 @@ class CollisionSystem :public System
 public:
 	CollisionSystem();
 	~CollisionSystem();
-	void Update(ECSManager& ecsManager, const Entity& entity) override;
+	void Update(ECSManager& ecsManager, Entity & entity) override;
 };
 

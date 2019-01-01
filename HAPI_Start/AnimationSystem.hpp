@@ -9,7 +9,7 @@ class AnimationSystem : public System
 public:
 	AnimationSystem();
 	~AnimationSystem();
-	void Update(ECSManager& ecsManager, const Entity& entity) override;
+	void Update(ECSManager& ecsManager, Entity & entity) override;
 private:
 	void SetAnimation(const std::string& spriteName, AnimationComponent& animation_component, ECSManager& ecs_manager);
 };

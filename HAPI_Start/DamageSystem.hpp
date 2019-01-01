@@ -1,11 +1,11 @@
 #pragma once
 #include "System.hpp"
 
-class MovementSystem :public System
+class DamageSystem : public System
 {
 public:
-	MovementSystem();
-	~MovementSystem();
+	DamageSystem();
+	~DamageSystem();
 	void Update(ECSManager& ecsManager, Entity & entity) override;
 };
 

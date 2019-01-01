@@ -12,7 +12,7 @@ public:
 	/// <summary> Virtual update function to update any system </summary>
 	/// <param name="entity"> refrence to the entity </param>
 	/// <param name="components"> A vector of the components of the entity </param>
-	virtual void Update(ECSManager& ecsManager, const Entity& entity) = 0;
+	virtual void Update(ECSManager& ecsManager, Entity & entity) = 0;
 
 	/// <summary> Virtual update function to update any system </summary>
 	/// <returns> A uint64 that is used a bitset to represent a signature of the system </returns>

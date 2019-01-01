@@ -1,5 +1,6 @@
 #pragma once
 #include "Vector2.hpp"
+#include <vector>
 
 struct Rect
 {
@@ -8,8 +9,8 @@ struct Rect
 
 	int Left, Right, Top, Bottom;
 
-	int Width() { return (Right - Left); }
-	int Height() { return (Bottom - Top); }
+	int Width() const { return (Right - Left); }
+	int Height() const { return (Bottom - Top); }
 
 	//Translate rect by a vector position
 	void Translate(const Vector2i& pos);
@@ -27,7 +28,14 @@ struct Rect
 	bool Outside(const Rect& otherRect);
 	void ClipTo(const Rect& otherRect);
 
-	Vector2i Center();
+	Vector2f GetIntersectionDepth(const Rect& rectB);
+
+	//Return the center point of the rectangle
+	Vector2i Center() const;
+
+	std::vector<Vector2f> RotatedRectangle(float radians) const;
+
+	void OBRBoundingRect(std::vector<Vector2f> points);
 
 	//Add a vector to the current vector
 	Rect& operator+=(const Rect& rhs)
@@ -38,7 +46,5 @@ struct Rect
 		Bottom += rhs.Bottom;
 		return *this;
 	}
-
-
 };
 

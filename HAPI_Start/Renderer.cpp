@@ -19,6 +19,12 @@ Renderer::~Renderer()
 	Cleanup();
 }
 
+void Renderer::SetOffset(const Vector2f& offset)
+{
+	m_lastOffset = m_offset;
+	m_targetOffset = offset;
+}
+
 void Renderer::Intialise(const Vector2i& screenSize, const std::string& windowName)
 {
 	m_screenSize = screenSize;
@@ -124,24 +130,17 @@ void Renderer::LoadTilesheet(const std::string& tilesheetName, const std::string
 		std::cout << "Can't load tilesheet as the texture with the name '" << textureName << "' doesn't exist!\n";
 }
 
-Vector2i Renderer::projectPosition(const Vector3f& sourcePos)
+Vector2f Renderer::Lerp(const Vector2f& pos, const Vector2f& lastPos, float s)
 {
-	//Check if the Z is less than or equal to 0, If true then return the source position without doing any calculation
-	if (sourcePos.z <= 0)
-		return Vector2i(static_cast<int>(sourcePos.x), static_cast<int>(sourcePos.y));
+	if(pos == lastPos)
+		return pos;
 
-	//Get the center of the screen as a vector2 int
-	const Vector2i center_screen = m_screenSize / 2;
+	Vector2f interPos{ lastPos + (pos - lastPos) * s };
 
-	//Calculate the projected screen position from a 3D world position
-	Vector2i projection;
-	projection.x = static_cast<int>((m_eyeDistance * (sourcePos.x - center_screen.x)) / (sourcePos.z + m_eyeDistance)) + center_screen.x;
-	projection.y = static_cast<int>((m_eyeDistance * (sourcePos.y - center_screen.y)) / (sourcePos.z + m_eyeDistance)) + center_screen.y;
-
-	return projection;
+	return interPos;
 }
 
-void Renderer::Draw(const std::string& spriteName, const Vector2i& pos)
+void Renderer::Draw(const std::string& spriteName, const Vector2f& pos)
 {
 	Sprite* sprite = m_sprites[spriteName];
 	//check if sprite is null and if so return out of this function
@@ -150,9 +149,12 @@ void Renderer::Draw(const std::string& spriteName, const Vector2i& pos)
 		return;
 	}
 
+	Vector2i veciOffset = Vector2i{ (int)m_offset.x,(int)m_offset.y };
 	Rect screenRect(0, m_screenSize.x, 0, m_screenSize.y);
 	Rect spriteRect(0, sprite->GetWidth(), 0, sprite->GetHeight());
-	spriteRect.Translate(pos + m_offset);
+	Vector2i centerPos = { (int)pos.x - sprite->GetWidth() / 2, (int)pos.y - sprite->GetHeight() / 2 };
+
+	spriteRect.Translate(centerPos + veciOffset);
 
 	//Clipping
 	if (spriteRect.Outside(screenRect))
@@ -161,31 +163,20 @@ void Renderer::Draw(const std::string& spriteName, const Vector2i& pos)
 	}
 	else if (screenRect.Contains(spriteRect))
 	{
-		sprite->Draw(m_screen,m_screenSize,pos + m_offset);
+		sprite->Draw(m_screen,m_screenSize, centerPos + veciOffset);
 	}
 	else
 	{
 		spriteRect.ClipTo(screenRect);
-		spriteRect.Translate(-pos - m_offset);
+		spriteRect.Translate(-centerPos - veciOffset);
 
 		spriteRect.Clamp(screenRect);
 
-		sprite->Draw(m_screen, m_screenSize, pos + m_offset, spriteRect);
+		sprite->Draw(m_screen, m_screenSize, centerPos + veciOffset, spriteRect);
 	}
 }
 
-void Renderer::Draw(const std::string& spriteName, const Vector2f& pos)
-{
-	Vector2i veci = { (int)pos.x,(int)pos.y };
-	Draw(spriteName, veci);
-}
-
-void Renderer::Draw(const std::string& spriteName, const Vector3f& pos)
-{
-	Draw(spriteName, projectPosition(pos));
-}
-
-void Renderer::DrawAnimation(const std::string& animationName, const Vector2i& pos, int& currentFrame, HAPISPACE::DWORD& lastTime, float speed)
+void Renderer::DrawAnimation(const std::string& animationName, const Vector2f& pos, int& currentFrame, HAPISPACE::DWORD& lastTime, float speed, float rotation)
 {
 	AnimatedSprite* sprite = (AnimatedSprite*)m_sprites[animationName];
 	//check if sprite is null and if so return out of this function
@@ -198,8 +189,10 @@ void Renderer::DrawAnimation(const std::string& animationName, const Vector2i& p
 	Rect spriteRect(0, sprite->GetWidth(), 0, sprite->GetHeight());
 
 	//Draw from center of the sprite
-	Vector2i centerPos = { pos.x - sprite->GetWidth() / 2,pos.y - sprite->GetHeight() / 2 };
-	spriteRect.Translate(centerPos + m_offset);
+	Vector2i centerPos = { (int)pos.x - sprite->GetWidth() / 2, (int)pos.y - sprite->GetHeight() / 2 };
+	Vector2i veciOffset = Vector2i{ (int)m_offset.x,(int)m_offset.y };
+
+	spriteRect.Translate(centerPos + veciOffset);
 
 	//Clipping
 	if (spriteRect.Outside(screenRect))
@@ -208,31 +201,20 @@ void Renderer::DrawAnimation(const std::string& animationName, const Vector2i& p
 	}
 	else if (screenRect.Contains(spriteRect))
 	{
-		sprite->Draw(m_screen, m_screenSize, centerPos + m_offset,currentFrame,lastTime,speed);
+		sprite->Draw(m_screen, m_screenSize, centerPos + veciOffset,currentFrame,lastTime,speed);
 	}
 	else
 	{
 		spriteRect.ClipTo(screenRect);
-		spriteRect.Translate(-centerPos - m_offset);
+		spriteRect.Translate(-centerPos - veciOffset);
 
 		spriteRect.Clamp(screenRect);
 
-		sprite->Draw(m_screen, m_screenSize, centerPos + m_offset, currentFrame, lastTime, speed, spriteRect);
+		sprite->Draw(m_screen, m_screenSize, centerPos + veciOffset, currentFrame, lastTime, speed, spriteRect);
 	}
 }
 
-void Renderer::DrawAnimation(const std::string& animationName, const Vector2f& pos, int& currentFrame, HAPISPACE::DWORD& lastTime, float speed)
-{
-	Vector2i veci = { (int)pos.x,(int)pos.y };
-	DrawAnimation(animationName, veci,currentFrame,lastTime,speed);
-}
-
-void Renderer::DrawAnimation(const std::string& animationName, const Vector3f& pos, int& currentFrame, HAPISPACE::DWORD& lastTime, float speed)
-{
-	DrawAnimation(animationName, projectPosition(pos), currentFrame, lastTime, speed);
-}
-
-void Renderer::DrawAnimation(const std::string& animationName, const Vector2i& pos, int currentFrame)
+void Renderer::DrawAnimation(const std::string& animationName, const Vector2f& pos, int currentFrame)
 {
 	AnimatedSprite* sprite = (AnimatedSprite*)m_sprites[animationName];
 	//check if sprite is null and if so return out of this function
@@ -245,8 +227,11 @@ void Renderer::DrawAnimation(const std::string& animationName, const Vector2i& p
 	Rect spriteRect(0, sprite->GetWidth(), 0, sprite->GetHeight());
 
 	//Draw from center of the sprite
-	Vector2i centerPos = { pos.x - sprite->GetWidth() / 2,pos.y - sprite->GetHeight() / 2 };
-	spriteRect.Translate(centerPos + m_offset);
+	Vector2i centerPos = { (int)pos.x - sprite->GetWidth() / 2, (int)pos.y - sprite->GetHeight() / 2 };
+	Vector2i veciOffset = Vector2i{ (int)m_offset.x,(int)m_offset.y };
+
+	spriteRect.Translate(centerPos + veciOffset);
+
 
 	//Clipping
 	if (spriteRect.Outside(screenRect))
@@ -255,16 +240,16 @@ void Renderer::DrawAnimation(const std::string& animationName, const Vector2i& p
 	}
 	else if (screenRect.Contains(spriteRect))
 	{
-		sprite->Draw(m_screen,m_screenSize, centerPos + m_offset, currentFrame);
+		sprite->Draw(m_screen,m_screenSize, centerPos + veciOffset, currentFrame);
 	}
 	else
 	{
 		spriteRect.ClipTo(screenRect);
-		spriteRect.Translate(-centerPos - m_offset);
+		spriteRect.Translate(-centerPos - veciOffset);
 
 		spriteRect.Clamp(screenRect);
 
-		sprite->Draw(m_screen, m_screenSize, centerPos + m_offset, currentFrame, spriteRect);
+		sprite->Draw(m_screen, m_screenSize, centerPos + veciOffset, currentFrame, spriteRect);
 	}
 }
 
@@ -281,7 +266,7 @@ void Renderer::GetAnimationFrameData(const std::string& animationName, int& Star
 	EndFrame = sprite->GetEndFrame();
 }
 
-void Renderer::DrawTile(const std::string& tilesheetName, const Vector2i& pos, int tileIndex)
+void Renderer::DrawTile(const std::string& tilesheetName, const Vector2f& pos, int tileIndex)
 {
 	Tilesheet* sprite = (Tilesheet*)m_sprites[tilesheetName];
 	//check if sprite is null and if so return out of this function
@@ -294,8 +279,10 @@ void Renderer::DrawTile(const std::string& tilesheetName, const Vector2i& pos, i
 	Rect spriteRect(0, sprite->GetWidth(), 0, sprite->GetHeight());
 
 	//Draw from center of the sprite
-	Vector2i centerPos = { pos.x - sprite->GetWidth() / 2,pos.y - sprite->GetHeight() / 2 };
-	spriteRect.Translate(centerPos + m_offset);
+	Vector2i centerPos = { (int)pos.x - sprite->GetWidth() / 2, (int)pos.y - sprite->GetHeight() / 2 };
+	Vector2i veciOffset = Vector2i{ (int)m_offset.x,(int)m_offset.y };
+
+	spriteRect.Translate(centerPos + veciOffset);
 
 	//Clipping
 	if (spriteRect.Outside(screenRect))
@@ -304,31 +291,20 @@ void Renderer::DrawTile(const std::string& tilesheetName, const Vector2i& pos, i
 	}
 	else if (screenRect.Contains(spriteRect))
 	{
-		sprite->Draw(m_screen, m_screenSize, centerPos + m_offset, tileIndex);
+		sprite->Draw(m_screen, m_screenSize, centerPos + veciOffset, tileIndex);
 	}
 	else
 	{
 		spriteRect.ClipTo(screenRect);
-		spriteRect.Translate(-centerPos - m_offset);
+		spriteRect.Translate(-centerPos - veciOffset);
 
 		spriteRect.Clamp(screenRect);
 
-		sprite->Draw(m_screen, m_screenSize, centerPos + m_offset, tileIndex, spriteRect);
+		sprite->Draw(m_screen, m_screenSize, centerPos + veciOffset, tileIndex, spriteRect);
 	}
 }
 
-void Renderer::DrawTile(const std::string& tilesheetName, const Vector2f& pos, int tileIndex)
-{
-	Vector2i veci = { (int)pos.x,(int)pos.y };
-	DrawTile(tilesheetName, veci, tileIndex);
-}
-
-void Renderer::DrawTile(const std::string& tilesheetName, const Vector3f& pos, int tileIndex)
-{
-	DrawTile(tilesheetName, projectPosition(pos), tileIndex);
-}
-
-void Renderer::InstanceDraw(int id, const std::string& spriteName, Vector2i& pos, float rotation)
+void Renderer::InstanceDraw(int id, const std::string& spriteName, const Vector2f& pos, const Vector2f& lastPos, float rotation)
 {
 	if(m_sprites.find(spriteName) == m_sprites.end())
 	{
@@ -340,16 +316,17 @@ void Renderer::InstanceDraw(int id, const std::string& spriteName, Vector2i& pos
 	if (m_instancedSprites.find(id) == m_instancedSprites.end())
 	{
 		//Insert new instance sprite to be drawn
-		m_instancedSprites.emplace(id, InstancedSprite(InstancedSprite::Sprite, spriteName, pos, rotation));
+		m_instancedSprites.emplace(id, InstancedSprite(InstancedSprite::Sprite, spriteName, pos, lastPos, rotation));
 	}
 	else
 	{
 		//update existing sprite position
 		m_instancedSprites.at(id).position = pos;
+		m_instancedSprites.at(id).lastPosition = lastPos;
 	}
 }
 
-void Renderer::InstanceDrawAnimation(int id, const std::string& spriteName, Vector2i& pos, int frame, int& startFrame, int& endFrame, float rotation)
+void Renderer::InstanceDrawAnimation(int id, const std::string& spriteName,const Vector2f& pos, const Vector2f& lastPos, int frame, int& startFrame, int& endFrame, float rotation)
 {
 	if (m_sprites.find(spriteName) == m_sprites.end())
 	{
@@ -365,12 +342,13 @@ void Renderer::InstanceDrawAnimation(int id, const std::string& spriteName, Vect
 	if (m_instancedSprites.find(id) == m_instancedSprites.end())
 	{
 		//Insert new instance sprite to be drawn
-		m_instancedSprites.emplace(id, InstancedSprite(InstancedSprite::Animated, spriteName, pos,rotation, frame));
+		m_instancedSprites.emplace(id, InstancedSprite(InstancedSprite::Animated, spriteName, pos, lastPos,rotation, frame));
 	}
 	else
 	{
 		//update existing sprite position
 		m_instancedSprites.at(id).position = pos;
+		m_instancedSprites.at(id).lastPosition = lastPos;
 		m_instancedSprites.at(id).frame = frame;
 	}
 }
@@ -381,24 +359,32 @@ void Renderer::RemoveInstance(int id)
 		m_instancedSprites.erase(id);
 }
 
-void Renderer::DrawInstancedSprites()
+void Renderer::DrawInstancedSprites(float s)
 {
+	m_lerpValue = s;
 
+	//update offset (Camera)
+	Vector2f interpolatedPosition = Lerp(m_targetOffset, m_lastOffset, s*.25f);
+	m_offset = interpolatedPosition;
 
 	//Loop through all instance sprite and draw them
 	for (auto& queued_sprite : m_instancedSprites)
 	{
+		interpolatedPosition = Lerp(queued_sprite.second.position, queued_sprite.second.lastPosition, s);
 		if (queued_sprite.second.spriteType == InstancedSprite::Sprite)
 		{
-			Draw(*queued_sprite.second.spriteName, queued_sprite.second.position);
+			Draw(*queued_sprite.second.spriteName, interpolatedPosition);
 		}
 		else if (queued_sprite.second.spriteType == InstancedSprite::Animated)
 		{
 			//Pass the current frame, lastTime, speed as pointer
 			int& frame = queued_sprite.second.frame;
-			DrawAnimation(*queued_sprite.second.spriteName, queued_sprite.second.position,queued_sprite.second.frame);
+			DrawAnimation(*queued_sprite.second.spriteName, interpolatedPosition,queued_sprite.second.frame);
 		}
 	}
+
+	//Set Last Frame time
+	m_lastTime = HAPI.GetTime();
 }
 
 void Renderer::LoadTexture(std::string name, const std::string& path)

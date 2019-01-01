@@ -15,7 +15,7 @@ AnimationSystem::~AnimationSystem()
 {
 }
 
-void AnimationSystem::Update(ECSManager& ecsManager, const Entity& entity)
+void AnimationSystem::Update(ECSManager& ecsManager, Entity & entity)
 {
 	TransformComponent* transform_component = (TransformComponent*)entity.GetComponent(TransformComponent::ID).get();
 	MotionComponent* motion_component = (MotionComponent*)entity.GetComponent(MotionComponent::ID).get();

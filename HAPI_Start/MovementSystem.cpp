@@ -14,7 +14,7 @@ MovementSystem::~MovementSystem()
 {
 }
 
-void MovementSystem::Update(ECSManager& ecsManager, const Entity& entity)
+void MovementSystem::Update(ECSManager& ecsManager, Entity & entity)
 {
 	TransformComponent* transform_component = (TransformComponent*)entity.GetComponent(TransformComponent::ID).get();
 	MotionComponent* motion_component = (MotionComponent*)entity.GetComponent(MotionComponent::ID).get();
@@ -24,9 +24,11 @@ void MovementSystem::Update(ECSManager& ecsManager, const Entity& entity)
 	else if(motion_component->CurrentState != MotionComponent::State::Attacking)
 		motion_component->CurrentState = MotionComponent::State::Idle;
 
+	transform_component->LastPosition = transform_component->GetPostion();
+
 	if (motion_component->Velocity > 0.0f) 
 	{
-		transform_component->Position += Vector2f(motion_component->Direction.x, motion_component->Direction.y) * motion_component->Velocity;
 		transform_component->Direction = motion_component->Direction;
+		transform_component->Position = transform_component->GetPostion() + Vector2f(motion_component->Direction.x, motion_component->Direction.y) * motion_component->Velocity;
 	}
 }

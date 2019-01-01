@@ -1,21 +1,25 @@
 #pragma once
 #include "Rect.hpp"
-#include <vector>
 #include <unordered_map>
 
-enum class CollisionLayer {
-	World,
-	Player,
-	Enemy
-};
 
 struct CollisionObject
 {
+	enum CollisionLayer
+	{
+		Player = 1,
+		Enemy = 2,
+		World = 4,
+		Effect = 8,
+		Half_Cover = 16
+	};
+
 	CollisionObject(){}
-	CollisionObject(const Rect& rect, CollisionLayer layerMask, int id) : CollisionRectangle(rect), LayerMask(layerMask), ID(id), LastRectangle(rect){}
+	CollisionObject(const Rect& rect, CollisionObject::CollisionLayer layer, unsigned int layerMask, int id) : CollisionRectangle(rect),Layer(layer), LayerMask(layerMask), ID(id), LastRectangle(rect){}
 	Rect CollisionRectangle;
 	Rect LastRectangle;
-	CollisionLayer LayerMask;
+	CollisionLayer Layer;
+	unsigned int LayerMask;
 	int ID{ 0 };
 	bool Active{ true };
 };
@@ -26,13 +30,15 @@ public:
 	CollisionManager();
 	~CollisionManager();
 
-	void AddCollisionObject(const Rect& rect, CollisionLayer layerMask, int id);
+	void AddCollisionObject(const Rect& rect, CollisionObject::CollisionLayer layer, unsigned int layerMask, int id);
 	void UpdateCollisionObject(int id, const Rect& rect);
 	void RemoveCollisionObject(int id);
 	void SetCollisionObject(int id, bool active);
 	Rect GetObjectRect(int id) const;
 
 	void UpdateCollisions();
+
+	int IsColliding(int id);
 
 	int ObjectCount() const;
 

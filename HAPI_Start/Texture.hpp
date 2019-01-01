@@ -29,6 +29,8 @@ public:
 	//BlitFast texture with alpha blending and only render a region of the sprite
 	void BlitAlpha(HAPISPACE::BYTE* screen, Vector2i screenSize, const Vector2i& pos, const Rect& area) const;
 
+	void BlitRotatedAlpha(HAPISPACE::BYTE* screen, Vector2i screenSize, const Vector2i& pos, const Rect& boundingArea, std::vector<Vector2f> OBR, float Rotation) const;
+
 private:
 	int m_width{ 0 }, m_height{ 0 };
 	HAPISPACE::BYTE* m_texture{ nullptr };

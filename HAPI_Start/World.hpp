@@ -20,12 +20,14 @@ public:
 	void DestroyFirstEntityByName(const std::string & entityName);
 private:
 	void initilise();
+	const HAPISPACE::DWORD TICKTIME{ 50 };
 	ECSManager m_ecsManager;
 	CollisionManager m_collision_system;
 	Renderer* m_renderer;
 
 	Tilemap m_tilemap;
 
-	HAPISPACE::DWORD m_lastTime{0};
+	HAPISPACE::DWORD m_lastTimeTicked{0};
+	float m_interpolatedTime{ 0.0f };
 };
 

@@ -8,7 +8,7 @@ public:
 	RenderSystem();
 	~RenderSystem();
 
-	void Update(ECSManager& ecsManager, const Entity& entity) override;
+	void Update(ECSManager& ecsManager, Entity & entity) override;
 	HAPISPACE::DWORD m_lastTime{ 0 };
 };
 

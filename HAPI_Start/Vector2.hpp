@@ -20,17 +20,26 @@ public:
 	//Get the magnitude (Length) of a vector
 	float Magnitude()
 	{
-		return std::sqrt((x * x) + (y * y));
+		return std::sqrt(x * x + y * y);
 	}
 	//Normalise the vector using its own magnitude
 	void Normalise()
 	{
-		if(std::abs(x) > 0.0f)
-			x /= Magnitude();
-		if (std::abs(y) > 0.0f)
-			y /= Magnitude();
+		float magnitude = Magnitude();
+
+		if(std::fabs(x) > 0.0f)
+			x /= magnitude;
+		if (std::fabs(y) > 0.0f)
+			y /= magnitude;
 	}
 
+	//Add a vector to the current vector
+	Vector2& operator*=(const float& rhs)
+	{
+		x *= rhs;
+		y *= rhs;
+		return *this;
+	}
 	//Add a vector to the current vector
 	Vector2& operator+=(const Vector2& rhs)
 	{

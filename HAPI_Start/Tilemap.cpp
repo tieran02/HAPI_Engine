@@ -80,7 +80,7 @@ void Tilemap::Draw(Renderer& renderer)
 				y++;
 				x = 0;
 			}
-				renderer.DrawTile(m_textureName, Vector2i(layer[i].x, layer[i].y), layer[i].tileID);
+				renderer.DrawTile(m_textureName, Vector2f(layer[i].x, layer[i].y), layer[i].tileID);
 			x++;
 		}
 	}
@@ -112,7 +112,11 @@ void Tilemap::LoadCollisionLayer(const std::string& layerData, CollisionManager&
 			int collisionY = y * m_tileHeight;
 			Rect collisionRect = Rect(collisionX, collisionX + m_tileWidth, collisionY, collisionY + m_tileHeight);
 
-			collisionSystem.AddCollisionObject(collisionRect, CollisionLayer::World, collisionSystem.ObjectCount());
+			collisionSystem.AddCollisionObject(collisionRect, CollisionObject::CollisionLayer::World,
+				CollisionObject::CollisionLayer::Enemy |
+				CollisionObject::CollisionLayer::Player |
+				CollisionObject::CollisionLayer::Effect,
+				collisionSystem.ObjectCount());
 		}
 
 		if (x < m_width - 1)

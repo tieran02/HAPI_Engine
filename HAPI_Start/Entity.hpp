@@ -26,12 +26,17 @@ struct Entity {
 	const std::string& GetName() { return m_name; }
 
 	std::shared_ptr<BaseComponent> GetComponent(int id) const;
+
+	bool IsActive() const { return m_active; }
+	void SetActive(bool active) { m_active = active; }
+
 private:
 	uint32_t m_id;
 	std::bitset<64> m_key{ 0 };
 	std::unordered_map<int, std::shared_ptr<BaseComponent>> components;
 
 	std::string m_name;
+	bool m_active{true};
 };
 
 inline std::shared_ptr<BaseComponent> Entity::GetComponent(int id) const

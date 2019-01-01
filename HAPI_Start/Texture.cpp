@@ -101,6 +101,29 @@ void Texture::BlitAlpha(HAPISPACE::BYTE* screen, Vector2i screenSize, const Vect
 	}
 }
 
+void Texture::BlitRotatedAlpha(HAPISPACE::BYTE* screen, Vector2i screenSize, const Vector2i& pos, const Rect& boundingArea, std::vector<Vector2f> OBR, float rotation) const
+{
+	//reverse area back to pre rotated area
+	if (rotation != 0.0f)
+	{
+		//loop through the AARB area
+		for (int x = boundingArea.Left; x < boundingArea.Right; ++x)
+		{
+			for (int y = boundingArea.Top; y < boundingArea.Bottom; ++y)
+			{
+
+
+				//do reverse transform back into pre rotated space
+				float nx = cos(-rotation) * (x - boundingArea.Center().x) - sin(-rotation) * (y - boundingArea.Center().y) + boundingArea.Center().x;
+				float ny = sin(-rotation) * (x - boundingArea.Center().x) + cos(-rotation) * (y - boundingArea.Center().y) + boundingArea.Center().y;
+
+
+			}
+		}
+	}
+
+}
+
 bool Texture::loadTexture(const std::string& path)
 {
 	return HAPI.LoadTexture(path, &m_texture, m_width, m_height);

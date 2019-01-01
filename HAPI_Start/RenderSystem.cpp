@@ -14,11 +14,10 @@ RenderSystem::~RenderSystem()
 {
 }
 
-void RenderSystem::Update(ECSManager& ecsManager, const Entity& entity)
+void RenderSystem::Update(ECSManager& ecsManager, Entity & entity)
 {
 	TransformComponent* transform_component = (TransformComponent*)entity.GetComponent(TransformComponent::ID).get();
 	SpriteComponent* sprite_component = (SpriteComponent*)entity.GetComponent(SpriteComponent::ID).get();
-	Vector2i pos = Vector2i((int)transform_component->Position.x, (int)transform_component->Position.y);
 
 	//check if the entity has a animation component
 	AnimationComponent* animation_component = (AnimationComponent*)entity.GetComponent(AnimationComponent::ID).get();
@@ -27,9 +26,14 @@ void RenderSystem::Update(ECSManager& ecsManager, const Entity& entity)
 		isAnimation = true;
 
 	if(!isAnimation)
-		ecsManager.GetRenderer()->InstanceDraw(entity.ID(), sprite_component->SpriteName, pos, transform_component->Rotation);
+		ecsManager.GetRenderer()->InstanceDraw(entity.ID(), sprite_component->SpriteName, transform_component->GetPostion(), transform_component->GetLastPosition(), transform_component->Rotation);
 	else
 	{
-		ecsManager.GetRenderer()->InstanceDrawAnimation(entity.ID(), animation_component->currentAnimation, pos, animation_component->Frame, animation_component->StartFrame, animation_component->EndFrame, transform_component->Rotation);
+		ecsManager.GetRenderer()->InstanceDrawAnimation(entity.ID(), animation_component->currentAnimation, transform_component->GetPostion(), transform_component->GetLastPosition(), animation_component->Frame, animation_component->StartFrame, animation_component->EndFrame, transform_component->Rotation);
+	}
+
+	if (!entity.IsActive())
+	{
+		ecsManager.GetRenderer()->RemoveInstance(entity.ID());
 	}
 }

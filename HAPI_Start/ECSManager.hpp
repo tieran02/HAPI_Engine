@@ -37,6 +37,10 @@ public:
 	void MakeEntity(std::vector<std::shared_ptr<BaseComponent>> components, const std::string& name);
 	//Instantiate entity (Spawn entity)
 	Entity* InstantiateEntity(const std::string& name);
+	//Instantiate entity at position with a direction and velocity
+	Entity* InstantiateEntity(const std::string& name, Vector2f pos, Vector2f dir = { 0.0f,0.0f }, float velocity = 0.0f);
+	//Get a  collidable entity from collide ID
+	Entity* GetCollidableEntity(int id);
 	//TODO: Load entities from xml
 	void LoadEntitiesFromXML(const std::string& path);
 	//Remove entity from the ECS
@@ -48,6 +52,10 @@ public:
 
 	//Add entity to the collision map
 	void AddEntityToCollisionMap(int collisonID, int entityID);
+	//Create an entity pool for an entity
+	void CreateEntityPool(const std::string& entityName, int size);
+	//Check if an entity pool exists
+	bool HasEntityPool(const std::string& entityName);
 
 	void UpdateCollisionPositions();
 	
@@ -60,9 +68,14 @@ private:
 	std::unordered_map<int, std::shared_ptr<Entity>> m_collidableEntities;
 	std::vector<std::unique_ptr<System>> m_systems;
 
+	//Entity Pools
+	std::unordered_map<std::string, std::vector<std::shared_ptr<Entity>>> m_entityPools;
+
 	//Pointer to the render for systems to access
 	Renderer* m_renderer;
 	CollisionManager* m_collision_system;
+
+	std::shared_ptr<Entity> getEntityFromPool(const std::string& entityName);
 
 
 };
