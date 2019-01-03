@@ -6,7 +6,7 @@ struct DamageComponent : public Component<DamageComponent> {
 	DamageComponent() {}
 	std::shared_ptr<BaseComponent> Clone() const override;
 
-	int Damage;
+	float Damage;
 	bool DestroyOnHit{ false };
 	std::string EntityToSpawnOnHit;
 };

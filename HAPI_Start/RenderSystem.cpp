@@ -26,10 +26,10 @@ void RenderSystem::Update(ECSManager& ecsManager, Entity & entity)
 		isAnimation = true;
 
 	if(!isAnimation)
-		ecsManager.GetRenderer()->InstanceDraw(entity.ID(), sprite_component->SpriteName, transform_component->GetPostion(), transform_component->GetLastPosition(), transform_component->Rotation);
+		ecsManager.GetRenderer()->InstanceDraw(entity.ID(), sprite_component->SpriteName, transform_component->GetPostion(), transform_component->GetLastPosition());
 	else
 	{
-		ecsManager.GetRenderer()->InstanceDrawAnimation(entity.ID(), animation_component->currentAnimation, transform_component->GetPostion(), transform_component->GetLastPosition(), animation_component->Frame, animation_component->StartFrame, animation_component->EndFrame, transform_component->Rotation);
+		ecsManager.GetRenderer()->InstanceDrawAnimation(entity.ID(), animation_component->currentAnimation, transform_component->GetPostion(), transform_component->GetLastPosition(), animation_component->Frame, animation_component->StartFrame, animation_component->EndFrame);
 	}
 
 	if (!entity.IsActive())

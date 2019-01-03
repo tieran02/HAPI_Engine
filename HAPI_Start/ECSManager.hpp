@@ -8,7 +8,7 @@
 #include "Renderer.hpp"
 #include "CollisionManager.hpp"
 
-
+class World;
 class ECSManager {
 public:
 	ECSManager() = default;
@@ -19,6 +19,8 @@ public:
 
 	void SetRenderer(Renderer* renderer) { m_renderer = renderer; }
 	Renderer* GetRenderer() const { return m_renderer; }
+	void SetWorld(World* world) { m_world = world; }
+	World* GetWorld() const { return m_world; }
 	void SetCollisionSystem(CollisionManager* collision_system) { m_collision_system = collision_system; }
 	CollisionManager* GetCollisionSystem() const { return m_collision_system; }
 
@@ -41,12 +43,16 @@ public:
 	Entity* InstantiateEntity(const std::string& name, Vector2f pos, Vector2f dir = { 0.0f,0.0f }, float velocity = 0.0f);
 	//Get a  collidable entity from collide ID
 	Entity* GetCollidableEntity(int id);
+	//Get entity by the entity ID
+	Entity* GetEntity(int id);
 	//TODO: Load entities from xml
 	void LoadEntitiesFromXML(const std::string& path);
 	//Remove entity from the ECS
 	void RemoveEntity(int entityID);
 	//Remove entity by name (ONLY the first entity with that name will be removed)
 	void RemoveEntityByName(const std::string& name);
+	//Set an entity to active or not active
+	void SetEntityActive(int id, bool active);
 	//Update all systems
 	void UpdateSystems();
 
@@ -56,6 +62,8 @@ public:
 	void CreateEntityPool(const std::string& entityName, int size);
 	//Check if an entity pool exists
 	bool HasEntityPool(const std::string& entityName);
+
+	bool IsCollidable(int collidableID);
 
 	void UpdateCollisionPositions();
 	
@@ -73,6 +81,7 @@ private:
 
 	//Pointer to the render for systems to access
 	Renderer* m_renderer;
+	World* m_world;
 	CollisionManager* m_collision_system;
 
 	std::shared_ptr<Entity> getEntityFromPool(const std::string& entityName);

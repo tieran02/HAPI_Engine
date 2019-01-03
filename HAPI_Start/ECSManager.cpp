@@ -60,7 +60,7 @@ Entity* ECSManager::InstantiateEntity(const std::string& name)
 		const std::shared_ptr<Entity> entity = getEntityFromPool(name);
 		if (entity != nullptr)
 		{
-			entity->SetActive(true);
+			SetEntityActive(entity->ID(), true);
 			return entity.get();
 		}
 		return nullptr;
@@ -82,13 +82,13 @@ Entity* ECSManager::InstantiateEntity(const std::string& name, Vector2f pos, Vec
 		const std::shared_ptr<Entity> entity = getEntityFromPool(name);
 		if (entity != nullptr)
 		{
-			entity->SetActive(true);
+			SetEntityActive(entity->ID(), true);
 
 			TransformComponent* transform = (TransformComponent*)entity->GetComponent(TransformComponent::ID).get();
 			MotionComponent* motion = (MotionComponent*)entity->GetComponent(MotionComponent::ID).get();
 
 			if (transform != nullptr)
-				transform->SetPosition(pos);
+				transform->InitilisePosition(pos);
 			if (motion != nullptr) {
 				motion->Direction = dir;
 				motion->Velocity = velocity;
@@ -105,7 +105,7 @@ Entity* ECSManager::InstantiateEntity(const std::string& name, Vector2f pos, Vec
 		MotionComponent* motion = (MotionComponent*)entity->GetComponent(MotionComponent::ID).get();
 
 		if (transform != nullptr)
-			transform->SetPosition(pos);
+			transform->InitilisePosition(pos);
 		if (motion != nullptr) {
 			motion->Direction = dir;
 			motion->Velocity = velocity;
@@ -119,7 +119,12 @@ Entity* ECSManager::InstantiateEntity(const std::string& name, Vector2f pos, Vec
 
 Entity * ECSManager::GetCollidableEntity(int id)
 {
-	return m_collidableEntities[id].get();;
+	return m_collidableEntities[id].get();
+}
+
+Entity * ECSManager::GetEntity(int id)
+{
+	return m_entities[id].get();
 }
 
 void ECSManager::RemoveEntity(int entityID)
@@ -141,7 +146,7 @@ void ECSManager::RemoveEntity(int entityID)
 			if (m_entityPools.find(m_entities[i]->GetName()) != m_entityPools.end())
 			{
 				//disable entity instead of remove them
-				m_entities[i]->SetActive(false);
+				SetEntityActive(entityID, false);
 				return;
 			}
 			//else delte it from the entities list
@@ -168,6 +173,29 @@ void ECSManager::RemoveEntityByName(const std::string& name)
 			m_entities.erase(m_entities.begin() + i);
 			return;
 		}
+	}
+}
+
+void ECSManager::SetEntityActive(int id, bool active)
+{
+	Entity* entity = m_entities[id].get();
+	if (entity != nullptr)
+	{
+		if (!active)
+		{
+			entity->m_active = false;
+			m_renderer->RemoveInstance(id);
+
+			//check if the entity is also in the 
+			CollidableComponent* collidable_component = (CollidableComponent*)entity->GetComponent(CollidableComponent::ID).get();
+			if (collidable_component != nullptr)
+			{
+				m_collision_system->RemoveCollisionObject(collidable_component->CollisionID);
+				m_collidableEntities.erase(collidable_component->CollisionID);
+			}
+		}
+		else
+			entity->m_active = true;
 	}
 }
 
@@ -199,6 +227,8 @@ void ECSManager::AddEntityToCollisionMap(int collisonID, int entityID)
 	}
 }
 
+
+
 void ECSManager::CreateEntityPool(const std::string& entityName, int size)
 {
 	//check if entity pool already exists
@@ -210,7 +240,7 @@ void ECSManager::CreateEntityPool(const std::string& entityName, int size)
 		for (int i = 0; i < size; ++i)
 		{
 			const auto entity = m_entityFactory.Instantiate(entityName, m_entities.size());
-			entity->SetActive(false);
+			entity->m_active = false;
 			m_entityPools[entityName][i] = entity;
 			//also add the pooled entites to the entity list
 			m_entities.push_back(entity);
@@ -224,6 +254,13 @@ bool ECSManager::HasEntityPool(const std::string & entityName)
 		return false;
 
 	return true;
+}
+
+bool ECSManager::IsCollidable(int collidableID)
+{
+	if (m_collidableEntities.find(collidableID) != m_collidableEntities.end())
+		return true;
+	return false;
 }
 
 void ECSManager::UpdateCollisionPositions()

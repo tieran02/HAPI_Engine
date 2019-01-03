@@ -12,6 +12,7 @@ struct AnimationComponent : public Component<AnimationComponent> {
 
 	std::string currentAnimation;
 	HAPISPACE::DWORD LastTime{ 0 };
+	bool DestroyOnFinish{ false };
 	float Speed{ 1.0f };
 	int Frame{ 0 };
 	int StartFrame{ 0 };

@@ -5,8 +5,7 @@
 #include "Input.hpp"
 #include "ECSManager.hpp"
 #include "TransformComponent.hpp"
-#include "CollidableComponent.hpp"
-#include <cmath>
+#include "WeaponComponent.hpp"
 
 using namespace HAPISPACE;
 
@@ -26,7 +25,9 @@ void ControllerSystem::Update(ECSManager& ecsManager, Entity & entity)
 	//Keyboard Input
 	const HAPI_TKeyboardData& keyboard_data = HAPI.GetKeyboardData();
 
-	float moveSpeed = 15.0f;
+	std::cout << transform_component->GetPostion() << std::endl;
+
+	float moveSpeed = motion_component->MovementSpeed;
 	motion_component->Velocity = 0.0f;
 	motion_component->Direction = Vector2f(0, 0);
 
@@ -55,7 +56,6 @@ void ControllerSystem::Update(ECSManager& ecsManager, Entity & entity)
 	const auto mouse_data = HAPI.GetMouseData();
 	if (mouse_data.leftButtonDown)
 	{
-		motion_component->CurrentState = MotionComponent::State::Attacking;
 		//Get mouse direction
 		Vector2f mouse_pos = Vector2f(mouse_data.x, mouse_data.y);
 		Vector2f mouse_world_pos = mouse_pos - Vector2f(ecsManager.GetRenderer()->GetOffset().x, ecsManager.GetRenderer()->GetOffset().y);
@@ -64,7 +64,13 @@ void ControllerSystem::Update(ECSManager& ecsManager, Entity & entity)
 
 		direction.Normalise();
 		
-		ShootBullet("Bullet", transform_component->GetPostion(), direction, 40.0f, ecsManager);
+		//check if the entity has a weapon
+		WeaponComponent* weapon_component = (WeaponComponent*)entity.GetComponent(WeaponComponent::ID).get();
+		if(weapon_component != nullptr)
+		{
+			weapon_component->Fire = true;
+			weapon_component->Direction = direction;
+		}
 
 	}
 
@@ -88,11 +94,4 @@ void ControllerSystem::Update(ECSManager& ecsManager, Entity & entity)
 	Vector2f pos = { -transform_component->GetPostion().x + ecsManager.GetRenderer()->GetSize().x/2.0f, -transform_component->GetPostion().y + ecsManager.GetRenderer()->GetSize().y / 2.0f };
 	ecsManager.GetRenderer()->SetOffset(pos);
 
-}
-
-void ControllerSystem::ShootBullet(const std::string& bulletEntity, Vector2f position, Vector2f direction, float velocity, ECSManager& ecs_manager)
-{
-	const auto bullet = ecs_manager.InstantiateEntity(bulletEntity, position,direction,velocity);
-	CollidableComponent* collidable_component = (CollidableComponent*)bullet->GetComponent(CollidableComponent::ID).get();
-	collidable_component->CollideMask |= CollidableComponent::CollisionLayer::Enemy;
 }

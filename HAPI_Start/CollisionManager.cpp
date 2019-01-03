@@ -47,30 +47,7 @@ Rect CollisionManager::GetObjectRect(int id) const
 
 void CollisionManager::UpdateCollisions()
 {
-	for (auto& collision_object : m_collision_objects)
-	{
-		for (auto& other_collision_object : m_collision_objects)
-		{
-			//Check whether the objects are the same if so skip this instance
-			if(collision_object.second.ID == other_collision_object.second.ID)
-				continue;
 
-			//check the layers
-			bool bit = (other_collision_object.second.Layer & collision_object.second.LayerMask) == other_collision_object.second.Layer;
-			bool bit1 = (collision_object.second.Layer & other_collision_object.second.LayerMask) == collision_object.second.Layer;
-
-			if (!bit || !bit1)
-				continue;
-
-			//Check if the rects intersect
-			if(collision_object.second.CollisionRectangle.Intersect(other_collision_object.second.CollisionRectangle))
-			{
-				//set the rect back to the old one
-				collision_object.second.CollisionRectangle = collision_object.second.LastRectangle;
-				other_collision_object.second.CollisionRectangle = other_collision_object.second.LastRectangle;
-			}
-		}
-	}
 }
 
 int CollisionManager::IsColliding(int id)
@@ -79,24 +56,23 @@ int CollisionManager::IsColliding(int id)
 
 	for (auto& other_collision_object : m_collision_objects)
 	{
+		if (!m_collision_objects[other_collision_object.second.ID].Active)
+			return -1;
+
 		//Check whether the objects are the same if so skip this instance
 		if (collision_object.ID == other_collision_object.second.ID)
 			continue;
 
 		//check the layers
-		bool bit = (other_collision_object.second.Layer & collision_object.LayerMask) == other_collision_object.second.Layer;
-		bool bit1 = (collision_object.Layer & other_collision_object.second.LayerMask) == collision_object.Layer;
+		bool bit = (other_collision_object.second.Layer & collision_object.CollidesWith) != 0;
 
-		if (!bit || !bit1)
+		if (!bit)
 			continue;
 
 		//Check if the rects intersect
 		if (collision_object.CollisionRectangle.Intersect(other_collision_object.second.CollisionRectangle))
 		{
 			return other_collision_object.second.ID;
-			////set the rect back to the old one
-			//collision_object.second.CollisionRectangle = collision_object.second.LastRectangle;
-			//other_collision_object.second.CollisionRectangle = other_collision_object.second.LastRectangle;
 		}
 	}
 	return -1;

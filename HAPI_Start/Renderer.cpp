@@ -304,7 +304,7 @@ void Renderer::DrawTile(const std::string& tilesheetName, const Vector2f& pos, i
 	}
 }
 
-void Renderer::InstanceDraw(int id, const std::string& spriteName, const Vector2f& pos, const Vector2f& lastPos, float rotation)
+void Renderer::InstanceDraw(int id, const std::string& spriteName, const Vector2f& pos, const Vector2f& lastPos)
 {
 	if(m_sprites.find(spriteName) == m_sprites.end())
 	{
@@ -316,7 +316,7 @@ void Renderer::InstanceDraw(int id, const std::string& spriteName, const Vector2
 	if (m_instancedSprites.find(id) == m_instancedSprites.end())
 	{
 		//Insert new instance sprite to be drawn
-		m_instancedSprites.emplace(id, InstancedSprite(InstancedSprite::Sprite, spriteName, pos, lastPos, rotation));
+		m_instancedSprites.emplace(id, InstancedSprite(InstancedSprite::Sprite, spriteName, pos, lastPos));
 	}
 	else
 	{
@@ -326,8 +326,11 @@ void Renderer::InstanceDraw(int id, const std::string& spriteName, const Vector2
 	}
 }
 
-void Renderer::InstanceDrawAnimation(int id, const std::string& spriteName,const Vector2f& pos, const Vector2f& lastPos, int frame, int& startFrame, int& endFrame, float rotation)
+void Renderer::InstanceDrawAnimation(int id, const std::string& spriteName,const Vector2f& pos, const Vector2f& lastPos, int frame, int& startFrame, int& endFrame)
 {
+	if(spriteName.empty())
+		return;
+
 	if (m_sprites.find(spriteName) == m_sprites.end())
 	{
 		std::cout << "Can not queue draw sprite '" << spriteName << "' as it doesn't the sprite doesn't exist\n";
@@ -342,7 +345,7 @@ void Renderer::InstanceDrawAnimation(int id, const std::string& spriteName,const
 	if (m_instancedSprites.find(id) == m_instancedSprites.end())
 	{
 		//Insert new instance sprite to be drawn
-		m_instancedSprites.emplace(id, InstancedSprite(InstancedSprite::Animated, spriteName, pos, lastPos,rotation, frame));
+		m_instancedSprites.emplace(id, InstancedSprite(InstancedSprite::Animated, spriteName, pos, lastPos, frame));
 	}
 	else
 	{

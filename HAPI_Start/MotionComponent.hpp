@@ -7,11 +7,11 @@ struct MotionComponent : public Component<MotionComponent> {
 	{
 		Idle,
 		Walking,
-		Attacking
 	};
 
 	MotionComponent() : Direction(0.0f, 0.0f), Velocity(0.0f){}
 	std::shared_ptr<BaseComponent> Clone() const override;
+	float MovementSpeed;
 	Vector2f Direction;
 	float Velocity;
 	State CurrentState{State::Idle};

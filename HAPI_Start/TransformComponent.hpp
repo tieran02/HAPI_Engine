@@ -13,8 +13,6 @@ private:
 	Vector2f LastPosition;
 public:
 	Vector2f Direction;
-	float Rotation{ 0.0f };
-
 	void SetPosition(const Vector2f& pos)
 	{
 		Position = pos;

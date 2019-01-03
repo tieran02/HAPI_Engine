@@ -19,7 +19,7 @@ struct InstancedSprite
 		Tile
 	};
 
-	InstancedSprite(Type spriteType, const std::string& sprite_name, const Vector2f& pos, const Vector2f& lastPos, float rotation, int frame = -1, int* endFrame = nullptr)
+	InstancedSprite(Type spriteType, const std::string& sprite_name, const Vector2f& pos, const Vector2f& lastPos,int frame = -1, int* endFrame = nullptr)
 		: spriteType(spriteType),
 		  spriteName(&sprite_name),
 		  position(pos),
@@ -80,9 +80,9 @@ public:
 	void DrawTile(const std::string& tilesheetName, const Vector2f& pos, int tileIndex);
 
 	//Add a new sprite to always be drawn on each frame.
-	void InstanceDraw(int id,const std::string& spriteName, const Vector2f& pos, const Vector2f& lastPos, float rotation);
+	void InstanceDraw(int id,const std::string& spriteName, const Vector2f& pos, const Vector2f& lastPos);
 	//Add a new animated sprite to always be drawn on each frame.
-	void InstanceDrawAnimation(int id, const std::string& spriteName, const Vector2f& pos, const Vector2f& lastPos, int frame, int& startFrame, int& endFrame, float rotation);
+	void InstanceDrawAnimation(int id, const std::string& spriteName, const Vector2f& pos, const Vector2f& lastPos, int frame, int& startFrame, int& endFrame);
 
 	//Remove instance which will get deleted at the beginning of the next draw stage
 	void RemoveInstance(int id);

@@ -1,6 +1,5 @@
 #pragma once
 #include "Component.hpp"
-#include "string"
 
 struct HealthComponent : public Component<HealthComponent> {
 	HealthComponent() {}
@@ -14,4 +13,3 @@ inline std::shared_ptr<BaseComponent> HealthComponent::Clone() const
 {
 	return std::make_shared<HealthComponent>(*this);
 }
-#pragma once

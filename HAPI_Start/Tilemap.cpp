@@ -113,9 +113,7 @@ void Tilemap::LoadCollisionLayer(const std::string& layerData, CollisionManager&
 			Rect collisionRect = Rect(collisionX, collisionX + m_tileWidth, collisionY, collisionY + m_tileHeight);
 
 			collisionSystem.AddCollisionObject(collisionRect, CollisionObject::CollisionLayer::World,
-				CollisionObject::CollisionLayer::Enemy |
-				CollisionObject::CollisionLayer::Player |
-				CollisionObject::CollisionLayer::Effect,
+				CollisionObject::CollisionLayer::None,
 				collisionSystem.ObjectCount());
 		}
 

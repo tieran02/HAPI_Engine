@@ -6,6 +6,8 @@
 #include "MovementSystem.hpp"
 #include "RenderSystem.hpp"
 #include "ControllerSystem.hpp"
+#include "AISystem.hpp"
+#include "AIControllerComponent.hpp"
 #include "ControllerComponent.hpp"
 #include "AnimationComponent.hpp"
 #include "AnimationSystem.hpp"
@@ -13,6 +15,9 @@
 #include "CollisionSystem.hpp"
 #include "DamageComponent.hpp"
 #include "DamageSystem.hpp"
+#include "WeaponComponent.hpp"
+#include "WeaponSystem.hpp"
+#include "HealthComponent.hpp"
 
 World::World() 
 {
@@ -31,6 +36,7 @@ void World::Load(Renderer* renderer)
 	m_tilemap.LoadFromFile("Data\\Level1.xml", m_collision_system);
 
 	m_ecsManager.SetRenderer(m_renderer);
+	m_ecsManager.SetWorld(this);
 	m_ecsManager.SetCollisionSystem(&m_collision_system);
 
 
@@ -42,47 +48,75 @@ void World::Load(Renderer* renderer)
 	m_ecsManager.AddComponentToFactory<SpriteComponent>("SpriteComponent");
 	m_ecsManager.AddComponentToFactory<CollidableComponent>("CollidableComponent");
 	m_ecsManager.AddComponentToFactory<DamageComponent>("DamageComponent");
+	m_ecsManager.AddComponentToFactory<WeaponComponent>("WeaponComponent");
+	m_ecsManager.AddComponentToFactory<HealthComponent>("HealthComponent");
+	m_ecsManager.AddComponentToFactory<AIControllerComponent>("AIControllerComponent");
+
 	//ADD ECS systems
 	m_ecsManager.AddSystem<ControllerSystem>();
+	m_ecsManager.AddSystem<AISystem>();
 	m_ecsManager.AddSystem<MovementSystem>();
+	m_ecsManager.AddSystem<WeaponSystem>();
 	m_ecsManager.AddSystem<CollisionSystem>();
 	m_ecsManager.AddSystem<DamageSystem>();
 	m_ecsManager.AddSystem<AnimationSystem>();
 	m_ecsManager.AddSystem<RenderSystem>();
 
 	//Make player Entity
-	auto playerComponents = m_ecsManager.MakeComponents({ "TransformComponent","MotionComponent", "ControllerComponent", "AnimationComponent", "SpriteComponent", "CollidableComponent" });
+	auto playerComponents = m_ecsManager.MakeComponents({ "TransformComponent","MotionComponent", "ControllerComponent", "AnimationComponent", "SpriteComponent", "CollidableComponent", "WeaponComponent", "HealthComponent" });
 	if (!playerComponents.empty())
 	{
-		TransformComponent* transform_component = (TransformComponent*)playerComponents[0].get();
-		transform_component->Rotation = 0.785398f;
+		MotionComponent* motion_component = (MotionComponent*)playerComponents[1].get();
+		motion_component->MovementSpeed = 10.0f;
 
 		AnimationComponent* animation_component = (AnimationComponent*)playerComponents[3].get();
-		animation_component->Animations["idle"] = std::make_tuple("rifleIdle",true);
-		animation_component->Animations["walk"] = std::make_tuple("rifleMove", true);
-		animation_component->Animations["attack"] = std::make_tuple("rifleAttack", false);
+		animation_component->Animations["idleLeft"] = std::make_tuple("playerIdleLeft",true);
+		animation_component->Animations["idleRight"] = std::make_tuple("playerIdleRight", true);
+		animation_component->Animations["walkLeft"] = std::make_tuple("playerRunLeft", true);
+		animation_component->Animations["walkRight"] = std::make_tuple("playerRunRight", true);
 		animation_component->Speed = 0.075f;
 
 		CollidableComponent* collidable_component = (CollidableComponent*)playerComponents[5].get();
 		collidable_component->Layer = CollidableComponent::CollisionLayer::Player;
+		collidable_component->CollideWith = (CollidableComponent::CollisionLayer::World | CollidableComponent::CollisionLayer::Enemy);
+
+
+		WeaponComponent* weapon_component = (WeaponComponent*)playerComponents[6].get();
+		weapon_component->EntityToFire = "Bullet";
+		weapon_component->Firerate = 8;
+
+		HealthComponent* health_component = (HealthComponent*)playerComponents[7].get();
+		health_component->Health = 100.0f;
 	}
 	m_ecsManager.MakeEntity(playerComponents, "Player");
 
-	//Make player Entity
-	auto enemyComponents = m_ecsManager.MakeComponents({ "TransformComponent","MotionComponent", "AnimationComponent", "SpriteComponent", "CollidableComponent" });
-	if (!enemyComponents.empty())
+	//Make slime Entity
+	auto slimeComponents = m_ecsManager.MakeComponents({ "TransformComponent","MotionComponent", "AnimationComponent", "SpriteComponent", "CollidableComponent", "HealthComponent", "AIControllerComponent", "WeaponComponent" });
+	if (!slimeComponents.empty())
 	{
-		AnimationComponent* animation_component = (AnimationComponent*)enemyComponents[2].get();
-		animation_component->Animations["idle"] = std::make_tuple("testAnimation", true);
-		animation_component->Animations["walk"] = std::make_tuple("rifleMove", true);
-		animation_component->Animations["attack"] = std::make_tuple("rifleAttack", true);
+		AnimationComponent* animation_component = (AnimationComponent*)slimeComponents[2].get();
+		animation_component->Animations["slime"] = std::make_tuple("slimeAnimation", true);
+		animation_component->Speed = 0.075f;
 
-		CollidableComponent* collidable_component = (CollidableComponent*)enemyComponents[4].get();
+		CollidableComponent* collidable_component = (CollidableComponent*)slimeComponents[4].get();
 		collidable_component->Layer = CollidableComponent::CollisionLayer::Enemy;
-	}
-	m_ecsManager.MakeEntity(enemyComponents, "Enemy");
+		collidable_component->CollideWith = (CollidableComponent::CollisionLayer::World | CollidableComponent::CollisionLayer::Player);
 
-	//Bullet Entity
+		HealthComponent* health_component = (HealthComponent*)slimeComponents[5].get();
+		health_component->Health = 5.0f;
+
+		AIControllerComponent* ai_component = (AIControllerComponent*)slimeComponents[6].get();
+		ai_component->Enemy = AIControllerComponent::EnemyType::GreenSlime;
+
+		WeaponComponent* weapon_component = (WeaponComponent*)slimeComponents[7].get();
+		weapon_component->EntityToFire = "GreenBullet";
+		weapon_component->Firerate = 8;
+	}
+	m_ecsManager.MakeEntity(slimeComponents, "Slime");
+	//Create an entity pool for the bullets
+	m_ecsManager.CreateEntityPool("Slime", 32);
+
+	////Bullet Entity
 	auto bulletComponents = m_ecsManager.MakeComponents({ "TransformComponent","MotionComponent", "DamageComponent", "SpriteComponent", "CollidableComponent" });
 	if (!bulletComponents.empty())
 	{
@@ -91,26 +125,85 @@ void World::Load(Renderer* renderer)
 
 		CollidableComponent* collidable_component = (CollidableComponent*)bulletComponents[4].get();
 		collidable_component->Layer = CollidableComponent::CollisionLayer::Effect;
-		collidable_component->CollideMask = CollidableComponent::CollisionLayer::World;
+		collidable_component->isTrigger = true;
+
 
 		DamageComponent* damage_component = (DamageComponent*)bulletComponents[2].get();
 		damage_component->DestroyOnHit = true;
+		damage_component->Damage = 10.0f;
+		damage_component->EntityToSpawnOnHit = "Explosion";
 	}
 	m_ecsManager.MakeEntity(bulletComponents, "Bullet");
 	//Create an entity pool for the bullets
 	m_ecsManager.CreateEntityPool("Bullet", 128);
 
-	SpawnEntity("Player", Vector2f(100, 200));
-	//SpawnEntity("Enemy", Vector2f(500, 100));
+	auto slimeBulletComponents = m_ecsManager.MakeComponents({ "TransformComponent","MotionComponent", "DamageComponent", "SpriteComponent", "CollidableComponent" });
+	if (!slimeBulletComponents.empty())
+	{
+		SpriteComponent* sprite_component = (SpriteComponent*)slimeBulletComponents[3].get();
+		sprite_component->SetSprite("greenBulletSprite");
 
-	SpawnEntity("Bullet", Vector2f(100, 400), Vector2f(1,0) , 10.0f);
+		CollidableComponent* collidable_component = (CollidableComponent*)slimeBulletComponents[4].get();
+		collidable_component->Layer = CollidableComponent::CollisionLayer::Effect;
+		collidable_component->isTrigger = true;
 
+
+		DamageComponent* damage_component = (DamageComponent*)slimeBulletComponents[2].get();
+		damage_component->DestroyOnHit = true;
+		damage_component->Damage = 0.0f;
+		damage_component->EntityToSpawnOnHit = "GreenExplosion";
+	}
+	m_ecsManager.MakeEntity(slimeBulletComponents, "GreenBullet");
+	//Create an entity pool for the bullets
+	m_ecsManager.CreateEntityPool("GreenBullet", 256);
+
+	//Explosion Entity
+	auto explosiontComponents = m_ecsManager.MakeComponents({ "TransformComponent", "SpriteComponent", "AnimationComponent"});
+	if (!explosiontComponents.empty())
+	{
+		AnimationComponent* animation_component = (AnimationComponent*)explosiontComponents[2].get();
+		animation_component->Animations["explosion"] = std::make_tuple("explosionAnimation", false);
+		animation_component->Speed = 0.06f;
+		animation_component->DestroyOnFinish = true;
+	}
+	m_ecsManager.MakeEntity(explosiontComponents, "Explosion");
+	//Create an entity pool for the bullets
+	m_ecsManager.CreateEntityPool("Explosion", 128);
+
+	//Green Explosion Entity
+	auto greenExplosiontComponents = m_ecsManager.MakeComponents({ "TransformComponent", "SpriteComponent", "AnimationComponent" });
+	if (!explosiontComponents.empty())
+	{
+		AnimationComponent* animation_component = (AnimationComponent*)greenExplosiontComponents[2].get();
+		animation_component->Animations["explosion"] = std::make_tuple("greenExplosionAnimation", false);
+		animation_component->Speed = 0.06f;
+		animation_component->DestroyOnFinish = true;
+	}
+	m_ecsManager.MakeEntity(greenExplosiontComponents, "GreenExplosion");
+	//Create an entity pool for the bullets
+	m_ecsManager.CreateEntityPool("GreenExplosion", 256);
+
+	m_playerEntityID = SpawnEntity("Player", Vector2f(100, 200));
+
+	SpawnEntity("Slime", Vector2f(100, 100));
+	SpawnEntity("Slime", Vector2f(200, 100));
+	SpawnEntity("Slime", Vector2f(300, 100));
+	SpawnEntity("Slime", Vector2f(400, 100));
+	SpawnEntity("Slime", Vector2f(500, 100));
+
+
+	//Enemy Paths
+	m_greenSlimePath.push_back({ 211.0f,728.0f });
+	m_greenSlimePath.push_back({ 623.0f,953.0f });
+	m_greenSlimePath.push_back({ 623.0f,1090.0f });
+	m_greenSlimePath.push_back({ 200.0f,1090.0f });
 }
 
 void World::Unload()
 {
 	m_ecsManager.Clear();
 	m_collision_system.Clear();
+	m_greenSlimePath.clear();
 }
 
 void World::Update()
@@ -123,6 +216,8 @@ void World::Update()
 		m_ecsManager.UpdateSystems();
 		//m_collision_system.UpdateCollisions();
 		//m_ecsManager.UpdateCollisionPositions();
+
+		m_collision_system.UpdateCollisions();
 
 		m_lastTimeTicked = HAPI.GetTime();
 		timeSinceLastTick = 0;
@@ -141,12 +236,12 @@ void World::Render()
 }
 
 
-void World::SpawnEntity(const std::string & entityName, Vector2f pos, Vector2f dir, float velocity)
+int World::SpawnEntity(const std::string & entityName, Vector2f pos, Vector2f dir, float velocity)
 {
 	Entity* entity = m_ecsManager.InstantiateEntity(entityName);
 
 	if(entity == nullptr)
-		return;
+		return -1;
 
 	TransformComponent* transform = (TransformComponent*)entity->GetComponent(TransformComponent::ID).get();
 	MotionComponent* motion = (MotionComponent*)entity->GetComponent(MotionComponent::ID).get();
@@ -157,6 +252,8 @@ void World::SpawnEntity(const std::string & entityName, Vector2f pos, Vector2f d
 		motion->Direction = dir;
 		motion->Velocity = velocity;
 	}
+
+	return entity->ID();
 }
 
 void World::DestroyFirstEntityByName(const std::string& entityName)

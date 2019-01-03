@@ -6,6 +6,7 @@ struct CollidableComponent : public Component<CollidableComponent> {
 
 	enum CollisionLayer
 	{
+		None = 0,
 		Player = 1,
 		Enemy = 2,
 		World = 4,
@@ -18,16 +19,16 @@ struct CollidableComponent : public Component<CollidableComponent> {
 
 	int CollisionID{ -1 };
 	CollisionLayer Layer;
-	unsigned int CollideMask;
+	unsigned int CollideWith;
 	Vector2f LastPos;
 	bool Collided{ false };
 	Entity* CollidedEntity{ nullptr };
-	
+	bool isTrigger{ false };	
 };
 
 inline CollidableComponent::CollidableComponent()
 {
-	CollideMask = CollisionLayer::Player |
+	CollideWith = CollisionLayer::Player |
 		CollisionLayer::Enemy |
 		CollisionLayer::World |
 		CollisionLayer::Effect |

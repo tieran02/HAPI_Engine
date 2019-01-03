@@ -7,6 +7,7 @@ struct CollisionObject
 {
 	enum CollisionLayer
 	{
+		None = 0,
 		Player = 1,
 		Enemy = 2,
 		World = 4,
@@ -15,11 +16,11 @@ struct CollisionObject
 	};
 
 	CollisionObject(){}
-	CollisionObject(const Rect& rect, CollisionObject::CollisionLayer layer, unsigned int layerMask, int id) : CollisionRectangle(rect),Layer(layer), LayerMask(layerMask), ID(id), LastRectangle(rect){}
+	CollisionObject(const Rect& rect, CollisionObject::CollisionLayer layer, unsigned int layerMask, int id) : CollisionRectangle(rect),Layer(layer), CollidesWith(layerMask), ID(id), LastRectangle(rect){}
 	Rect CollisionRectangle;
 	Rect LastRectangle;
 	CollisionLayer Layer;
-	unsigned int LayerMask;
+	unsigned int CollidesWith;
 	int ID{ 0 };
 	bool Active{ true };
 };
@@ -46,6 +47,7 @@ public:
 	void Clear();
 private:
 	std::unordered_map<int, CollisionObject> m_collision_objects;
+	std::vector<int> m_markedForDeleteion;
 
 };
 

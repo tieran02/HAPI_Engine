@@ -1,13 +1,11 @@
 #pragma once
 #include "System.hpp"
-#include "Vector2.hpp"
 
-class ControllerSystem : public System
+class AISystem : public System
 {
 public:
-	ControllerSystem();
-	~ControllerSystem();
+	AISystem();
+	~AISystem();
 	void Update(ECSManager& ecsManager, Entity & entity) override;
-
 };
 

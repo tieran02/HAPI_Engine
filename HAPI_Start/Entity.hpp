@@ -28,7 +28,6 @@ struct Entity {
 	std::shared_ptr<BaseComponent> GetComponent(int id) const;
 
 	bool IsActive() const { return m_active; }
-	void SetActive(bool active) { m_active = active; }
 
 private:
 	uint32_t m_id;

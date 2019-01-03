@@ -6,7 +6,7 @@
 #include "ECSManager.hpp"
 
 
-AnimationSystem::AnimationSystem() : System(TransformComponent::ID | MotionComponent::ID | AnimationComponent::ID | SpriteComponent::ID)
+AnimationSystem::AnimationSystem() : System(TransformComponent::ID | AnimationComponent::ID | SpriteComponent::ID)
 {
 }
 
@@ -22,24 +22,31 @@ void AnimationSystem::Update(ECSManager& ecsManager, Entity & entity)
 	AnimationComponent* animation_component = (AnimationComponent*)entity.GetComponent(AnimationComponent::ID).get();
 	SpriteComponent* sprite_component = (SpriteComponent*)entity.GetComponent(SpriteComponent::ID).get();
 
-	switch (motion_component->CurrentState)
+	if(animation_component->Animations.size() == 1)
 	{
-	case MotionComponent::State::Idle:
-		SetAnimation(std::get<0>(animation_component->Animations["idle"]), *animation_component, ecsManager);
-		break;
-	case MotionComponent::State::Walking:
-		SetAnimation(std::get<0>(animation_component->Animations["walk"]), *animation_component, ecsManager);
-		break;
-	case MotionComponent::State::Attacking:
-		SetAnimation(std::get<0>(animation_component->Animations["attack"]), *animation_component, ecsManager);
+		auto animationName = animation_component->Animations.begin()->second;
+		SetAnimation(std::get<0>(animationName), *animation_component, ecsManager);
+	}
 
-		//check if attack is over
-		if (animation_component->Frame == animation_component->EndFrame - animation_component->StartFrame - 1)
-			motion_component->CurrentState = MotionComponent::State::Idle;
-		break;
-	default:
+	else if(motion_component != nullptr ){
+		switch (motion_component->CurrentState)
+		{
+		case MotionComponent::State::Idle:
+			if (transform_component->Direction.x >= 0)
+				SetAnimation(std::get<0>(animation_component->Animations["idleRight"]), *animation_component, ecsManager);
+			else
+				SetAnimation(std::get<0>(animation_component->Animations["idleLeft"]), *animation_component, ecsManager);
+			break;
+		case MotionComponent::State::Walking:
+			if (transform_component->Direction.x >= 0)
+				SetAnimation(std::get<0>(animation_component->Animations["walkRight"]), *animation_component, ecsManager);
+			else
+				SetAnimation(std::get<0>(animation_component->Animations["walkLeft"]), *animation_component, ecsManager);
+			break;
+		default:
 
-		break;
+			break;
+		}
 	}
 
 	//update frame
@@ -52,10 +59,25 @@ void AnimationSystem::Update(ECSManager& ecsManager, Entity & entity)
 		animation_component->Frame = (animation_component->Frame + 1) % (animation_component->EndFrame - animation_component->StartFrame);
 		animation_component->LastTime = HAPI.GetTime();
 	}
+
+
+	if(animation_component->DestroyOnFinish)
+	{
+		if(animation_component->Frame >= animation_component->EndFrame-1)
+		{
+			ecsManager.RemoveEntity(entity.ID());
+		}
+	}
 }
 
 void AnimationSystem::SetAnimation(const std::string& spriteName, AnimationComponent& animation_component, ECSManager& ecs_manager)
 {
+
+	if(spriteName.empty())
+	{
+		return;
+	}
+
 	if (spriteName != animation_component.currentAnimation)
 	{
 		animation_component.Frame = 0;
