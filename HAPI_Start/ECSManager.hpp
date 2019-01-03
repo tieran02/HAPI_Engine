@@ -86,7 +86,6 @@ private:
 
 	std::shared_ptr<Entity> getEntityFromPool(const std::string& entityName);
 
-
 };
 
 template <class T>

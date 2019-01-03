@@ -41,6 +41,15 @@ void EntityFactory::CreateFromXML(const std::string& xml)
 {
 }
 
+const Entity* EntityFactory::GetEntity(const Entity& entity) const
+{
+	if (m_entities.find(entity.GetName()) != m_entities.end())
+	{
+		return m_entities.at(entity.GetName()).get();
+	}
+	return nullptr;
+}
+
 std::shared_ptr<Entity> EntityFactory::Instantiate(const std::string& entityName, int id)
 {
 	//check if name is withing the entity map
@@ -56,6 +65,7 @@ std::shared_ptr<Entity> EntityFactory::Instantiate(const std::string& entityName
 		component.second = entity->components[component.first]->Clone();
 	}
 	entity->m_id = id;
+	entity->SetName(entityName);
 	return entity;
 	
 }

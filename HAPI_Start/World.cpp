@@ -18,6 +18,8 @@
 #include "WeaponComponent.hpp"
 #include "WeaponSystem.hpp"
 #include "HealthComponent.hpp"
+#include "SpawnerComponent.hpp"
+#include "SpawnerSystem.hpp"
 
 World::World() 
 {
@@ -51,8 +53,10 @@ void World::Load(Renderer* renderer)
 	m_ecsManager.AddComponentToFactory<WeaponComponent>("WeaponComponent");
 	m_ecsManager.AddComponentToFactory<HealthComponent>("HealthComponent");
 	m_ecsManager.AddComponentToFactory<AIControllerComponent>("AIControllerComponent");
+	m_ecsManager.AddComponentToFactory<SpawnerComponent>("SpawnerComponent");
 
 	//ADD ECS systems
+	m_ecsManager.AddSystem<SpawnerSystem>();
 	m_ecsManager.AddSystem<ControllerSystem>();
 	m_ecsManager.AddSystem<AISystem>();
 	m_ecsManager.AddSystem<MovementSystem>();
@@ -107,6 +111,7 @@ void World::Load(Renderer* renderer)
 
 		AIControllerComponent* ai_component = (AIControllerComponent*)slimeComponents[6].get();
 		ai_component->Enemy = AIControllerComponent::EnemyType::GreenSlime;
+		ai_component->MoveSpeed = 2.5f;
 
 		WeaponComponent* weapon_component = (WeaponComponent*)slimeComponents[7].get();
 		weapon_component->EntityToFire = "GreenBullet";
@@ -125,6 +130,7 @@ void World::Load(Renderer* renderer)
 
 		CollidableComponent* collidable_component = (CollidableComponent*)bulletComponents[4].get();
 		collidable_component->Layer = CollidableComponent::CollisionLayer::Effect;
+		collidable_component->CollideWith = CollidableComponent::CollisionLayer::None;
 		collidable_component->isTrigger = true;
 
 
@@ -145,6 +151,7 @@ void World::Load(Renderer* renderer)
 
 		CollidableComponent* collidable_component = (CollidableComponent*)slimeBulletComponents[4].get();
 		collidable_component->Layer = CollidableComponent::CollisionLayer::Effect;
+		collidable_component->CollideWith = CollidableComponent::CollisionLayer::None;
 		collidable_component->isTrigger = true;
 
 
@@ -183,14 +190,20 @@ void World::Load(Renderer* renderer)
 	//Create an entity pool for the bullets
 	m_ecsManager.CreateEntityPool("GreenExplosion", 256);
 
+	//SlimeSpawner
+	auto slimeSpawnerComponents = m_ecsManager.MakeComponents({ "TransformComponent", "SpawnerComponent" });
+	if (!slimeSpawnerComponents.empty())
+	{
+		SpawnerComponent* spawner_component = (SpawnerComponent*)slimeSpawnerComponents[1].get();
+		spawner_component->EntityToSpawn = "Slime";
+		spawner_component->SpawnRate = 100;
+		spawner_component->SpawnLimit = 5;
+	}
+	m_ecsManager.MakeEntity(slimeSpawnerComponents, "SlimeSpawner");
+
 	m_playerEntityID = SpawnEntity("Player", Vector2f(100, 200));
 
-	SpawnEntity("Slime", Vector2f(100, 100));
-	SpawnEntity("Slime", Vector2f(200, 100));
-	SpawnEntity("Slime", Vector2f(300, 100));
-	SpawnEntity("Slime", Vector2f(400, 100));
-	SpawnEntity("Slime", Vector2f(500, 100));
-
+	SpawnEntity("SlimeSpawner", Vector2f(100, 100));
 
 	//Enemy Paths
 	m_greenSlimePath.push_back({ 211.0f,728.0f });
@@ -214,10 +227,6 @@ void World::Update()
 	if (timeSinceLastTick >= TICKTIME)
 	{
 		m_ecsManager.UpdateSystems();
-		//m_collision_system.UpdateCollisions();
-		//m_ecsManager.UpdateCollisionPositions();
-
-		m_collision_system.UpdateCollisions();
 
 		m_lastTimeTicked = HAPI.GetTime();
 		timeSinceLastTick = 0;

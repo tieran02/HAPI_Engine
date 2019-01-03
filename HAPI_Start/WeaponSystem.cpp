@@ -44,9 +44,6 @@ void WeaponSystem::Update(ECSManager& ecsManager, Entity& entity)
 		default: ;
 		}
 	}
-
-
-
 	weapon_component->Fire = false;
 }
 
@@ -58,7 +55,7 @@ void WeaponSystem::ShootBullet(const std::string& bulletEntity, Vector2f positio
 	CollidableComponent* collidable_component = (CollidableComponent*)bullet->GetComponent(CollidableComponent::ID).get();
 
 	//check what side to set the bullet
-	if (entity.GetComponent(ControllerComponent::ID) != nullptr)
+	if (entity.GetName() == "Player")
 		collidable_component->CollideWith = (CollidableComponent::CollisionLayer::Enemy | CollidableComponent::CollisionLayer::World);
 	else
 		collidable_component->CollideWith = (CollidableComponent::CollisionLayer::Player | CollidableComponent::CollisionLayer::World);

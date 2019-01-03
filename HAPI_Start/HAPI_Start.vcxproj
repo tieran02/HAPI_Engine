@@ -44,6 +44,7 @@
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="SceneManager.cpp" />
+    <ClCompile Include="SpawnerSystem.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Tilemap.cpp" />
@@ -81,6 +82,8 @@
     <ClInclude Include="RenderSystem.hpp" />
     <ClInclude Include="Scene.hpp" />
     <ClInclude Include="SceneManager.hpp" />
+    <ClInclude Include="SpawnerComponent.hpp" />
+    <ClInclude Include="SpawnerSystem.hpp" />
     <ClInclude Include="Sprite.hpp" />
     <ClInclude Include="SpriteComponent.hpp" />
     <ClInclude Include="System.hpp" />

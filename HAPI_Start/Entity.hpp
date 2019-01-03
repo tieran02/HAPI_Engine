@@ -23,7 +23,7 @@ struct Entity {
 
 	/// <summary> Get the name for this entity </summary>
 	/// <returns> Name of the entity </returns>
-	const std::string& GetName() { return m_name; }
+	const std::string& GetName() const { return m_name; }
 
 	std::shared_ptr<BaseComponent> GetComponent(int id) const;
 

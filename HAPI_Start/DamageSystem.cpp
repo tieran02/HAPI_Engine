@@ -26,10 +26,7 @@ void DamageSystem::Update(ECSManager & ecsManager, Entity & entity)
 	{
 		if (damage_component->DestroyOnHit)
 		{
-			if (ecsManager.HasEntityPool(entity.GetName()))
-				ecsManager.SetEntityActive(entity.ID(), false);
-			else
-				ecsManager.RemoveEntity(entity.ID());
+			ecsManager.RemoveEntity(entity.ID());
 		}
 
 		//spawn entity on hit if it has one

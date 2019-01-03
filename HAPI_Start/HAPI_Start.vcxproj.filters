@@ -153,6 +153,9 @@
     <ClCompile Include="AISystem.cpp">
       <Filter>Source Files\World\ECS\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="SpawnerSystem.cpp">
+      <Filter>Source Files\World\ECS\Systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.hpp">
@@ -276,6 +279,12 @@
       <Filter>Header Files\World\ECS\Components</Filter>
     </ClInclude>
     <ClInclude Include="AISystem.hpp">
+      <Filter>Header Files\World\ECS\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="SpawnerComponent.hpp">
+      <Filter>Header Files\World\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="SpawnerSystem.hpp">
       <Filter>Header Files\World\ECS\Systems</Filter>
     </ClInclude>
   </ItemGroup>

@@ -37,8 +37,6 @@ public:
 	void SetCollisionObject(int id, bool active);
 	Rect GetObjectRect(int id) const;
 
-	void UpdateCollisions();
-
 	int IsColliding(int id);
 
 	int ObjectCount() const;

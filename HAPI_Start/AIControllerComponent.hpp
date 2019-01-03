@@ -15,6 +15,7 @@ struct AIControllerComponent : public Component<AIControllerComponent> {
 	EnemyType Enemy;
 	int CurrentPathIndex{ 0 };
 	float DetectRange = 10.0f;
+	float MoveSpeed;
 };
 
 inline std::shared_ptr<BaseComponent> AIControllerComponent::Clone() const

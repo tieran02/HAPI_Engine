@@ -45,11 +45,6 @@ Rect CollisionManager::GetObjectRect(int id) const
 	return Rect();
 }
 
-void CollisionManager::UpdateCollisions()
-{
-
-}
-
 int CollisionManager::IsColliding(int id)
 {
 	auto& collision_object = m_collision_objects.at(id);

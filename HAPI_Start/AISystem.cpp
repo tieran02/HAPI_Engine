@@ -66,6 +66,6 @@ void AISystem::Update(ECSManager & ecsManager, Entity & entity)
 
 		Direction.Normalise();
 		motion_component->Direction = Direction;
-		motion_component->Velocity = 5.0f;
+		motion_component->Velocity = ai_component->MoveSpeed;
 	}
 }
