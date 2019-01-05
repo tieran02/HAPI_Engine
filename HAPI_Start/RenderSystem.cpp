@@ -14,6 +14,18 @@ RenderSystem::~RenderSystem()
 {
 }
 
+void RenderSystem::Setup(ECSManager& ecsManager, Entity& entity)
+{
+}
+
+void RenderSystem::OnEnable(ECSManager& ecsManager, Entity& entity)
+{
+}
+
+void RenderSystem::OnDisable(ECSManager& ecsManager, Entity& entity)
+{
+}
+
 void RenderSystem::Update(ECSManager& ecsManager, Entity & entity)
 {
 	TransformComponent* transform_component = (TransformComponent*)entity.GetComponent(TransformComponent::ID).get();

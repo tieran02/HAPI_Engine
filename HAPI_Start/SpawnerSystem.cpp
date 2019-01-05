@@ -12,6 +12,19 @@ SpawnerSystem::~SpawnerSystem()
 {
 }
 
+void SpawnerSystem::Setup(ECSManager& ecsManager, Entity& entity)
+{
+
+}
+
+void SpawnerSystem::OnEnable(ECSManager& ecsManager, Entity& entity)
+{
+}
+
+void SpawnerSystem::OnDisable(ECSManager& ecsManager, Entity& entity)
+{
+}
+
 void SpawnerSystem::Update(ECSManager& ecsManager, Entity& entity)
 {
 	TransformComponent* transform_component = (TransformComponent*)entity.GetComponent(TransformComponent::ID).get();

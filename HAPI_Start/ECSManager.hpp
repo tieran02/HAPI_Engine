@@ -7,6 +7,7 @@
 #include "EntityFactory.hpp"
 #include "Renderer.hpp"
 #include "CollisionManager.hpp"
+#include "CollidableComponent.hpp"
 
 class World;
 class ECSManager {
@@ -49,15 +50,15 @@ public:
 	void LoadEntitiesFromXML(const std::string& path);
 	//Remove entity from the ECS
 	void RemoveEntity(int entityID);
-	//Remove entity by name (ONLY the first entity with that name will be removed)
-	void RemoveEntityByName(const std::string& name);
 	//Set an entity to active or not active
 	void SetEntityActive(int id, bool active);
+	//Setup all entities
+	void SetupEntities();
 	//Update all systems
 	void UpdateSystems();
 
 	//Add entity to the collision map
-	void AddEntityToCollisionMap(int collisonID, int entityID);
+	void AddEntityToCollisionMap(int collisonID, int entityID, CollidableComponent::CollisionLayer layer, unsigned int collidesWith);
 	//Create an entity pool for an entity
 	void CreateEntityPool(const std::string& entityName, int size);
 	//Check if an entity pool exists
@@ -85,7 +86,7 @@ private:
 	CollisionManager* m_collision_system;
 
 	std::shared_ptr<Entity> getEntityFromPool(const std::string& entityName);
-
+	void SetupEntity(Entity* entity);
 };
 
 template <class T>

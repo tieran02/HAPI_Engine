@@ -133,12 +133,7 @@ void ECSManager::RemoveEntity(int entityID)
 	{
 		if(m_entities[i]->ID() == entityID)
 		{
-			//check if the entity is also in the 
-			CollidableComponent* collidable_component = (CollidableComponent*)m_entities[i]->GetComponent(CollidableComponent::ID).get();
-			if (collidable_component != nullptr) {
-				if (m_collidableEntities.find(collidable_component->CollisionID) != m_collidableEntities.end())
-					m_collidableEntities.erase(collidable_component->CollisionID);
-			}
+			//TODO: disable collision object associated with this object
 			//Remove instance sprite from renderer if it has one
 			m_renderer->RemoveInstance(m_entities[i]->ID());
 
@@ -156,26 +151,6 @@ void ECSManager::RemoveEntity(int entityID)
 	}
 }
 
-void ECSManager::RemoveEntityByName(const std::string& name)
-{
-	for (int i = 0; i < m_entities.size(); ++i)
-	{
-		if(m_entities[i]->GetName() == name)
-		{
-			//check if the entity is also in the 
-			CollidableComponent* collidable_component = (CollidableComponent*)m_entities[i]->GetComponent(CollidableComponent::ID).get();
-			if (collidable_component != nullptr) {
-				if (m_collidableEntities.find(collidable_component->CollisionID) != m_collidableEntities.end())
-					m_collidableEntities.erase(collidable_component->CollisionID);
-			}
-			//Remove instance sprite from renderer if it has one
-			m_renderer->RemoveInstance(m_entities[i]->ID());
-			m_entities.erase(m_entities.begin() + i);
-			return;
-		}
-	}
-}
-
 void ECSManager::SetEntityActive(int id, bool active)
 {
 	Entity* entity = m_entities[id].get();
@@ -186,16 +161,35 @@ void ECSManager::SetEntityActive(int id, bool active)
 			entity->m_active = false;
 			m_renderer->RemoveInstance(id);
 
-			//check if the entity is also in the 
-			CollidableComponent* collidable_component = (CollidableComponent*)entity->GetComponent(CollidableComponent::ID).get();
-			if (collidable_component != nullptr)
+			//On disable
+			for (auto& system : m_systems)
 			{
-				m_collision_system->RemoveCollisionObject(collidable_component->CollisionID);
-				m_collidableEntities.erase(collidable_component->CollisionID);
+				if (entity != nullptr && (system->GetSignature() & ~entity->GetKey()).none()) {
+					system->OnDisable((*this), *entity);
+				}
 			}
 		}
 		else
+		{
 			entity->m_active = true;
+
+			//On disable
+			for (auto& system : m_systems)
+			{
+				if (entity != nullptr && (system->GetSignature() & ~entity->GetKey()).none()) {
+					system->OnEnable((*this), *entity);
+				}
+			}
+		}
+	}
+}
+
+void ECSManager::SetupEntities()
+{
+	//Setup Entites
+	for (auto& entity : m_entities)
+	{
+		SetupEntity(entity.get());
 	}
 }
 
@@ -215,13 +209,16 @@ void ECSManager::UpdateSystems()
 	}
 }
 
-void ECSManager::AddEntityToCollisionMap(int collisonID, int entityID)
+void ECSManager::AddEntityToCollisionMap(int collisonID, int entityID, CollidableComponent::CollisionLayer layer, unsigned int collidesWith)
 {
 	for (auto& entity : m_entities)
 	{
 		if(entity->ID() == entityID)
 		{
 			m_collidableEntities[collisonID] = m_entities[entityID];
+			CollidableComponent* collidable_component = (CollidableComponent*)m_collidableEntities[collisonID]->GetComponent(CollidableComponent::ID).get();
+			collidable_component->Layer = layer;
+			collidable_component->CollideWith = collidesWith;
 			return;
 		}
 	}
@@ -292,4 +289,14 @@ std::shared_ptr<Entity> ECSManager::getEntityFromPool(const std::string& entityN
 		}
 	}
 	return nullptr;
+}
+
+void ECSManager::SetupEntity(Entity* entity)
+{
+	for (auto& system : m_systems)
+	{
+		if (entity != nullptr && (system->GetSignature() & ~entity->GetKey()).none()) {
+			system->Setup((*this), *entity);
+		}
+	}
 }

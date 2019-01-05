@@ -15,6 +15,18 @@ AnimationSystem::~AnimationSystem()
 {
 }
 
+void AnimationSystem::Setup(ECSManager& ecsManager, Entity& entity)
+{
+}
+
+void AnimationSystem::OnEnable(ECSManager & ecsManager, Entity & entity)
+{
+}
+
+void AnimationSystem::OnDisable(ECSManager & ecsManager, Entity & entity)
+{
+}
+
 void AnimationSystem::Update(ECSManager& ecsManager, Entity & entity)
 {
 	TransformComponent* transform_component = (TransformComponent*)entity.GetComponent(TransformComponent::ID).get();

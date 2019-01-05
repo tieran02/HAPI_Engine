@@ -14,6 +14,18 @@ MovementSystem::~MovementSystem()
 {
 }
 
+void MovementSystem::Setup(ECSManager& ecsManager, Entity& entity)
+{
+}
+
+void MovementSystem::OnEnable(ECSManager& ecsManager, Entity& entity)
+{
+}
+
+void MovementSystem::OnDisable(ECSManager& ecsManager, Entity& entity)
+{
+}
+
 void MovementSystem::Update(ECSManager& ecsManager, Entity & entity)
 {
 	TransformComponent* transform_component = (TransformComponent*)entity.GetComponent(TransformComponent::ID).get();

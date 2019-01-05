@@ -112,6 +112,7 @@ void World::Load(Renderer* renderer)
 		AIControllerComponent* ai_component = (AIControllerComponent*)slimeComponents[6].get();
 		ai_component->Enemy = AIControllerComponent::EnemyType::GreenSlime;
 		ai_component->MoveSpeed = 2.5f;
+		ai_component->DetectRange = 10.0f;
 
 		WeaponComponent* weapon_component = (WeaponComponent*)slimeComponents[7].get();
 		weapon_component->EntityToFire = "GreenBullet";
@@ -196,8 +197,8 @@ void World::Load(Renderer* renderer)
 	{
 		SpawnerComponent* spawner_component = (SpawnerComponent*)slimeSpawnerComponents[1].get();
 		spawner_component->EntityToSpawn = "Slime";
-		spawner_component->SpawnRate = 100;
-		spawner_component->SpawnLimit = 5;
+		spawner_component->SpawnRate = 50;
+		spawner_component->SpawnLimit = 10;
 	}
 	m_ecsManager.MakeEntity(slimeSpawnerComponents, "SlimeSpawner");
 
@@ -210,6 +211,8 @@ void World::Load(Renderer* renderer)
 	m_greenSlimePath.push_back({ 623.0f,953.0f });
 	m_greenSlimePath.push_back({ 623.0f,1090.0f });
 	m_greenSlimePath.push_back({ 200.0f,1090.0f });
+
+	m_ecsManager.SetupEntities();
 }
 
 void World::Unload()
@@ -263,11 +266,6 @@ int World::SpawnEntity(const std::string & entityName, Vector2f pos, Vector2f di
 	}
 
 	return entity->ID();
-}
-
-void World::DestroyFirstEntityByName(const std::string& entityName)
-{
-	m_ecsManager.RemoveEntityByName(entityName);
 }
 
 void World::initilise()

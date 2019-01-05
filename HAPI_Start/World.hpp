@@ -17,7 +17,6 @@ public:
 	void Update();
 	void Render();
 	int SpawnEntity(const std::string & entityName, Vector2f pos, Vector2f dir = { 0.0f,0.0f }, float velocity = 0.0f);
-	void DestroyFirstEntityByName(const std::string & entityName);
 
 	int GetPlayerID() { return m_playerEntityID; }
 

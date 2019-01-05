@@ -9,6 +9,11 @@ public:
 	virtual ~System() = default;
 	System(const uint64_t &signature) : m_signature(signature) {}
 
+	virtual void Setup(ECSManager& ecsManager, Entity & entity) = 0;
+
+	virtual void OnEnable(ECSManager& ecsManager, Entity & entity) = 0;
+	virtual void OnDisable(ECSManager& ecsManager, Entity & entity) = 0;
+
 	/// <summary> Virtual update function to update any system </summary>
 	/// <param name="entity"> refrence to the entity </param>
 	/// <param name="components"> A vector of the components of the entity </param>

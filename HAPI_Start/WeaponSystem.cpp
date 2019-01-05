@@ -14,6 +14,18 @@ WeaponSystem::~WeaponSystem()
 {
 }
 
+void WeaponSystem::Setup(ECSManager& ecsManager, Entity& entity)
+{
+}
+
+void WeaponSystem::OnEnable(ECSManager& ecsManager, Entity& entity)
+{
+}
+
+void WeaponSystem::OnDisable(ECSManager& ecsManager, Entity& entity)
+{
+}
+
 void WeaponSystem::Update(ECSManager& ecsManager, Entity& entity)
 {
 	TransformComponent* transform_component = (TransformComponent*)entity.GetComponent(TransformComponent::ID).get();

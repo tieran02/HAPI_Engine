@@ -18,6 +18,18 @@ ControllerSystem::~ControllerSystem()
 {
 }
 
+void ControllerSystem::Setup(ECSManager& ecsManager, Entity& entity)
+{
+}
+
+void ControllerSystem::OnEnable(ECSManager& ecsManager, Entity& entity)
+{
+}
+
+void ControllerSystem::OnDisable(ECSManager& ecsManager, Entity& entity)
+{
+}
+
 void ControllerSystem::Update(ECSManager& ecsManager, Entity & entity)
 {
 	MotionComponent* motion_component = (MotionComponent*)entity.GetComponent(MotionComponent::ID).get();

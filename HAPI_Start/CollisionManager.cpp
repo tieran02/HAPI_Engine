@@ -16,25 +16,24 @@ void CollisionManager::AddCollisionObject(const Rect& rect, CollisionObject::Col
 	m_collision_objects.insert(std::make_pair(id, CollisionObject(rect, layer,layerMask, id)));
 }
 
-void CollisionManager::UpdateCollisionObject(int id, const Rect& rect)
+void CollisionManager::UpdateCollisionObject(int id, const Rect& rect, CollisionObject::CollisionLayer layer, unsigned int layerMask)
 {
 	if (m_collision_objects.find(id) != m_collision_objects.end()) 
 	{
 		m_collision_objects[id].LastRectangle = m_collision_objects[id].CollisionRectangle;
 		m_collision_objects[id].CollisionRectangle = rect;
+		m_collision_objects[id].Layer = layer;
+		m_collision_objects[id].CollidesWith = layerMask;
 	}
 }
 
-void CollisionManager::RemoveCollisionObject(int id)
+void CollisionManager::SetCollisionObjectActive(int id, bool active)
 {
 	if (m_collision_objects.find(id) != m_collision_objects.end())
-		m_collision_objects.erase(id);
-}
-
-void CollisionManager::SetCollisionObject(int id, bool active)
-{
-	if (m_collision_objects.find(id) != m_collision_objects.end())
-		m_collision_objects[id].Active = active;
+	{
+		if(m_collision_objects[id].Active != active)
+			m_collision_objects[id].Active = active;
+	}
 }
 
 Rect CollisionManager::GetObjectRect(int id) const
@@ -47,12 +46,18 @@ Rect CollisionManager::GetObjectRect(int id) const
 
 int CollisionManager::IsColliding(int id)
 {
+	if (id < 0)
+		return -1;
+
 	auto& collision_object = m_collision_objects.at(id);
+	//check if the entity is active
+	if (!collision_object.Active)
+		return -1;
 
 	for (auto& other_collision_object : m_collision_objects)
 	{
 		if (!m_collision_objects[other_collision_object.second.ID].Active)
-			return -1;
+			continue;
 
 		//Check whether the objects are the same if so skip this instance
 		if (collision_object.ID == other_collision_object.second.ID)

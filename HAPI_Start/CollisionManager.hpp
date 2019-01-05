@@ -32,9 +32,8 @@ public:
 	~CollisionManager();
 
 	void AddCollisionObject(const Rect& rect, CollisionObject::CollisionLayer layer, unsigned int layerMask, int id);
-	void UpdateCollisionObject(int id, const Rect& rect);
-	void RemoveCollisionObject(int id);
-	void SetCollisionObject(int id, bool active);
+	void UpdateCollisionObject(int id, const Rect& rect, CollisionObject::CollisionLayer layer, unsigned int layerMask);
+	void SetCollisionObjectActive(int id, bool active);
 	Rect GetObjectRect(int id) const;
 
 	int IsColliding(int id);
@@ -45,7 +44,5 @@ public:
 	void Clear();
 private:
 	std::unordered_map<int, CollisionObject> m_collision_objects;
-	std::vector<int> m_markedForDeleteion;
-
 };
 

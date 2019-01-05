@@ -15,6 +15,20 @@ AISystem::~AISystem()
 {
 }
 
+void AISystem::Setup(ECSManager& ecsManager, Entity& entity)
+{
+}
+
+void AISystem::OnEnable(ECSManager& ecsManager, Entity& entity)
+{
+	AIControllerComponent* ai_component = (AIControllerComponent*)entity.GetComponent(AIControllerComponent::ID).get();
+	ai_component->CurrentPathIndex = 0;
+}
+
+void AISystem::OnDisable(ECSManager& ecsManager, Entity& entity)
+{
+}
+
 void AISystem::Update(ECSManager & ecsManager, Entity & entity)
 {
 	TransformComponent* transform_component = (TransformComponent*)entity.GetComponent(TransformComponent::ID).get();
@@ -35,10 +49,14 @@ void AISystem::Update(ECSManager & ecsManager, Entity & entity)
 			//Calculate direction to player
 			Vector2f PlayerPos = ((TransformComponent*)playerEntity->GetComponent(TransformComponent::ID).get())->GetPostion();
 			Vector2f Direction = PlayerPos - AiPos;
-			Direction.Normalise();
+			float distance = std::fabs(Direction.Magnitude());
+			if (distance <= ai_component->DetectRange * 32)
+			{
+				Direction.Normalise();
 
-			weapon_component->Direction = Direction;
-			weapon_component->Fire = true;
+				weapon_component->Direction = Direction;
+				weapon_component->Fire = true;
+			}
 		}
 	}
 

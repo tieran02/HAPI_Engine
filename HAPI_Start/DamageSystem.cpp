@@ -15,6 +15,18 @@ DamageSystem::~DamageSystem()
 {
 }
 
+void DamageSystem::Setup(ECSManager& ecsManager, Entity& entity)
+{
+}
+
+void DamageSystem::OnEnable(ECSManager& ecsManager, Entity& entity)
+{
+}
+
+void DamageSystem::OnDisable(ECSManager& ecsManager, Entity& entity)
+{
+}
+
 void DamageSystem::Update(ECSManager & ecsManager, Entity & entity)
 {
 	TransformComponent* transform_component = (TransformComponent*)entity.GetComponent(TransformComponent::ID).get();
