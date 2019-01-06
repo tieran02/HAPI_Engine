@@ -1,6 +1,5 @@
 #include "GameScene.hpp"
 #include "SceneManager.hpp"
-#include "Input.hpp"
 
 using namespace HAPISPACE;
 
@@ -14,14 +13,17 @@ void GameScene::OnLoad()
 	m_renderer->LoadTexture("explosionTexture", "Data\\explosion.png");
 	m_renderer->LoadTexture("greenExplosionTexture", "Data\\greenExplosion.png");
 	m_renderer->LoadTexture("slimeTexture", "Data\\slime.png");
+	m_renderer->LoadTexture("ogreTexture", "Data\\Ogre.png");
+	m_renderer->LoadTexture("healthTexture", "Data\\HealthBar.png");
+	m_renderer->LoadTexture("healthPickupTexture", "Data\\HealthPickup.png");
 
 	m_renderer->LoadTexture("dungeonTexture", "Data\\tiles_dungeon_v1.1.png");
 
 
-	m_renderer->LoadSprite("playerSprite", "playerTexture");
-	m_renderer->LoadSprite("backgroundSprite", "backgroundTexture");
 	m_renderer->LoadSprite("bulletSprite", "bulletTexture");
 	m_renderer->LoadSprite("greenBulletSprite", "greenBulletTexture");
+	m_renderer->LoadSprite("healthSprite", "healthTexture");
+
 
 
 	m_renderer->LoadAnimatedSprite("playerRunRight", "PlayerMovementTexture", 6, 3, 0, 5);
@@ -29,7 +31,14 @@ void GameScene::OnLoad()
 	m_renderer->LoadAnimatedSprite("playerIdleRight", "PlayerMovementTexture", 6, 3, 12, 14);
 	m_renderer->LoadAnimatedSprite("playerIdleLeft", "PlayerMovementTexture", 6, 3, 15, 18);
 
+	m_renderer->LoadAnimatedSprite("ogreRunRight", "ogreTexture", 4, 4, 0, 3);
+	m_renderer->LoadAnimatedSprite("ogreRunLeft", "ogreTexture", 4, 4, 4, 7);
+	m_renderer->LoadAnimatedSprite("ogreIdleRight", "ogreTexture", 4, 4, 8, 11);
+	m_renderer->LoadAnimatedSprite("ogreIdleLeft", "ogreTexture", 4, 4, 12, 15);
+
 	m_renderer->LoadAnimatedSprite("testAnimation", "testTexture", 8, 2, 0, 16);
+
+	m_renderer->LoadAnimatedSprite("healthPickup", "healthPickupTexture", 4, 1, 0, 3);
 
 	m_renderer->LoadAnimatedSprite("explosionAnimation", "explosionTexture", 4, 3, 0, 8);
 	m_renderer->LoadAnimatedSprite("greenExplosionAnimation", "greenExplosionTexture", 4, 3, 0, 8);

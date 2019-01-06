@@ -156,7 +156,7 @@ void ECSManager::SetEntityActive(int id, bool active)
 	Entity* entity = m_entities[id].get();
 	if (entity != nullptr)
 	{
-		if (!active)
+		if (!active && entity->IsActive())
 		{
 			entity->m_active = false;
 			m_renderer->RemoveInstance(id);
@@ -169,7 +169,7 @@ void ECSManager::SetEntityActive(int id, bool active)
 				}
 			}
 		}
-		else
+		else if(!entity->IsActive())
 		{
 			entity->m_active = true;
 

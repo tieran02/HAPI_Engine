@@ -32,6 +32,7 @@
     <ClCompile Include="EntityFactory.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameScene.cpp" />
+    <ClCompile Include="HealthSystem.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="main.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -40,6 +41,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="MovementSystem.cpp" />
+    <ClCompile Include="PickupSystem.cpp" />
     <ClCompile Include="Rect.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
@@ -74,9 +76,12 @@
     <ClInclude Include="Game.hpp" />
     <ClInclude Include="GameScene.hpp" />
     <ClInclude Include="HealthComponent.hpp" />
+    <ClInclude Include="HealthSystem.hpp" />
     <ClInclude Include="Input.hpp" />
     <ClInclude Include="MotionComponent.hpp" />
     <ClInclude Include="MovementSystem.hpp" />
+    <ClInclude Include="PickupComponent.hpp" />
+    <ClInclude Include="PickupSystem.hpp" />
     <ClInclude Include="Rect.hpp" />
     <ClInclude Include="Renderer.hpp" />
     <ClInclude Include="RenderSystem.hpp" />
@@ -88,6 +93,7 @@
     <ClInclude Include="SpriteComponent.hpp" />
     <ClInclude Include="System.hpp" />
     <ClInclude Include="Texture.hpp" />
+    <ClInclude Include="TileComponent.hpp" />
     <ClInclude Include="Tilemap.hpp" />
     <ClInclude Include="Tilesheet.hpp" />
     <ClInclude Include="Time.hpp" />

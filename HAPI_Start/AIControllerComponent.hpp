@@ -9,10 +9,18 @@ struct AIControllerComponent : public Component<AIControllerComponent> {
 
 	enum class EnemyType
 	{
-		GreenSlime
+		GreenSlime,
+		Ogre
+	};
+
+	enum class AIState
+	{
+		Moving,
+		AtDestination
 	};
 
 	EnemyType Enemy;
+	AIState CurrentState{ AIState::Moving };
 	int CurrentPathIndex{ 0 };
 	float DetectRange = 10.0f;
 	float MoveSpeed;

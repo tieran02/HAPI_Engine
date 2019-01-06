@@ -19,8 +19,10 @@ public:
 	int SpawnEntity(const std::string & entityName, Vector2f pos, Vector2f dir = { 0.0f,0.0f }, float velocity = 0.0f);
 
 	int GetPlayerID() { return m_playerEntityID; }
+	int GetBaseID() { return m_objectiveEntityID; }
 
 	const std::vector<Vector2f>& GetGreenSlimePath() const { return m_greenSlimePath; }
+	const std::vector<Vector2f>& GetOgrePath() const { return m_ogrePath; }
 private:
 	void initilise();
 	const HAPISPACE::DWORD TICKTIME{ 32 };
@@ -31,8 +33,10 @@ private:
 	Tilemap m_tilemap;
 
 	int m_playerEntityID{ -1 };
+	int m_objectiveEntityID{ -1 };
 
 	std::vector<Vector2f> m_greenSlimePath;
+	std::vector<Vector2f> m_ogrePath;
 
 	HAPISPACE::DWORD m_lastTimeTicked{0};
 	float m_interpolatedTime{ 0.0f };

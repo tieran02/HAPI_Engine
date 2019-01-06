@@ -1,12 +1,17 @@
 #pragma once
 #include "Component.hpp"
-#include "HAPI_lib.h"
 
 
 struct SpriteComponent : public Component<SpriteComponent> {
+private:
 	std::string SpriteName;
-
+	float Percentage{ 1.0f };
+public:
 	void SetSprite(const std::string& spriteName);
+	const std::string& GetSprite() const { return SpriteName; }
+
+	void SetPercentage(float percentage) { Percentage = percentage; }
+	float GetPercentage() const { return Percentage; }
 	std::shared_ptr<BaseComponent> Clone() const override;
 
 };

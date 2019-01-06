@@ -51,14 +51,21 @@ void DamageSystem::Update(ECSManager & ecsManager, Entity & entity)
 	//check if the collided entity has a health component
 	if (collidable_component->CollidedEntity != nullptr)
 	{
-		HealthComponent* health_component = (HealthComponent*)collidable_component->CollidedEntity->GetComponent(HealthComponent::ID).get();
+	HealthComponent* health_component = (HealthComponent*)collidable_component->CollidedEntity->GetComponent(HealthComponent::ID).get();
 		if (health_component != nullptr)
 		{
-			health_component->Health -= damage_component->Damage;
-			if (health_component->Health <= 0.0f) 
+			health_component->TakeDamage(damage_component->Damage);
+			if (!health_component->IsAlive())
 			{
-				health_component->Alive = false;
 				ecsManager.SetEntityActive(collidable_component->CollidedEntity->ID(), false);
+
+				//Spawn random pickups when an entity dies
+				double r = ((double)rand() / (RAND_MAX));
+				if(r > 0.75)
+				{
+					//Spawn health pickup
+					ecsManager.InstantiateEntity("HealthPickup", transform_component->GetPostion());
+				}
 			}
 		}
 	}

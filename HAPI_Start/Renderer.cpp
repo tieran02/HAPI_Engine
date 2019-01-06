@@ -142,6 +142,11 @@ Vector2f Renderer::Lerp(const Vector2f& pos, const Vector2f& lastPos, float s)
 
 void Renderer::Draw(const std::string& spriteName, const Vector2f& pos)
 {
+	Draw(spriteName, pos, GetSpriteRect(spriteName));
+}
+
+void Renderer::Draw(const std::string& spriteName, const Vector2f& pos, Rect area)
+{
 	Sprite* sprite = m_sprites[spriteName];
 	//check if sprite is null and if so return out of this function
 	if (sprite == nullptr) {
@@ -151,7 +156,7 @@ void Renderer::Draw(const std::string& spriteName, const Vector2f& pos)
 
 	Vector2i veciOffset = Vector2i{ (int)m_offset.x,(int)m_offset.y };
 	Rect screenRect(0, m_screenSize.x, 0, m_screenSize.y);
-	Rect spriteRect(0, sprite->GetWidth(), 0, sprite->GetHeight());
+	Rect spriteRect = area;
 	Vector2i centerPos = { (int)pos.x - sprite->GetWidth() / 2, (int)pos.y - sprite->GetHeight() / 2 };
 
 	spriteRect.Translate(centerPos + veciOffset);
@@ -163,7 +168,7 @@ void Renderer::Draw(const std::string& spriteName, const Vector2f& pos)
 	}
 	else if (screenRect.Contains(spriteRect))
 	{
-		sprite->Draw(m_screen,m_screenSize, centerPos + veciOffset);
+		sprite->Draw(m_screen, m_screenSize, centerPos + veciOffset, area);
 	}
 	else
 	{
@@ -176,7 +181,13 @@ void Renderer::Draw(const std::string& spriteName, const Vector2f& pos)
 	}
 }
 
-void Renderer::DrawAnimation(const std::string& animationName, const Vector2f& pos, int& currentFrame, HAPISPACE::DWORD& lastTime, float speed, float rotation)
+void Renderer::DrawAnimation(const std::string& animationName, const Vector2f& pos, int& currentFrame, HAPISPACE::DWORD& lastTime, float speed)
+{
+	DrawAnimation(animationName, pos, currentFrame, lastTime, speed, GetSpriteRect(animationName));
+}
+
+void Renderer::DrawAnimation(const std::string& animationName, const Vector2f& pos, int& currentFrame,
+	HAPISPACE::DWORD& lastTime, float speed, const Rect& area)
 {
 	AnimatedSprite* sprite = (AnimatedSprite*)m_sprites[animationName];
 	//check if sprite is null and if so return out of this function
@@ -186,7 +197,7 @@ void Renderer::DrawAnimation(const std::string& animationName, const Vector2f& p
 	}
 
 	Rect screenRect(0, m_screenSize.x, 0, m_screenSize.y);
-	Rect spriteRect(0, sprite->GetWidth(), 0, sprite->GetHeight());
+	Rect spriteRect = area;
 
 	//Draw from center of the sprite
 	Vector2i centerPos = { (int)pos.x - sprite->GetWidth() / 2, (int)pos.y - sprite->GetHeight() / 2 };
@@ -201,7 +212,7 @@ void Renderer::DrawAnimation(const std::string& animationName, const Vector2f& p
 	}
 	else if (screenRect.Contains(spriteRect))
 	{
-		sprite->Draw(m_screen, m_screenSize, centerPos + veciOffset,currentFrame,lastTime,speed);
+		sprite->Draw(m_screen, m_screenSize, centerPos + veciOffset, currentFrame, lastTime, speed, area);
 	}
 	else
 	{
@@ -216,6 +227,11 @@ void Renderer::DrawAnimation(const std::string& animationName, const Vector2f& p
 
 void Renderer::DrawAnimation(const std::string& animationName, const Vector2f& pos, int currentFrame)
 {
+	DrawAnimation(animationName, pos, currentFrame, GetSpriteRect(animationName));
+}
+
+void Renderer::DrawAnimation(const std::string& animationName, const Vector2f& pos, int currentFrame, const Rect& area)
+{
 	AnimatedSprite* sprite = (AnimatedSprite*)m_sprites[animationName];
 	//check if sprite is null and if so return out of this function
 	if (sprite == nullptr) {
@@ -224,7 +240,7 @@ void Renderer::DrawAnimation(const std::string& animationName, const Vector2f& p
 	}
 
 	Rect screenRect(0, m_screenSize.x, 0, m_screenSize.y);
-	Rect spriteRect(0, sprite->GetWidth(), 0, sprite->GetHeight());
+	Rect spriteRect = area;
 
 	//Draw from center of the sprite
 	Vector2i centerPos = { (int)pos.x - sprite->GetWidth() / 2, (int)pos.y - sprite->GetHeight() / 2 };
@@ -240,7 +256,7 @@ void Renderer::DrawAnimation(const std::string& animationName, const Vector2f& p
 	}
 	else if (screenRect.Contains(spriteRect))
 	{
-		sprite->Draw(m_screen,m_screenSize, centerPos + veciOffset, currentFrame);
+		sprite->Draw(m_screen, m_screenSize, centerPos + veciOffset, currentFrame, area);
 	}
 	else
 	{
@@ -268,6 +284,11 @@ void Renderer::GetAnimationFrameData(const std::string& animationName, int& Star
 
 void Renderer::DrawTile(const std::string& tilesheetName, const Vector2f& pos, int tileIndex)
 {
+	DrawTile(tilesheetName, pos, tileIndex, GetSpriteRect(tilesheetName));
+}
+
+void Renderer::DrawTile(const std::string& tilesheetName, const Vector2f& pos, int tileIndex, const Rect& rect)
+{
 	Tilesheet* sprite = (Tilesheet*)m_sprites[tilesheetName];
 	//check if sprite is null and if so return out of this function
 	if (sprite == nullptr) {
@@ -276,7 +297,7 @@ void Renderer::DrawTile(const std::string& tilesheetName, const Vector2f& pos, i
 	}
 
 	Rect screenRect(0, m_screenSize.x, 0, m_screenSize.y);
-	Rect spriteRect(0, sprite->GetWidth(), 0, sprite->GetHeight());
+	Rect spriteRect = rect;
 
 	//Draw from center of the sprite
 	Vector2i centerPos = { (int)pos.x - sprite->GetWidth() / 2, (int)pos.y - sprite->GetHeight() / 2 };
@@ -291,7 +312,7 @@ void Renderer::DrawTile(const std::string& tilesheetName, const Vector2f& pos, i
 	}
 	else if (screenRect.Contains(spriteRect))
 	{
-		sprite->Draw(m_screen, m_screenSize, centerPos + veciOffset, tileIndex);
+		sprite->Draw(m_screen, m_screenSize, centerPos + veciOffset, tileIndex, rect);
 	}
 	else
 	{
@@ -304,7 +325,7 @@ void Renderer::DrawTile(const std::string& tilesheetName, const Vector2f& pos, i
 	}
 }
 
-void Renderer::InstanceDraw(int id, const std::string& spriteName, const Vector2f& pos, const Vector2f& lastPos)
+void Renderer::InstanceDraw(int id, const std::string& spriteName, const Vector2f& pos, const Vector2f& lastPos, float percentage)
 {
 	if(m_sprites.find(spriteName) == m_sprites.end())
 	{
@@ -316,17 +337,46 @@ void Renderer::InstanceDraw(int id, const std::string& spriteName, const Vector2
 	if (m_instancedSprites.find(id) == m_instancedSprites.end())
 	{
 		//Insert new instance sprite to be drawn
-		m_instancedSprites.emplace(id, InstancedSprite(InstancedSprite::Sprite, spriteName, pos, lastPos));
+		m_instancedSprites.emplace(id, InstancedSprite(InstancedSprite::Sprite, spriteName, pos, lastPos,percentage));
 	}
 	else
 	{
 		//update existing sprite position
 		m_instancedSprites.at(id).position = pos;
 		m_instancedSprites.at(id).lastPosition = lastPos;
+		m_instancedSprites.at(id).percentage = percentage;
 	}
 }
 
-void Renderer::InstanceDrawAnimation(int id, const std::string& spriteName,const Vector2f& pos, const Vector2f& lastPos, int frame, int& startFrame, int& endFrame)
+void Renderer::InstanceDrawTile(int id, const std::string& spriteName, const Vector2f& pos, const Vector2f& lastPos,
+	int index, float percentage)
+{
+	if (spriteName.empty())
+		return;
+
+	if (m_sprites.find(spriteName) == m_sprites.end())
+	{
+		std::cout << "Can not queue draw sprite '" << spriteName << "' as it doesn't the sprite doesn't exist\n";
+		return;
+	}
+
+	//check if tile exists
+	if (m_instancedSprites.find(id) == m_instancedSprites.end())
+	{
+		//Insert new instance sprite to be drawn
+		m_instancedSprites.emplace(id, InstancedSprite(InstancedSprite::Tile, spriteName, pos, lastPos, percentage, index));
+	}
+	else
+	{
+		//update existing sprite position
+		m_instancedSprites.at(id).position = pos;
+		m_instancedSprites.at(id).lastPosition = lastPos;
+		m_instancedSprites.at(id).frame = index;
+		m_instancedSprites.at(id).percentage = percentage;
+	}
+}
+
+void Renderer::InstanceDrawAnimation(int id, const std::string& spriteName,const Vector2f& pos, const Vector2f& lastPos, int frame, int& startFrame, int& endFrame, float percentage)
 {
 	if(spriteName.empty())
 		return;
@@ -345,7 +395,7 @@ void Renderer::InstanceDrawAnimation(int id, const std::string& spriteName,const
 	if (m_instancedSprites.find(id) == m_instancedSprites.end())
 	{
 		//Insert new instance sprite to be drawn
-		m_instancedSprites.emplace(id, InstancedSprite(InstancedSprite::Animated, spriteName, pos, lastPos, frame));
+		m_instancedSprites.emplace(id, InstancedSprite(InstancedSprite::Animated, spriteName, pos, lastPos,percentage, frame));
 	}
 	else
 	{
@@ -353,6 +403,7 @@ void Renderer::InstanceDrawAnimation(int id, const std::string& spriteName,const
 		m_instancedSprites.at(id).position = pos;
 		m_instancedSprites.at(id).lastPosition = lastPos;
 		m_instancedSprites.at(id).frame = frame;
+		m_instancedSprites.at(id).percentage = percentage;
 	}
 }
 
@@ -374,15 +425,44 @@ void Renderer::DrawInstancedSprites(float s)
 	for (auto& queued_sprite : m_instancedSprites)
 	{
 		interpolatedPosition = Lerp(queued_sprite.second.position, queued_sprite.second.lastPosition, s);
-		if (queued_sprite.second.spriteType == InstancedSprite::Sprite)
+
+		if(queued_sprite.second.percentage != 1.0f)
 		{
-			Draw(*queued_sprite.second.spriteName, interpolatedPosition);
+			Rect rect = GetSpriteRect(*queued_sprite.second.spriteName);
+			float width = (float)rect.Width() * queued_sprite.second.percentage;
+			rect.Right = width;
+
+			switch (queued_sprite.second.spriteType)
+			{
+			case InstancedSprite::Sprite:
+				Draw(*queued_sprite.second.spriteName, interpolatedPosition, rect);
+				break;
+			case InstancedSprite::Animated:
+				DrawAnimation(*queued_sprite.second.spriteName, interpolatedPosition, queued_sprite.second.frame, rect);
+				break;
+			case InstancedSprite::Tile:
+				DrawTile(*queued_sprite.second.spriteName, interpolatedPosition, queued_sprite.second.frame, rect);
+				break;
+			default:
+				return;
+			}
 		}
-		else if (queued_sprite.second.spriteType == InstancedSprite::Animated)
+		else 
 		{
-			//Pass the current frame, lastTime, speed as pointer
-			int& frame = queued_sprite.second.frame;
-			DrawAnimation(*queued_sprite.second.spriteName, interpolatedPosition,queued_sprite.second.frame);
+			switch (queued_sprite.second.spriteType)
+			{
+			case InstancedSprite::Sprite:
+				Draw(*queued_sprite.second.spriteName, interpolatedPosition);
+				break;
+			case InstancedSprite::Animated:
+				DrawAnimation(*queued_sprite.second.spriteName, interpolatedPosition, queued_sprite.second.frame);
+				break;
+			case InstancedSprite::Tile:
+				DrawTile(*queued_sprite.second.spriteName, interpolatedPosition, queued_sprite.second.frame);
+				break;
+			default:
+				return;
+			}
 		}
 	}
 
@@ -402,6 +482,15 @@ void Renderer::LoadTexture(std::string name, const std::string& path)
 
 }
 
+Rect Renderer::GetSpriteRect(const std::string& spriteName) const
+{
+	if (m_sprites.find(spriteName) != m_sprites.end()) {
+		Sprite* sprite = m_sprites.at(spriteName);
+		return Rect(0, sprite->GetWidth(), 0, sprite->GetHeight());
+	}
+	return Rect();
+}
+
 void Renderer::Cleanup()
 {
 	m_instancedSprites.clear();
@@ -418,5 +507,4 @@ void Renderer::Cleanup()
 		delete sprite.second;
 	}
 	m_sprites.clear();
-
 }

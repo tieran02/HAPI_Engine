@@ -156,6 +156,12 @@
     <ClCompile Include="SpawnerSystem.cpp">
       <Filter>Source Files\World\ECS\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="HealthSystem.cpp">
+      <Filter>Source Files\World\ECS\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="PickupSystem.cpp">
+      <Filter>Source Files\World\ECS\Systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.hpp">
@@ -285,6 +291,18 @@
       <Filter>Header Files\World\ECS\Components</Filter>
     </ClInclude>
     <ClInclude Include="SpawnerSystem.hpp">
+      <Filter>Header Files\World\ECS\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="TileComponent.hpp">
+      <Filter>Header Files\World\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="HealthSystem.hpp">
+      <Filter>Header Files\World\ECS\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="PickupComponent.hpp">
+      <Filter>Header Files\World\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="PickupSystem.hpp">
       <Filter>Header Files\World\ECS\Systems</Filter>
     </ClInclude>
   </ItemGroup>

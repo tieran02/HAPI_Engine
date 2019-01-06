@@ -70,5 +70,5 @@ void WeaponSystem::ShootBullet(const std::string& bulletEntity, Vector2f positio
 	if (entity.GetName() == "Player")
 		collidable_component->CollideWith = (CollidableComponent::CollisionLayer::Enemy | CollidableComponent::CollisionLayer::World);
 	else
-		collidable_component->CollideWith = (CollidableComponent::CollisionLayer::Player | CollidableComponent::CollisionLayer::World);
+		collidable_component->CollideWith = (CollidableComponent::CollisionLayer::Player | CollidableComponent::CollisionLayer::World | CollidableComponent::CollisionLayer::Objective);
 }

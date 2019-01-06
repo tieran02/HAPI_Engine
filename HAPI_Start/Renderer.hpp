@@ -19,12 +19,13 @@ struct InstancedSprite
 		Tile
 	};
 
-	InstancedSprite(Type spriteType, const std::string& sprite_name, const Vector2f& pos, const Vector2f& lastPos,int frame = -1, int* endFrame = nullptr)
+	InstancedSprite(Type spriteType, const std::string& sprite_name, const Vector2f& pos, const Vector2f& lastPos, float percentage = 1.0f,int frame = -1, int* endFrame = nullptr)
 		: spriteType(spriteType),
 		  spriteName(&sprite_name),
 		  position(pos),
 		  lastPosition(lastPos),
-		  frame(frame)	{
+		  frame(frame),
+		  percentage(percentage){
 	}
 
 	const Type spriteType;
@@ -32,6 +33,7 @@ struct InstancedSprite
 	Vector2f position;
 	Vector2f lastPosition;
 	int frame;
+	float percentage;
 };
 
 class Renderer
@@ -63,26 +65,36 @@ public:
 	void LoadTilesheet(const std::string& tilesheetName, const std::string& textureName, int rows, int columns);
 
 	///Sprites
-	//DrawAnimation a sprite and clip it to the screen (Vector2f as position)
+	//Draw a sprite and clip it to the screen (Vector2f as position)
 	void Draw(const std::string& spriteName, const Vector2f& pos);
+	//Draw a section of a sprite and clip it to the screen (Vector2f as position)
+	void Draw(const std::string& spriteName, const Vector2f& pos, Rect area);
 
 	///Animated Sprites
 	//DrawAnimation a animated sprite and clip it to the screen (Vector2f as position)
-	void DrawAnimation(const std::string& animationName, const Vector2f& pos, int& currentFrame, HAPISPACE::DWORD& lastTime, float speed, float rotation = 0.0f);
+	void DrawAnimation(const std::string& animationName, const Vector2f& pos, int& currentFrame, HAPISPACE::DWORD& lastTime, float speed);
+	//DrawAnimation a section of the animated sprite and clip it to the screen (Vector2f as position)
+	void DrawAnimation(const std::string& animationName, const Vector2f& pos, int& currentFrame, HAPISPACE::DWORD& lastTime, float speed, const Rect& area);
 
 	//Draw Animation at one given frame
 	void DrawAnimation(const std::string& animationName, const Vector2f& pos, int currentFrame);
+	//Draw Animation section at one given frame
+	void DrawAnimation(const std::string& animationName, const Vector2f& pos, int currentFrame, const Rect& area);
 	//Retrieve common data about the animation
 	void GetAnimationFrameData(const std::string& animationName, int& StartFrame, int& EndFrame);
 
 	///Tiles
 	//Draw a single tile from a tilesheet and clip it to the screen (Vector2f as position)
 	void DrawTile(const std::string& tilesheetName, const Vector2f& pos, int tileIndex);
+	//Draw a sectionb of a single tile from a tilesheet and clip it to the screen (Vector2f as position)
+	void DrawTile(const std::string& tilesheetName, const Vector2f& pos, int tileIndex, const Rect& rect);
 
 	//Add a new sprite to always be drawn on each frame.
-	void InstanceDraw(int id,const std::string& spriteName, const Vector2f& pos, const Vector2f& lastPos);
+	void InstanceDraw(int id,const std::string& spriteName, const Vector2f& pos, const Vector2f& lastPos, float percentage = 1.0f);
+	//Add a new sprite to always be drawn on each frame.
+	void InstanceDrawTile(int id, const std::string& spriteName, const Vector2f& pos, const Vector2f& lastPos, int index, float percentage = 1.0f);
 	//Add a new animated sprite to always be drawn on each frame.
-	void InstanceDrawAnimation(int id, const std::string& spriteName, const Vector2f& pos, const Vector2f& lastPos, int frame, int& startFrame, int& endFrame);
+	void InstanceDrawAnimation(int id, const std::string& spriteName, const Vector2f& pos, const Vector2f& lastPos, int frame, int& startFrame, int& endFrame, float percentage = 1.0f);
 
 	//Remove instance which will get deleted at the beginning of the next draw stage
 	void RemoveInstance(int id);
@@ -92,6 +104,7 @@ public:
 	//Load a sprite into the sprite map
 	void LoadTexture(std::string name, const std::string& path);
 
+	Rect GetSpriteRect(const std::string& spriteName) const;
 	void Cleanup();
 
 private:

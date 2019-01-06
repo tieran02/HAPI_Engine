@@ -12,7 +12,8 @@ struct CollisionObject
 		Enemy = 2,
 		World = 4,
 		Effect = 8,
-		Half_Cover = 16
+		Objective = 16,
+		Pickup = 32
 	};
 
 	CollisionObject(){}

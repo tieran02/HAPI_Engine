@@ -11,6 +11,8 @@ struct SpawnerComponent : public Component<SpawnerComponent> {
 	unsigned int SpawnRate;
 	unsigned int CurrentTime{ 0 };
 	unsigned int CurrentSpawned{ 0 };
+	bool SpawnOneAtATime{ false };
+	int LastEntitySpawned{ -1 };
 };
 
 inline std::shared_ptr<BaseComponent> SpawnerComponent::Clone() const

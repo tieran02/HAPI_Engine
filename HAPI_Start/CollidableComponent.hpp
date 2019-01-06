@@ -11,7 +11,8 @@ struct CollidableComponent : public Component<CollidableComponent> {
 		Enemy = 2,
 		World = 4,
 		Effect = 8,
-		Half_Cover = 16
+		Objective = 16,
+		Pickup = 32
 	};
 
 	CollidableComponent();
@@ -32,7 +33,8 @@ inline CollidableComponent::CollidableComponent()
 		CollisionLayer::Enemy |
 		CollisionLayer::World |
 		CollisionLayer::Effect |
-		CollisionLayer::Half_Cover; 
+		CollisionLayer::Objective |
+		CollisionLayer::Pickup;
 }
 
 inline std::shared_ptr<BaseComponent> CollidableComponent::Clone() const
