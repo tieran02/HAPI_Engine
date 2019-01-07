@@ -37,7 +37,7 @@ void ControllerSystem::Update(ECSManager& ecsManager, Entity & entity)
 	//Keyboard Input
 	const HAPI_TKeyboardData& keyboard_data = HAPI.GetKeyboardData();
 
-	std::cout << transform_component->GetPostion() << std::endl;
+	//std::cout << transform_component->GetPostion() << std::endl;
 
 	float moveSpeed = motion_component->MovementSpeed;
 	motion_component->Velocity = 0.0f;

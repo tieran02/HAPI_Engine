@@ -33,7 +33,7 @@ void SpawnerSystem::Update(ECSManager& ecsManager, Entity& entity)
 	if (!spawner_component->SpawnOneAtATime) {
 		spawner_component->CurrentTime++;
 
-		if (spawner_component->CurrentTime >= spawner_component->SpawnRate && (spawner_component->CurrentSpawned <= spawner_component->SpawnLimit || spawner_component->SpawnLimit == 0))
+		if (spawner_component->CurrentTime >= spawner_component->SpawnRate && (spawner_component->CurrentSpawned <= spawner_component->SpawnLimit - 1 || spawner_component->SpawnLimit == 0))
 		{
 			ecsManager.InstantiateEntity(spawner_component->EntityToSpawn, transform_component->GetPostion());
 			spawner_component->CurrentSpawned++;

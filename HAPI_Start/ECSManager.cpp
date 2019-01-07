@@ -117,6 +117,36 @@ Entity* ECSManager::InstantiateEntity(const std::string& name, Vector2f pos, Vec
 	return nullptr;
 }
 
+Entity* ECSManager::InstantiateEntity(std::vector<std::shared_ptr<BaseComponent>> components, const std::string& name,
+	Vector2f pos, Vector2f dir, float velocity)
+{
+	auto entity = std::make_shared<Entity>(m_entities.size(), name);
+
+	//create key for the entity components
+	for (auto& base_component : components)
+	{
+		//add component to entity key
+		entity->components[base_component->id] = base_component;
+		entity->m_key = entity->m_key.to_ulong() + base_component->id;
+	}
+
+	if (entity != nullptr) {
+		TransformComponent* transform = (TransformComponent*)entity->GetComponent(TransformComponent::ID).get();
+		MotionComponent* motion = (MotionComponent*)entity->GetComponent(MotionComponent::ID).get();
+
+		if (transform != nullptr)
+			transform->InitilisePosition(pos);
+		if (motion != nullptr) {
+			motion->Direction = dir;
+			motion->Velocity = velocity;
+		}
+
+		m_entities.push_back(entity);
+		return m_entities.back().get();
+	}
+	return nullptr;
+}
+
 Entity * ECSManager::GetCollidableEntity(int id)
 {
 	return m_collidableEntities[id].get();

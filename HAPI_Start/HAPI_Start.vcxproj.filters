@@ -162,6 +162,9 @@
     <ClCompile Include="PickupSystem.cpp">
       <Filter>Source Files\World\ECS\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="WaveSystem.cpp">
+      <Filter>Source Files\World\ECS\Systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.hpp">
@@ -303,6 +306,12 @@
       <Filter>Header Files\World\ECS\Components</Filter>
     </ClInclude>
     <ClInclude Include="PickupSystem.hpp">
+      <Filter>Header Files\World\ECS\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="WaveComponent.hpp">
+      <Filter>Header Files\World\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="WaveSystem.hpp">
       <Filter>Header Files\World\ECS\Systems</Filter>
     </ClInclude>
   </ItemGroup>

@@ -52,6 +52,7 @@
     <ClCompile Include="Tilemap.cpp" />
     <ClCompile Include="Tilesheet.cpp" />
     <ClCompile Include="Time.cpp" />
+    <ClCompile Include="WaveSystem.cpp" />
     <ClCompile Include="WeaponSystem.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
@@ -100,6 +101,8 @@
     <ClInclude Include="TransformComponent.hpp" />
     <ClInclude Include="Vector2.hpp" />
     <ClInclude Include="Vector3.hpp" />
+    <ClInclude Include="WaveComponent.hpp" />
+    <ClInclude Include="WaveSystem.hpp" />
     <ClInclude Include="WeaponComponent.hpp" />
     <ClInclude Include="WeaponSystem.hpp" />
     <ClInclude Include="World.hpp" />

@@ -42,6 +42,8 @@ public:
 	Entity* InstantiateEntity(const std::string& name);
 	//Instantiate entity at position with a direction and velocity
 	Entity* InstantiateEntity(const std::string& name, Vector2f pos, Vector2f dir = { 0.0f,0.0f }, float velocity = 0.0f);
+	//Instantiate entity at position with a direction and velocity
+	Entity* InstantiateEntity(std::vector<std::shared_ptr<BaseComponent>> components, const std::string& name, Vector2f pos, Vector2f dir = { 0.0f,0.0f }, float velocity = 0.0f);
 	//Get a  collidable entity from collide ID
 	Entity* GetCollidableEntity(int id);
 	//Get entity by the entity ID

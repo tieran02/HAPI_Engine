@@ -23,8 +23,15 @@ public:
 
 	const std::vector<Vector2f>& GetGreenSlimePath() const { return m_greenSlimePath; }
 	const std::vector<Vector2f>& GetOgrePath() const { return m_ogrePath; }
+
+	void SetEnemyCount(int count) { m_currentEnimiesAlive = count; }
+	int GetEnemyCount() const { return m_currentEnimiesAlive; }
 private:
 	void initilise();
+	void setupComponents();
+	void setuSystems();
+	void setupEntites();
+
 	const HAPISPACE::DWORD TICKTIME{ 32 };
 	ECSManager m_ecsManager;
 	CollisionManager m_collision_system;
@@ -34,6 +41,7 @@ private:
 
 	int m_playerEntityID{ -1 };
 	int m_objectiveEntityID{ -1 };
+	int m_currentEnimiesAlive{ 0 };
 
 	std::vector<Vector2f> m_greenSlimePath;
 	std::vector<Vector2f> m_ogrePath;

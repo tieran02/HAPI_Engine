@@ -4,6 +4,8 @@
 #include "HealthComponent.hpp"
 #include "ECSManager.hpp"
 #include "TransformComponent.hpp"
+#include "AIControllerComponent.hpp"
+#include "World.hpp"
 
 
 DamageSystem::DamageSystem() : System(TransformComponent::ID | CollidableComponent::ID | DamageComponent::ID)
@@ -58,6 +60,12 @@ void DamageSystem::Update(ECSManager & ecsManager, Entity & entity)
 			if (!health_component->IsAlive())
 			{
 				ecsManager.SetEntityActive(collidable_component->CollidedEntity->ID(), false);
+
+				//Reduce enemy count by one
+				if(collidable_component->CollidedEntity->GetComponent(AIControllerComponent::ID) != nullptr)
+				{
+					ecsManager.GetWorld()->SetEnemyCount(ecsManager.GetWorld()->GetEnemyCount() - 1);
+				}
 
 				//Spawn random pickups when an entity dies
 				double r = ((double)rand() / (RAND_MAX));
