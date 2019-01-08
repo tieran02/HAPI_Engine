@@ -9,21 +9,23 @@ void GameScene::OnLoad()
 	m_renderer->LoadTexture("PlayerMovementTexture", "Data\\PlayerMovement.png");
 	m_renderer->LoadTexture("testTexture", "Data\\testTiles.png");
 	m_renderer->LoadTexture("greenBulletTexture", "Data\\greenBullet.png");
+	m_renderer->LoadTexture("purpleBulletTexture", "Data\\purpleBullet.png");
 	m_renderer->LoadTexture("bulletTexture", "Data\\bullet.png");
 	m_renderer->LoadTexture("explosionTexture", "Data\\explosion.png");
 	m_renderer->LoadTexture("greenExplosionTexture", "Data\\greenExplosion.png");
+	m_renderer->LoadTexture("purpleExplosionTexture", "Data\\purpleExplosion.png");
 	m_renderer->LoadTexture("slimeTexture", "Data\\slime.png");
+	m_renderer->LoadTexture("purpleSlimeTexture", "Data\\purpleSlime.png");
 	m_renderer->LoadTexture("ogreTexture", "Data\\Ogre.png");
 	m_renderer->LoadTexture("healthTexture", "Data\\HealthBar.png");
 	m_renderer->LoadTexture("healthPickupTexture", "Data\\HealthPickup.png");
-
 	m_renderer->LoadTexture("dungeonTexture", "Data\\tiles_dungeon_v1.1.png");
 
 
 	m_renderer->LoadSprite("bulletSprite", "bulletTexture");
 	m_renderer->LoadSprite("greenBulletSprite", "greenBulletTexture");
+	m_renderer->LoadSprite("purpleBulletSprite", "purpleBulletTexture");
 	m_renderer->LoadSprite("healthSprite", "healthTexture");
-
 
 
 	m_renderer->LoadAnimatedSprite("playerRunRight", "PlayerMovementTexture", 6, 3, 0, 5);
@@ -42,7 +44,9 @@ void GameScene::OnLoad()
 
 	m_renderer->LoadAnimatedSprite("explosionAnimation", "explosionTexture", 4, 3, 0, 8);
 	m_renderer->LoadAnimatedSprite("greenExplosionAnimation", "greenExplosionTexture", 4, 3, 0, 8);
+	m_renderer->LoadAnimatedSprite("purpleExplosionAnimation", "purpleExplosionTexture", 4, 3, 0, 8);
 	m_renderer->LoadAnimatedSprite("slimeAnimation", "slimeTexture", 4, 1, 0, 3);
+	m_renderer->LoadAnimatedSprite("purpleSlimeAnimation", "purpleSlimeTexture", 4, 1, 0, 3);
 
 	m_renderer->LoadTilesheet("dungeonTilesheet", "dungeonTexture", 20, 24);
 

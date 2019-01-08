@@ -154,10 +154,11 @@ void Renderer::Draw(const std::string& spriteName, const Vector2f& pos, Rect are
 		return;
 	}
 
-	Vector2i veciOffset = Vector2i{ (int)m_offset.x,(int)m_offset.y };
+	Vector2f veciOffset = Vector2f{m_offset.x,m_offset.y };
 	Rect screenRect(0, m_screenSize.x, 0, m_screenSize.y);
 	Rect spriteRect = area;
-	Vector2i centerPos = { (int)pos.x - sprite->GetWidth() / 2, (int)pos.y - sprite->GetHeight() / 2 };
+	Vector2f centerPos = { pos.x - (float)sprite->GetWidth() / 2, pos.y - (float)sprite->GetHeight() / 2 };
+	Vector2i pixelPos = Vector2i((int)(centerPos + veciOffset).x, (int)(centerPos + veciOffset).y);
 
 	spriteRect.Translate(centerPos + veciOffset);
 
@@ -168,7 +169,7 @@ void Renderer::Draw(const std::string& spriteName, const Vector2f& pos, Rect are
 	}
 	else if (screenRect.Contains(spriteRect))
 	{
-		sprite->Draw(m_screen, m_screenSize, centerPos + veciOffset, area);
+		sprite->Draw(m_screen, m_screenSize, pixelPos, area);
 	}
 	else
 	{
@@ -177,7 +178,7 @@ void Renderer::Draw(const std::string& spriteName, const Vector2f& pos, Rect are
 
 		spriteRect.Clamp(screenRect);
 
-		sprite->Draw(m_screen, m_screenSize, centerPos + veciOffset, spriteRect);
+		sprite->Draw(m_screen, m_screenSize, pixelPos, spriteRect);
 	}
 }
 
@@ -200,8 +201,9 @@ void Renderer::DrawAnimation(const std::string& animationName, const Vector2f& p
 	Rect spriteRect = area;
 
 	//Draw from center of the sprite
-	Vector2i centerPos = { (int)pos.x - sprite->GetWidth() / 2, (int)pos.y - sprite->GetHeight() / 2 };
-	Vector2i veciOffset = Vector2i{ (int)m_offset.x,(int)m_offset.y };
+	Vector2f centerPos = { pos.x - sprite->GetWidth() / 2, pos.y - sprite->GetHeight() / 2 };
+	Vector2f veciOffset = Vector2f{ m_offset.x,m_offset.y };
+	Vector2i pixelPos = Vector2i((int)(centerPos + veciOffset).x, (int)(centerPos + veciOffset).y);
 
 	spriteRect.Translate(centerPos + veciOffset);
 
@@ -212,7 +214,7 @@ void Renderer::DrawAnimation(const std::string& animationName, const Vector2f& p
 	}
 	else if (screenRect.Contains(spriteRect))
 	{
-		sprite->Draw(m_screen, m_screenSize, centerPos + veciOffset, currentFrame, lastTime, speed, area);
+		sprite->Draw(m_screen, m_screenSize, pixelPos, currentFrame, lastTime, speed, area);
 	}
 	else
 	{
@@ -221,7 +223,7 @@ void Renderer::DrawAnimation(const std::string& animationName, const Vector2f& p
 
 		spriteRect.Clamp(screenRect);
 
-		sprite->Draw(m_screen, m_screenSize, centerPos + veciOffset, currentFrame, lastTime, speed, spriteRect);
+		sprite->Draw(m_screen, m_screenSize, pixelPos, currentFrame, lastTime, speed, spriteRect);
 	}
 }
 
@@ -243,8 +245,9 @@ void Renderer::DrawAnimation(const std::string& animationName, const Vector2f& p
 	Rect spriteRect = area;
 
 	//Draw from center of the sprite
-	Vector2i centerPos = { (int)pos.x - sprite->GetWidth() / 2, (int)pos.y - sprite->GetHeight() / 2 };
-	Vector2i veciOffset = Vector2i{ (int)m_offset.x,(int)m_offset.y };
+	Vector2f centerPos = {pos.x - sprite->GetWidth() / 2, pos.y - sprite->GetHeight() / 2 };
+	Vector2f veciOffset = Vector2f{m_offset.x,m_offset.y };
+	Vector2i pixelPos = Vector2i((int)(centerPos + veciOffset).x, (int)(centerPos + veciOffset).y);
 
 	spriteRect.Translate(centerPos + veciOffset);
 
@@ -256,7 +259,7 @@ void Renderer::DrawAnimation(const std::string& animationName, const Vector2f& p
 	}
 	else if (screenRect.Contains(spriteRect))
 	{
-		sprite->Draw(m_screen, m_screenSize, centerPos + veciOffset, currentFrame, area);
+		sprite->Draw(m_screen, m_screenSize, pixelPos, currentFrame, area);
 	}
 	else
 	{
@@ -265,7 +268,7 @@ void Renderer::DrawAnimation(const std::string& animationName, const Vector2f& p
 
 		spriteRect.Clamp(screenRect);
 
-		sprite->Draw(m_screen, m_screenSize, centerPos + veciOffset, currentFrame, spriteRect);
+		sprite->Draw(m_screen, m_screenSize, pixelPos, currentFrame, spriteRect);
 	}
 }
 
@@ -300,8 +303,10 @@ void Renderer::DrawTile(const std::string& tilesheetName, const Vector2f& pos, i
 	Rect spriteRect = rect;
 
 	//Draw from center of the sprite
-	Vector2i centerPos = { (int)pos.x - sprite->GetWidth() / 2, (int)pos.y - sprite->GetHeight() / 2 };
-	Vector2i veciOffset = Vector2i{ (int)m_offset.x,(int)m_offset.y };
+	Vector2f centerPos = { pos.x - sprite->GetWidth() / 2, pos.y - sprite->GetHeight() / 2 };
+	Vector2f veciOffset = Vector2f{ m_offset.x,m_offset.y };
+	Vector2i pixelPos = Vector2i((int)(centerPos + veciOffset).x, (int)(centerPos + veciOffset).y);
+
 
 	spriteRect.Translate(centerPos + veciOffset);
 
@@ -312,7 +317,7 @@ void Renderer::DrawTile(const std::string& tilesheetName, const Vector2f& pos, i
 	}
 	else if (screenRect.Contains(spriteRect))
 	{
-		sprite->Draw(m_screen, m_screenSize, centerPos + veciOffset, tileIndex, rect);
+		sprite->Draw(m_screen, m_screenSize, pixelPos, tileIndex, rect);
 	}
 	else
 	{
@@ -321,7 +326,7 @@ void Renderer::DrawTile(const std::string& tilesheetName, const Vector2f& pos, i
 
 		spriteRect.Clamp(screenRect);
 
-		sprite->Draw(m_screen, m_screenSize, centerPos + veciOffset, tileIndex, spriteRect);
+		sprite->Draw(m_screen, m_screenSize, pixelPos, tileIndex, spriteRect);
 	}
 }
 

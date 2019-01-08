@@ -24,7 +24,7 @@ void CollisionSystem::Setup(ECSManager& ecsManager, Entity& entity)
 
 	//TODO: make the rect fit to the sprite
 	Rect rect(0, 28, 0, 28);
-	rect.Translate(Vector2i((int)transform_component->GetPostion().x, (int)transform_component->GetPostion().y));
+	rect.Translate(transform_component->GetPostion());
 
 	//Set object collision layer
 	CollidableComponent::CollisionLayer layer = collidable_component->Layer;
@@ -57,7 +57,7 @@ void CollisionSystem::Update(ECSManager& ecsManager, Entity & entity)
 
 	//TODO: make the rect fit to the sprite
 	Rect rect(0, 28, 0, 28);
-	rect.Translate(Vector2i((int)transform_component->GetPostion().x, (int)transform_component->GetPostion().y));
+	rect.Translate(transform_component->GetPostion());
 
 
 	//Set object collision layer

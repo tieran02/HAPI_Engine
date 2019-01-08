@@ -183,7 +183,7 @@ void World::setupEntites()
 		collidable_component->CollideWith = CollidableComponent::CollisionLayer::None;
 
 		HealthComponent* health_component = (HealthComponent*)objectiveComponent[3].get();
-		health_component->SetMaxHealth(1000);
+		health_component->SetMaxHealth(2000);
 	}
 	m_ecsManager.MakeEntity(objectiveComponent, "Objective");
 
@@ -244,6 +244,34 @@ void World::setupEntites()
 	m_ecsManager.CreateEntityPool("Slime", 32);
 
 	//Make slime Entity
+	auto purpleSlimeComponents = m_ecsManager.MakeComponents({ "TransformComponent","MotionComponent", "AnimationComponent", "SpriteComponent", "CollidableComponent", "HealthComponent", "AIControllerComponent", "WeaponComponent" });
+	if (!purpleSlimeComponents.empty())
+	{
+		AnimationComponent* animation_component = (AnimationComponent*)purpleSlimeComponents[2].get();
+		animation_component->Animations["slime"] = std::make_tuple("purpleSlimeAnimation", true);
+		animation_component->Speed = 0.075f;
+
+		CollidableComponent* collidable_component = (CollidableComponent*)purpleSlimeComponents[4].get();
+		collidable_component->Layer = CollidableComponent::CollisionLayer::Enemy;
+		collidable_component->CollideWith = (CollidableComponent::CollisionLayer::World | CollidableComponent::CollisionLayer::Player);
+
+		HealthComponent* health_component = (HealthComponent*)purpleSlimeComponents[5].get();
+		health_component->SetMaxHealth(7.5f);
+
+		AIControllerComponent* ai_component = (AIControllerComponent*)purpleSlimeComponents[6].get();
+		ai_component->Enemy = AIControllerComponent::EnemyType::GreenSlime;
+		ai_component->MoveSpeed = 2.5f;
+		ai_component->DetectRange = 10.0f;
+
+		WeaponComponent* weapon_component = (WeaponComponent*)purpleSlimeComponents[7].get();
+		weapon_component->EntityToFire = "PurpleBullet";
+		weapon_component->Firerate = 8;
+	}
+	m_ecsManager.MakeEntity(purpleSlimeComponents, "PurpleSlime");
+	//Create an entity pool for the purple slimes
+	m_ecsManager.CreateEntityPool("PurpleSlime", 32);
+
+	//Make ogre Entity
 	auto ogreComponents = m_ecsManager.MakeComponents({ "TransformComponent","MotionComponent", "AnimationComponent", "SpriteComponent", "CollidableComponent", "HealthComponent", "AIControllerComponent", "WeaponComponent" });
 	if (!ogreComponents.empty())
 	{
@@ -317,6 +345,27 @@ void World::setupEntites()
 	//Create an entity pool for the bullets
 	m_ecsManager.CreateEntityPool("GreenBullet", 256);
 
+	auto purpleBulletComponents = m_ecsManager.MakeComponents({ "TransformComponent","MotionComponent", "DamageComponent", "SpriteComponent", "CollidableComponent" });
+	if (!purpleBulletComponents.empty())
+	{
+		SpriteComponent* sprite_component = (SpriteComponent*)purpleBulletComponents[3].get();
+		sprite_component->SetSprite("purpleBulletSprite");
+
+		CollidableComponent* collidable_component = (CollidableComponent*)purpleBulletComponents[4].get();
+		collidable_component->Layer = CollidableComponent::CollisionLayer::Effect;
+		collidable_component->CollideWith = CollidableComponent::CollisionLayer::None;
+		collidable_component->isTrigger = true;
+
+
+		DamageComponent* damage_component = (DamageComponent*)purpleBulletComponents[2].get();
+		damage_component->DestroyOnHit = true;
+		damage_component->Damage = 2.0f;
+		damage_component->EntityToSpawnOnHit = "PurpleExplosion";
+	}
+	m_ecsManager.MakeEntity(purpleBulletComponents, "PurpleBullet");
+	//Create an entity pool for the bullets
+	m_ecsManager.CreateEntityPool("PurpleBullet", 256);
+
 	//Explosion Entity
 	auto explosiontComponents = m_ecsManager.MakeComponents({ "TransformComponent", "SpriteComponent", "AnimationComponent" });
 	if (!explosiontComponents.empty())
@@ -343,6 +392,19 @@ void World::setupEntites()
 	//Create an entity pool for the explosions
 	m_ecsManager.CreateEntityPool("GreenExplosion", 256);
 
+	//Green Explosion Entity
+	auto purpleExplosiontComponents = m_ecsManager.MakeComponents({ "TransformComponent", "SpriteComponent", "AnimationComponent" });
+	if (!purpleExplosiontComponents.empty())
+	{
+		AnimationComponent* animation_component = (AnimationComponent*)purpleExplosiontComponents[2].get();
+		animation_component->Animations["explosion"] = std::make_tuple("purpleExplosionAnimation", false);
+		animation_component->Speed = 0.06f;
+		animation_component->DestroyOnFinish = true;
+	}
+	m_ecsManager.MakeEntity(purpleExplosiontComponents, "PurpleExplosion");
+	//Create an entity pool for the explosions
+	m_ecsManager.CreateEntityPool("PurpleExplosion", 128);
+
 	//Health pickup Entity
 	auto healthPickupComponents = m_ecsManager.MakeComponents({ "TransformComponent", "SpriteComponent", "AnimationComponent", "CollidableComponent", "PickupComponent" });
 	if (!healthPickupComponents.empty())
@@ -361,29 +423,6 @@ void World::setupEntites()
 	}
 	m_ecsManager.MakeEntity(healthPickupComponents, "HealthPickup");
 	m_ecsManager.CreateEntityPool("HealthPickup", 32);
-
-	////SlimeSpawner
-	//auto slimeSpawnerComponents = m_ecsManager.MakeComponents({ "TransformComponent", "SpawnerComponent" });
-	//if (!slimeSpawnerComponents.empty())
-	//{
-	//	SpawnerComponent* spawner_component = (SpawnerComponent*)slimeSpawnerComponents[1].get();
-	//	spawner_component->EntityToSpawn = "Slime";
-	//	spawner_component->SpawnRate = 50;
-	//	spawner_component->SpawnLimit = 10;
-	//}
-	//m_ecsManager.MakeEntity(slimeSpawnerComponents, "SlimeSpawner");
-
-	////OgreSpawner
-	//auto ogreSpawnerComponents = m_ecsManager.MakeComponents({ "TransformComponent", "SpawnerComponent" });
-	//if (!ogreSpawnerComponents.empty())
-	//{
-	//	SpawnerComponent* spawner_component = (SpawnerComponent*)ogreSpawnerComponents[1].get();
-	//	spawner_component->EntityToSpawn = "Ogre";
-	//	spawner_component->SpawnRate = 100;
-	//	spawner_component->SpawnLimit = 2;
-	//}
-	//m_ecsManager.MakeEntity(ogreSpawnerComponents, "OgreSpawner");
-
 
 	//Wave
 	auto waveComponents = m_ecsManager.MakeComponents({ "TransformComponent", "WaveComponent" });
@@ -432,6 +471,40 @@ void World::setupEntites()
 		wave3Ogres.SpawnRate = 200;
 		wave3Ogres.SpawnPos = Vector2f(1041, 100);
 		wave_component->AddWave(wave3Ogres);
+
+		//Wave 4
+		WaveData wave4Slimes;
+		wave4Slimes.Wave = 4;
+		wave4Slimes.EnemyToSpawn = "PurpleSlime";
+		wave4Slimes.AmountToSpawn = 8;
+		wave4Slimes.SpawnRate = 50;
+		wave4Slimes.SpawnPos = Vector2f(208, 100);
+		wave_component->AddWave(wave4Slimes);
+
+		WaveData wave4Ogres;
+		wave4Ogres.Wave = 4;
+		wave4Ogres.EnemyToSpawn = "Ogre";
+		wave4Ogres.AmountToSpawn = 5;
+		wave4Ogres.SpawnRate = 200;
+		wave4Ogres.SpawnPos = Vector2f(1041, 100);
+		wave_component->AddWave(wave4Ogres);
+
+		//Wave 5
+		WaveData wave5Slimes;
+		wave5Slimes.Wave = 4;
+		wave5Slimes.EnemyToSpawn = "PurpleSlime";
+		wave5Slimes.AmountToSpawn = 16;
+		wave5Slimes.SpawnRate = 50;
+		wave5Slimes.SpawnPos = Vector2f(208, 100);
+		wave_component->AddWave(wave5Slimes);
+
+		WaveData wave5Ogres;
+		wave5Ogres.Wave = 4;
+		wave5Ogres.EnemyToSpawn = "Ogre";
+		wave5Ogres.AmountToSpawn = 8;
+		wave5Ogres.SpawnRate = 200;
+		wave5Ogres.SpawnPos = Vector2f(1041, 100);
+		wave_component->AddWave(wave5Ogres);
 
 	}
 	m_ecsManager.MakeEntity(waveComponents, "Wave");

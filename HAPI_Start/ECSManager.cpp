@@ -301,8 +301,8 @@ void ECSManager::UpdateCollisionPositions()
 
 		if(transform_component != nullptr)
 		{
-			Vector2i center = collisonRect.second.Center();
-			transform_component->SetPosition(Vector2f(collisonRect.second.Left, collisonRect.second.Top));
+			Vector2f center = collisonRect.second.Center();
+			transform_component->SetPosition(center);
 		}
 	}
 }

@@ -126,7 +126,7 @@ template<typename T>
 Vector2<T> operator-(const Vector2<T>& pos)
 {
 	return { -pos.x,-pos.y };
-}
+} 
 
 using Vector2f = Vector2<float>;
 using Vector2i = Vector2<int>;

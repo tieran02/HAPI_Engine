@@ -2,7 +2,7 @@
 #include <algorithm>
 
 
-void Rect::Translate(const Vector2i& pos)
+void Rect::Translate(const Vector2f& pos)
 {
 	Left += pos.x;
 	Right += pos.x;
@@ -29,8 +29,8 @@ bool Rect::Intersect(const Rect & otherRect)
 bool Rect::Intersect(const Vector2i& point)
 {
 	//get bottom right
-	Vector2i min = Vector2i(Left, Top);
-	Vector2i max = Vector2i(Right, Bottom);
+	Vector2f min = Vector2f(Left, Top);
+	Vector2f max = Vector2f(Right, Bottom);
 
 	return (point.x < max.x && point.x > min.x &&
 		point.y < max.y && point.y > min.y);
@@ -39,8 +39,8 @@ bool Rect::Intersect(const Vector2i& point)
 bool Rect::Intersect(const Vector2f& point)
 {
 	//get bottom right
-	Vector2i min = Vector2i(Left, Top);
-	Vector2i max = Vector2i(Right, Bottom);
+	Vector2f min = Vector2f(Left, Top);
+	Vector2f max = Vector2f(Right, Bottom);
 
 	return (point.x < max.x && point.x > min.x &&
 		point.y < max.y && point.y > min.y);
@@ -94,11 +94,11 @@ Vector2f Rect::GetIntersectionDepth(const Rect& rectB)
 	return Vector2f(depthX, depthY);
 }
 
-Vector2i Rect::Center() const
+Vector2f Rect::Center() const
 {
-	int x = Left + (Width() / 2);
-	int y = Top + (Height() / 2);
-	return Vector2i(x, y);
+	float x = Left + (Width() / 2);
+	float y = Top + (Height() / 2);
+	return Vector2f(x, y);
 }
 
 std::vector<Vector2f> Rect::RotatedRectangle(float radians) const

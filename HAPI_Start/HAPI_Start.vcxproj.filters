@@ -70,6 +70,12 @@
     <Filter Include="Header Files\Physics">
       <UniqueIdentifier>{a877b61d-a2ef-40ec-8b3a-2353a89d2dc7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\UI">
+      <UniqueIdentifier>{a1a336c8-4555-46ad-9163-ddd78e35eb37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UI">
+      <UniqueIdentifier>{f8e2b64e-afa7-4757-9b47-d0f3e4aecb25}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -164,6 +170,12 @@
     </ClCompile>
     <ClCompile Include="WaveSystem.cpp">
       <Filter>Source Files\World\ECS\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="UiManager.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UiTextElement.cpp">
+      <Filter>Source Files\UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -313,6 +325,15 @@
     </ClInclude>
     <ClInclude Include="WaveSystem.hpp">
       <Filter>Header Files\World\ECS\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="UiManager.hpp">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UiElement.hpp">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UiTextElement.hpp">
+      <Filter>Header Files\UI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

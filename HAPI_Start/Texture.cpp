@@ -32,7 +32,7 @@ void Texture::Load(Texture* mainTexture, int offset, int width, int height)
 void Texture::BlitFast(HAPISPACE::BYTE* screen, Vector2i screenSize, const Vector2i& pos, const Rect& area) const
 {
 	const BYTE* currentTexturePixel = m_texture;
-	currentTexturePixel += (area.Left + (m_width * area.Top)) * 4;
+	currentTexturePixel += ((int)area.Left + (m_width * (int)area.Top)) * 4;
 	const Vector2i center_screen = screenSize / 2;
 
 	const int width = area.Right - area.Left;
@@ -53,7 +53,7 @@ void Texture::BlitFast(HAPISPACE::BYTE* screen, Vector2i screenSize, const Vecto
 void Texture::BlitAlpha(HAPISPACE::BYTE* screen, Vector2i screenSize, const Vector2i& pos, const Rect& area) const
 {
 	const BYTE* currentTexturePixel = m_texture;
-	auto offset = (area.Left + (m_width * area.Top));
+	int offset = ((int)area.Left + (m_width * (int)area.Top));
 	currentTexturePixel += offset * 4;
 	const Vector2i center_screen = screenSize / 2;
 

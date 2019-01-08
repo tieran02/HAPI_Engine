@@ -5,15 +5,15 @@
 struct Rect
 {
 	Rect() : Left(0), Right(0), Top(0), Bottom(0) {}
-	Rect(int left, int right, int top, int bottom) : Left(left), Right(right), Top(top), Bottom(bottom) {}
+	Rect(float left, float right, float top, float bottom) : Left(left), Right(right), Top(top), Bottom(bottom) {}
 
-	int Left, Right, Top, Bottom;
+	float Left, Right, Top, Bottom;
 
-	int Width() const { return (Right - Left); }
-	int Height() const { return (Bottom - Top); }
+	float Width() const { return (Right - Left); }
+	float Height() const { return (Bottom - Top); }
 
 	//Translate rect by a vector position
-	void Translate(const Vector2i& pos);
+	void Translate(const Vector2f& pos);
 	//Clamp rect values
 	void Clamp(const Rect& clampRect);
 	//One or more points intersect
@@ -31,7 +31,7 @@ struct Rect
 	Vector2f GetIntersectionDepth(const Rect& rectB);
 
 	//Return the center point of the rectangle
-	Vector2i Center() const;
+	Vector2f Center() const;
 
 	std::vector<Vector2f> RotatedRectangle(float radians) const;
 
