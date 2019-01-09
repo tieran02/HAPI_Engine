@@ -5,7 +5,7 @@
 
 struct BaseComponent {
 	virtual ~BaseComponent() = default;
-	static const uint64_t NextID();
+	static uint64_t NextID();
 	virtual std::shared_ptr<BaseComponent> Make() const = 0;
 	virtual std::shared_ptr<BaseComponent> Clone() const = 0;
 

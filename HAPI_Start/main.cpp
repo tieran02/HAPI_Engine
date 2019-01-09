@@ -25,6 +25,7 @@
 #include <HAPI_lib.h>
 #include "Game.hpp"
 #include "GameScene.hpp"
+#include "UiManager.hpp"
 
 
 // HAPI itself is wrapped in the HAPISPACE namespace
@@ -37,6 +38,7 @@ Game game("HAPI - T7042361");
 void HAPI_Main()
 {
 	game.Initialise(Vector2i(1280,720));
+	UiManager::Instance().SetScreenSize(Vector2f(1280, 720));
 
 	//scenes
 	game.AddScene<GameScene>();

@@ -69,7 +69,7 @@ void ControllerSystem::Update(ECSManager& ecsManager, Entity & entity)
 	if (mouse_data.leftButtonDown)
 	{
 		//Get mouse direction
-		Vector2f mouse_pos = Vector2f(mouse_data.x, mouse_data.y);
+		Vector2f mouse_pos = Vector2f((float)mouse_data.x, (float)mouse_data.y);
 		Vector2f mouse_world_pos = mouse_pos - Vector2f(ecsManager.GetRenderer()->GetOffset().x, ecsManager.GetRenderer()->GetOffset().y);
 
 		Vector2f direction = mouse_world_pos - transform_component->GetPostion();
@@ -83,7 +83,6 @@ void ControllerSystem::Update(ECSManager& ecsManager, Entity & entity)
 			weapon_component->Fire = true;
 			weapon_component->Direction = direction;
 		}
-
 	}
 
 	if (keyboard_data.scanCode['Q'])
@@ -91,15 +90,30 @@ void ControllerSystem::Update(ECSManager& ecsManager, Entity & entity)
 		ecsManager.RemoveEntity(entity.ID());
 	}
 
-
-
 	//Xbox controller
-	//int playerControllerID = Input::GetPlayerControllerID(1);
+	int playerControllerID = Input::GetPlayerControllerID(1);
 
-	//if (playerControllerID != -1) {
-	//	Vector2f dir = Input::JoystickDirection(playerControllerID, 1);
-	//	motion_component->Direction = dir;
-	//}
+	if (playerControllerID != -1 && motion_component->Velocity <= 0.0f) 
+	{
+		//Movement
+		Vector2f dir = Input::JoystickDirection(playerControllerID, 1);
+		motion_component->Direction = dir;
+		if(std::fabs(dir.Magnitude()) > 0.0f)
+			motion_component->Velocity = moveSpeed;
+
+		if (Input::JoystickTrigger(playerControllerID, 2) > 0.0f) {
+			//check if the entity has a weapon
+			WeaponComponent* weapon_component = (WeaponComponent*)entity.GetComponent(WeaponComponent::ID).get();
+			if (weapon_component != nullptr)
+			{
+				Vector2f dir = Input::JoystickDirection(playerControllerID, 2);
+				if (std::fabs(dir.Magnitude()) > 0.0f) {
+					weapon_component->Fire = true;
+					weapon_component->Direction = dir;
+				}
+			}
+		}
+	}
 
 	motion_component->Direction.Normalise();
 

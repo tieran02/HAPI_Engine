@@ -26,6 +26,8 @@
 #include "PickupSystem.hpp"
 #include "WaveComponent.hpp"
 #include "WaveSystem.hpp"
+#include "UiManager.hpp"
+#include "UiTextElement.hpp"
 
 World::World() 
 {
@@ -39,6 +41,8 @@ World::~World()
 void World::Load(Renderer* renderer)
 {
 	m_renderer = renderer;
+
+	UiManager::Instance().SetRenderer(renderer);
 
 	//load tilemap
 	m_tilemap.LoadFromFile("Data\\Level1.xml", m_collision_system);
@@ -66,6 +70,19 @@ void World::Load(Renderer* renderer)
 	m_ogrePath.push_back({ 196,1090.0f });
 
 	m_ecsManager.SetupEntities();
+
+	//Add UI elements
+	auto WaveText = std::make_shared<UiTextElement>();
+	WaveText->SetText("Wave: 0");
+	WaveText->SetFontSize(24);
+	WaveText->SetPosition(Vector2f{ 0.9f,0.0f });
+	UiManager::Instance().AddUIElement("WaveText", WaveText);
+
+	auto EnemyCountText = std::make_shared<UiTextElement>();
+	EnemyCountText->SetText("Enemy Count: 0");
+	EnemyCountText->SetFontSize(12);
+	EnemyCountText->SetPosition(Vector2f{ 0.9f,0.05f });
+	UiManager::Instance().AddUIElement("EnemyCountText", EnemyCountText);
 }
 
 void World::Unload()
@@ -77,6 +94,16 @@ void World::Unload()
 
 void World::Update()
 {
+	//TESTS
+	auto& mouse = HAPI.GetMouseData();
+	Vector2f screenSpace = UiManager::Instance().PositionToScreenSpace(Vector2f{ (float)mouse.x,(float)mouse.y });
+
+	Vector2f worldSpace = UiManager::Instance().ScreenSpaceToWorld(screenSpace);
+
+
+	std::cout << worldSpace << std::endl;
+
+
 	//Update entity component system
 	HAPISPACE::DWORD timeSinceLastTick{ HAPI.GetTime() - m_lastTimeTicked };
 
@@ -86,9 +113,18 @@ void World::Update()
 
 		m_lastTimeTicked = HAPI.GetTime();
 		timeSinceLastTick = 0;
+
+
+		//update UI
+		UiTextElement* text_element = (UiTextElement*)UiManager::Instance().GetUIElement("EnemyCountText").get();
+		if (text_element != nullptr)
+		{
+			text_element->SetText("Enemy Count: " + std::to_string(m_currentEnimiesAlive));
+		}
 	}
 
 	m_interpolatedTime = timeSinceLastTick / (float)TICKTIME;
+
 }
 
 void World::Render()
@@ -98,6 +134,8 @@ void World::Render()
 	m_tilemap.Draw(*m_renderer);
 
 	m_renderer->DrawInstancedSprites(m_interpolatedTime);
+
+	UiManager::Instance().Render();
 }
 
 
@@ -292,7 +330,7 @@ void World::setupEntites()
 		AIControllerComponent* ai_component = (AIControllerComponent*)ogreComponents[6].get();
 		ai_component->Enemy = AIControllerComponent::EnemyType::Ogre;
 		ai_component->MoveSpeed = 2.0f;
-		ai_component->DetectRange = 15.0f;
+		ai_component->DetectRange = 5.0f;
 
 		WeaponComponent* weapon_component = (WeaponComponent*)ogreComponents[7].get();
 		weapon_component->EntityToFire = "Bullet";

@@ -333,3 +333,5 @@ ASALocalRun/
 Demo/Data/
 
 Demo/
+
+*.cd

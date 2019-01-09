@@ -66,7 +66,7 @@ Entity* ECSManager::InstantiateEntity(const std::string& name)
 		return nullptr;
 	}
 
-	const auto entity = m_entityFactory.Instantiate(name, m_entities.size());
+	const auto entity = m_entityFactory.Instantiate(name, (int)m_entities.size());
 	if (entity != nullptr) {
 		m_entities.push_back(entity);
 		return m_entities.back().get();
@@ -99,7 +99,7 @@ Entity* ECSManager::InstantiateEntity(const std::string& name, Vector2f pos, Vec
 		return nullptr;
 	}
 
-	const auto entity = m_entityFactory.Instantiate(name, m_entities.size());
+	const auto entity = m_entityFactory.Instantiate(name, (int)m_entities.size());
 	if (entity != nullptr) {
 		TransformComponent* transform = (TransformComponent*)entity->GetComponent(TransformComponent::ID).get();
 		MotionComponent* motion = (MotionComponent*)entity->GetComponent(MotionComponent::ID).get();
@@ -120,7 +120,7 @@ Entity* ECSManager::InstantiateEntity(const std::string& name, Vector2f pos, Vec
 Entity* ECSManager::InstantiateEntity(std::vector<std::shared_ptr<BaseComponent>> components, const std::string& name,
 	Vector2f pos, Vector2f dir, float velocity)
 {
-	auto entity = std::make_shared<Entity>(m_entities.size(), name);
+	auto entity = std::make_shared<Entity>((uint32_t)m_entities.size(), name);
 
 	//create key for the entity components
 	for (auto& base_component : components)
@@ -266,7 +266,7 @@ void ECSManager::CreateEntityPool(const std::string& entityName, int size)
 
 		for (int i = 0; i < size; ++i)
 		{
-			const auto entity = m_entityFactory.Instantiate(entityName, m_entities.size());
+			const auto entity = m_entityFactory.Instantiate(entityName, (int)m_entities.size());
 			entity->m_active = false;
 			m_entityPools[entityName][i] = entity;
 			//also add the pooled entites to the entity list

@@ -25,8 +25,8 @@ void Tilesheet::Load(Texture* texture, int rows, int columns)
 		int currentRow = int(i / rows);
 		int currentColumn = i % rows;
 
-		Rect rect(currentColumn*m_frameSize.x, (currentColumn + 1) * m_frameSize.x, currentRow*m_frameSize.y, (currentRow + 1) * m_frameSize.y);
-		int offset = rect.Left * 4;
+		Rect rect((float)currentColumn*m_frameSize.x, (float)(currentColumn + 1) * (float)m_frameSize.x, (float)currentRow*m_frameSize.y, (float)(currentRow + 1) * (float)m_frameSize.y);
+		int offset = (int)rect.Left * 4;
 		int heightOffset = currentRow * texture->GetWidth() * m_frameSize.y * 4;;
 		Texture subTexture;
 		subTexture.Load(texture, offset + heightOffset, m_frameSize.x,m_frameSize.x);
@@ -36,7 +36,7 @@ void Tilesheet::Load(Texture* texture, int rows, int columns)
 
 void Tilesheet::Draw(HAPISPACE::BYTE* screen, Vector2i screenSize, const Vector2i& pos, int tileIndex) const
 {
-	Rect rect(0, m_frameSize.x, 0, m_frameSize.y);
+	Rect rect(0.0f, (float)m_frameSize.x, 0.0f, (float)m_frameSize.y);
 	Draw(screen, screenSize, pos, tileIndex, rect);
 }
 

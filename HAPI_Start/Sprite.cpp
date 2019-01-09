@@ -18,7 +18,7 @@ void Sprite::Load(Texture* texture)
 
 void Sprite::Draw(BYTE* screen, Vector2i screenSize, const Vector2i& pos) const
 {
-	Draw(screen, screenSize, pos, Rect(0, m_texture->GetWidth(), 0, m_texture->GetHeight()));
+	Draw(screen, screenSize, pos, Rect(0.0f, (float)m_texture->GetWidth(), 0.0f, (float)m_texture->GetHeight()));
 }
 
 void Sprite::Draw(BYTE* screen, Vector2i screenSize, const Vector2i& pos, const Rect& area) const

@@ -4,6 +4,8 @@
 #include "ECSManager.hpp"
 #include "World.hpp"
 #include "SpawnerComponent.hpp"
+#include "UiManager.hpp"
+#include "UiTextElement.hpp"
 
 WaveSystem::WaveSystem() : System(TransformComponent::ID | WaveComponent::ID)
 {
@@ -100,10 +102,18 @@ void WaveSystem::SpawnWave(int wave, ECSManager& ecsManager)
 		//Get spawn count
 		SpawnerComponent* spawner_component = (SpawnerComponent*)wave->GetComponent(SpawnerComponent::ID).get();
 		enemyCount += spawner_component->SpawnLimit;
+
 	}
 
 	ecsManager.GetWorld()->SetEnemyCount(enemyCount);
 	m_waveState = WaveState::Started;
+
+	//Update wave UI
+	UiTextElement* text_element = (UiTextElement*)UiManager::Instance().GetUIElement("WaveText").get();
+	if (text_element != nullptr) 
+	{
+		text_element->SetText("Wave: " + std::to_string(m_currentWave));
+	}
 
 	std::cout << "Wave " << m_currentWave << "started" << std::endl;
 }

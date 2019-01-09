@@ -11,7 +11,7 @@ struct WaveData
 	std::string EnemyToSpawn;
 	Vector2f SpawnPos;
 	int AmountToSpawn;
-	float SpawnRate;
+	unsigned int SpawnRate;
 };
 
 struct WaveComponent : public Component<WaveComponent> {

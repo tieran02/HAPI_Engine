@@ -25,20 +25,20 @@ struct Entity {
 	/// <returns> Name of the entity </returns>
 	const std::string& GetName() const { return m_name; }
 
-	std::shared_ptr<BaseComponent> GetComponent(int id) const;
+	std::shared_ptr<BaseComponent> GetComponent(uint64_t id) const;
 
 	bool IsActive() const { return m_active; }
 
 private:
 	uint32_t m_id;
 	std::bitset<64> m_key{ 0 };
-	std::unordered_map<int, std::shared_ptr<BaseComponent>> components;
+	std::unordered_map<uint64_t, std::shared_ptr<BaseComponent>> components;
 
 	std::string m_name;
 	bool m_active{true};
 };
 
-inline std::shared_ptr<BaseComponent> Entity::GetComponent(int id) const
+inline std::shared_ptr<BaseComponent> Entity::GetComponent(uint64_t id) const
 {
 	if(components.find(id) != components.end())
 		return components.at(id);

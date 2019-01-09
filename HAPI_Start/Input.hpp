@@ -11,6 +11,7 @@ public:
 	static int GetPlayerControllerID(int player);
 	static void ResetControllers();
 	static Vector2f JoystickDirection(int controllerID, int joystick);
+	static float JoystickTrigger(int controllerID, int button);
 	static const float& GetAxis(std::string axisName);
 
 private:

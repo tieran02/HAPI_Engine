@@ -23,10 +23,13 @@ public:
 	Vector2f ScreenSpaceToPosition(const Vector2f& position);
 	Vector2f ScreenSpaceToWorld(const Vector2f& position);
 
-	void AddUIElement(std::shared_ptr<UiElement> element);
+	void Render();
+
+	void AddUIElement(const std::string& name, std::shared_ptr<UiElement> element);
+	std::shared_ptr<UiElement> GetUIElement(const std::string& name);
 private:
 	Vector2f m_screenSize;
 	Renderer* m_renderer{ nullptr };
-	std::shared_ptr<UiElement> m_uiElements;
+	std::unordered_map<std::string, std::shared_ptr<UiElement>> m_uiElements;
 };
 

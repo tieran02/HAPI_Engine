@@ -31,8 +31,8 @@ void AnimatedSprite::Load(Texture* texture, int rows, int columns, int startFram
 		int currentRow = int((startFrame + i) / rows);
 		int currentColumn = (startFrame + i) % rows;
 
-		Rect rect(currentColumn*m_frameSize.x, (currentColumn + 1) * m_frameSize.x, currentRow*m_frameSize.y, (currentRow + 1) * m_frameSize.y);
-		int offset = rect.Left * 4;
+		Rect rect((float)currentColumn*(float)m_frameSize.x, (float)(currentColumn + 1) * (float)m_frameSize.x, (float)currentRow*(float)m_frameSize.y, (float)(currentRow + 1) * (float)m_frameSize.y);
+		int offset = (int)rect.Left * 4;
 		int heightOffset = currentRow * texture->GetWidth() * m_frameSize.y * 4;;
 		Texture subTexture;
 		subTexture.Load(texture,offset + heightOffset,m_frameSize.x,m_frameSize.y);
@@ -42,7 +42,7 @@ void AnimatedSprite::Load(Texture* texture, int rows, int columns, int startFram
 
 void AnimatedSprite::Draw(HAPISPACE::BYTE* screen, Vector2i screenSize, const Vector2i& pos, int& currentFrame, HAPISPACE::DWORD& lastTime, float speed) const
 {
-	Rect rect(0, m_frameSize.x, 0, m_frameSize.y);
+	Rect rect(0, (float)m_frameSize.x, 0, (float)m_frameSize.y);
 	Draw(screen, screenSize, pos, currentFrame, lastTime, speed, rect);
 }
 
@@ -50,8 +50,8 @@ void AnimatedSprite::Draw(HAPISPACE::BYTE* screen, Vector2i screenSize, const Ve
 void AnimatedSprite::Draw(HAPISPACE::BYTE* screen, Vector2i screenSize, const Vector2i& pos, int& currentFrame, HAPISPACE::DWORD& lastTime, float speed, Rect area) const
 {
 	//speed to milliseconds
-	int milliSpeed = speed * 1000.0f;
-	int currentTime = HAPI.GetTime();
+	float milliSpeed = speed * 1000.0f;
+	HAPISPACE::DWORD currentTime = HAPI.GetTime();
 	if (currentTime >= lastTime + milliSpeed) {
 		currentFrame = (currentFrame + 1) % (m_endFrame - m_startFrame);
 		lastTime = HAPI.GetTime();
@@ -68,7 +68,7 @@ void AnimatedSprite::Draw(HAPISPACE::BYTE* screen, Vector2i screenSize, const Ve
 
 void AnimatedSprite::Draw(HAPISPACE::BYTE* screen, Vector2i screenSize, const Vector2i& pos, int currentFrame) const
 {
-	Rect rect(0, m_frameSize.x, 0, m_frameSize.y);
+	Rect rect(0, (float)m_frameSize.x, 0, (float)m_frameSize.y);
 	Draw(screen, screenSize, pos, currentFrame, rect);
 }
 

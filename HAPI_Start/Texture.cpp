@@ -35,8 +35,8 @@ void Texture::BlitFast(HAPISPACE::BYTE* screen, Vector2i screenSize, const Vecto
 	currentTexturePixel += ((int)area.Left + (m_width * (int)area.Top)) * 4;
 	const Vector2i center_screen = screenSize / 2;
 
-	const int width = area.Right - area.Left;
-	const int height = area.Bottom - area.Top;
+	const int width = (int)area.Right - (int)area.Left;
+	const int height = (int)area.Bottom - (int)area.Top;
 
 	BYTE* currentScreenPixel = screen + (std::clamp(pos.x, 0, screenSize.x) + std::clamp(pos.y, 0, screenSize.y) * screenSize.x) * 4;
 
@@ -57,8 +57,8 @@ void Texture::BlitAlpha(HAPISPACE::BYTE* screen, Vector2i screenSize, const Vect
 	currentTexturePixel += offset * 4;
 	const Vector2i center_screen = screenSize / 2;
 
-	const int width = area.Right - area.Left;
-	const int height = area.Bottom - area.Top;
+	const int width = (int)area.Right - (int)area.Left;
+	const int height = (int)area.Bottom - (int)area.Top;
 
 	BYTE* currentScreenPixel = screen + (std::clamp(pos.x, 0, screenSize.x) + std::clamp(pos.y, 0, screenSize.y) * screenSize.x) * 4;
 	int endOfLineScreenIncrement = (screenSize.x - width) * 4;
@@ -107,9 +107,9 @@ void Texture::BlitRotatedAlpha(HAPISPACE::BYTE* screen, Vector2i screenSize, con
 	if (rotation != 0.0f)
 	{
 		//loop through the AARB area
-		for (int x = boundingArea.Left; x < boundingArea.Right; ++x)
+		for (int x = (int)boundingArea.Left; x < (int)boundingArea.Right; ++x)
 		{
-			for (int y = boundingArea.Top; y < boundingArea.Bottom; ++y)
+			for (int y = (int)boundingArea.Top; y < (int)boundingArea.Bottom; ++y)
 			{
 
 
@@ -149,27 +149,25 @@ bool Texture::checkAlpha(BYTE offset, int width, int height)
 		}
 		return false;
 	}
-	else
+	//check sub texture
+	const BYTE* currentTexturePixel = m_texture + offset;
+	for (int i = 0; i < (width*height * 4); i += 4)
 	{
-		//check sub texture
-		const BYTE* currentTexturePixel = m_texture + offset;
-		for (int i = 0; i < (width*height * 4); i += 4)
+		BYTE alpha = currentTexturePixel[3];
+
+		if (alpha < 255)
+			return true;
+
+
+		if (i != 0 && i % (width * 4) == 0)
 		{
-			BYTE alpha = currentTexturePixel[3];
-
-			if (alpha < 255)
-				return true;
-
-
-			if (i != 0 && i % (width * 4) == 0)
-			{
-				//add the rest of the sprite width to get to the next line of the texture
-				currentTexturePixel += (m_width - width) * 4;
-			}
-
-			currentTexturePixel += 4;
+			//add the rest of the sprite width to get to the next line of the texture
+			currentTexturePixel += (m_width - width) * 4;
 		}
+
+		currentTexturePixel += 4;
 	}
+	return false;
 }
 
 void Texture::setAlpha()

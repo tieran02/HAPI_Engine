@@ -81,7 +81,7 @@ int CollisionManager::IsColliding(int id)
 
 int CollisionManager::ObjectCount() const
 {
-	return m_collision_objects.size();
+	return (int)m_collision_objects.size();
 }
 
 std::unordered_map<int, Rect> CollisionManager::GetUpdatedRects()

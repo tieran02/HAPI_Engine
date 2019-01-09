@@ -18,7 +18,7 @@ Input::~Input()
 
 void Input::CheckControllers()
 {
-	for (size_t i = 0; i < 4; i++)
+	for (int i = 0; i < 4; i++)
 	{
 		const auto controller = HAPI.GetControllerData(i);
 		m_controllers[i] = controller.isAttached;
@@ -29,7 +29,7 @@ int Input::GetPlayerControllerID(int player)
 {
 	//get the controller that is attached corresponding to the number of the player
 	int currentPlayer = 1;
-	for (size_t i = 0; i < 4; ++i)
+	for (int i = 0; i < 4; ++i)
 	{
 		if (m_controllers[i] && currentPlayer == player)
 			return i;
@@ -41,7 +41,7 @@ int Input::GetPlayerControllerID(int player)
 
 void Input::ResetControllers()
 {
-	for (size_t i = 0; i < 4; ++i)
+	for (int i = 0; i < 4; ++i)
 	{
 		if (m_controllers[i])
 		{
@@ -83,10 +83,34 @@ Vector2f Input::JoystickDirection(int controllerID, int joystick)
 	return Vector2f(0.0f, 0.0f);
 }
 
+float Input::JoystickTrigger(int controllerID, int trigger)
+{
+	auto const controller = HAPI.GetControllerData(controllerID);
+	int deadzone = HK_GAMEPAD_TRIGGER_THRESHOLD;
+
+	int t = 0;
+	
+	if (trigger == 1) {
+		t = std::abs(controller.analogueButtons[HK_ANALOGUE_LEFT_TRIGGER]) > deadzone
+			? controller.analogueButtons[HK_ANALOGUE_LEFT_TRIGGER]
+			: 0;
+	}
+	else 
+	{
+		t = std::abs(controller.analogueButtons[HK_ANALOGUE_RIGHT_TRIGGER]) > deadzone
+			? controller.analogueButtons[HK_ANALOGUE_RIGHT_TRIGGER]
+			: 0;
+	}
+
+	float value = (float)t / 32767.0f;
+
+	return value;
+}
+
 const float& Input::GetAxis(std::string axisName)
 {
 	if (axisName == "Horizontal")
 		return m_horizontal;
-	else if(axisName == "Vertical")
-		return m_vertical;
+	return m_vertical;
+
 }

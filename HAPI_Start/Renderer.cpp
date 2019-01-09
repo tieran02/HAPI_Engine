@@ -155,7 +155,7 @@ void Renderer::Draw(const std::string& spriteName, const Vector2f& pos, Rect are
 	}
 
 	Vector2f veciOffset = Vector2f{m_offset.x,m_offset.y };
-	Rect screenRect(0, m_screenSize.x, 0, m_screenSize.y);
+	Rect screenRect(0, (float)m_screenSize.x, 0, (float)m_screenSize.y);
 	Rect spriteRect = area;
 	Vector2f centerPos = { pos.x - (float)sprite->GetWidth() / 2, pos.y - (float)sprite->GetHeight() / 2 };
 	Vector2i pixelPos = Vector2i((int)(centerPos + veciOffset).x, (int)(centerPos + veciOffset).y);
@@ -197,7 +197,7 @@ void Renderer::DrawAnimation(const std::string& animationName, const Vector2f& p
 		return;
 	}
 
-	Rect screenRect(0, m_screenSize.x, 0, m_screenSize.y);
+	Rect screenRect(0, (float)m_screenSize.x, 0, (float)m_screenSize.y);
 	Rect spriteRect = area;
 
 	//Draw from center of the sprite
@@ -241,7 +241,7 @@ void Renderer::DrawAnimation(const std::string& animationName, const Vector2f& p
 		return;
 	}
 
-	Rect screenRect(0, m_screenSize.x, 0, m_screenSize.y);
+	Rect screenRect(0, (float)m_screenSize.x, 0, (float)m_screenSize.y);
 	Rect spriteRect = area;
 
 	//Draw from center of the sprite
@@ -299,7 +299,7 @@ void Renderer::DrawTile(const std::string& tilesheetName, const Vector2f& pos, i
 		return;
 	}
 
-	Rect screenRect(0, m_screenSize.x, 0, m_screenSize.y);
+	Rect screenRect(0, (float)m_screenSize.x, 0, (float)m_screenSize.y);
 	Rect spriteRect = rect;
 
 	//Draw from center of the sprite
@@ -491,7 +491,7 @@ Rect Renderer::GetSpriteRect(const std::string& spriteName) const
 {
 	if (m_sprites.find(spriteName) != m_sprites.end()) {
 		Sprite* sprite = m_sprites.at(spriteName);
-		return Rect(0, sprite->GetWidth(), 0, sprite->GetHeight());
+		return Rect(0.0f, (float)sprite->GetWidth(), 0.0f, (float)sprite->GetHeight());
 	}
 	return Rect();
 }

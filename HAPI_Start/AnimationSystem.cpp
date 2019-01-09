@@ -65,8 +65,8 @@ void AnimationSystem::Update(ECSManager& ecsManager, Entity & entity)
 	if(animation_component->currentAnimation.empty())
 		return;
 
-	int milliSpeed = animation_component->Speed * 1000.0f;
-	int currentTime = HAPI.GetTime();
+	float milliSpeed = animation_component->Speed * 1000.0f;
+	HAPISPACE::DWORD currentTime = HAPI.GetTime();
 	if (currentTime >= animation_component->LastTime + milliSpeed) {
 		animation_component->Frame = (animation_component->Frame + 1) % (animation_component->EndFrame - animation_component->StartFrame);
 		animation_component->LastTime = HAPI.GetTime();

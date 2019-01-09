@@ -23,10 +23,27 @@ Vector2f UiManager::ScreenSpaceToPosition(const Vector2f& position)
 Vector2f UiManager::ScreenSpaceToWorld(const Vector2f& position)
 {
 	Vector2f mousePosition = ScreenSpaceToPosition(position);
-	Vector2f worldPosition = mousePosition + m_renderer->GetOffset();
+	Vector2f worldPosition = mousePosition - m_renderer->GetOffset();
 	return worldPosition;
 }
 
-void UiManager::AddUIElement(std::shared_ptr<UiElement> element)
+void UiManager::Render()
 {
+	for (const auto& ui_element : m_uiElements)
+	{
+		ui_element.second->Render();
+	}
+}
+
+void UiManager::AddUIElement(const std::string& name, std::shared_ptr<UiElement> element)
+{
+	m_uiElements[name] =  element;
+}
+
+std::shared_ptr<UiElement> UiManager::GetUIElement(const std::string & name)
+{
+	if(m_uiElements.find(name) == m_uiElements.end())
+		return nullptr;
+
+	return m_uiElements.at(name);
 }

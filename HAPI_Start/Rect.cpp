@@ -135,21 +135,21 @@ void Rect::OBRBoundingRect(std::vector<Vector2f> points)
 	int maxX = std::numeric_limits<int>::min();
 	int maxY = std::numeric_limits<int>::min();
 
-	for (size_t i = 0; i < 4; i++)
+	for (int i = 0; i < 4; i++)
 	{
 		if (points[i].x < minX)
-			minX = points[i].x;
+			minX = (int)points[i].x;
 		if (points[i].y < minY)
-			minY = points[i].y;
+			minY = (int)points[i].y;
 		if (points[i].x > maxX)
-			maxX = points[i].x;
+			maxX = (int)points[i].x;
 		if (points[i].y > maxY)
-			maxY = points[i].y;
+			maxY = (int)points[i].y;
 	}
 
-	Left = minX;
-	Right = maxX;
-	Top = minY;
-	Bottom = maxY;
+	Left = (float)minX;
+	Right = (float)maxX;
+	Top = (float)minY;
+	Bottom = (float)maxY;
 }
 
