@@ -13,6 +13,7 @@ public:
 
 	UiManager(UiManager const&) = delete;
 	void operator=(UiManager const&) = delete;
+
 private:
 	UiManager() {}
 
@@ -22,8 +23,11 @@ public:
 	Vector2f PositionToScreenSpace(const Vector2f& position);
 	Vector2f ScreenSpaceToPosition(const Vector2f& position);
 	Vector2f ScreenSpaceToWorld(const Vector2f& position);
+	void RectToScreenSpace(Rect& rect);
 
+	void Update();
 	void Render();
+	void Clear();
 
 	void AddUIElement(const std::string& name, std::shared_ptr<UiElement> element);
 	std::shared_ptr<UiElement> GetUIElement(const std::string& name);

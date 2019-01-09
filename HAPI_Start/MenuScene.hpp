@@ -12,6 +12,5 @@ public:
 	void OnStart() override;
 	void OnUpdate() override;
 	void OnRender() override;
-
 };
 

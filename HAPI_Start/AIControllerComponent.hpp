@@ -10,13 +10,15 @@ struct AIControllerComponent : public Component<AIControllerComponent> {
 	enum class EnemyType
 	{
 		GreenSlime,
-		Ogre
+		Ogre,
+		Boss
 	};
 
 	enum class AIState
 	{
 		Moving,
-		AtDestination
+		AtDestination,
+		FollowPlayer
 	};
 
 	EnemyType Enemy;

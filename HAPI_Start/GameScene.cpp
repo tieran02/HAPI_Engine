@@ -1,5 +1,7 @@
 #include "GameScene.hpp"
 #include "SceneManager.hpp"
+#include "UiManager.hpp"
+#include "Utilities.hpp"
 
 using namespace HAPISPACE;
 
@@ -7,7 +9,6 @@ void GameScene::OnLoad()
 {
 	//Load game sprites
 	m_renderer->LoadTexture("PlayerMovementTexture", "Data\\PlayerMovement.png");
-	m_renderer->LoadTexture("testTexture", "Data\\testTiles.png");
 	m_renderer->LoadTexture("greenBulletTexture", "Data\\greenBullet.png");
 	m_renderer->LoadTexture("purpleBulletTexture", "Data\\purpleBullet.png");
 	m_renderer->LoadTexture("bulletTexture", "Data\\bullet.png");
@@ -20,6 +21,7 @@ void GameScene::OnLoad()
 	m_renderer->LoadTexture("healthTexture", "Data\\HealthBar.png");
 	m_renderer->LoadTexture("healthPickupTexture", "Data\\HealthPickup.png");
 	m_renderer->LoadTexture("dungeonTexture", "Data\\tiles_dungeon_v1.1.png");
+	m_renderer->LoadTexture("bossTexture", "Data\\WizzardMove.png");
 
 
 	m_renderer->LoadSprite("bulletSprite", "bulletTexture");
@@ -38,7 +40,10 @@ void GameScene::OnLoad()
 	m_renderer->LoadAnimatedSprite("ogreIdleRight", "ogreTexture", 4, 4, 8, 11);
 	m_renderer->LoadAnimatedSprite("ogreIdleLeft", "ogreTexture", 4, 4, 12, 15);
 
-	m_renderer->LoadAnimatedSprite("testAnimation", "testTexture", 8, 2, 0, 16);
+	m_renderer->LoadAnimatedSprite("bossIdleLeft", "bossTexture", 3, 2, 0, 2);
+	m_renderer->LoadAnimatedSprite("bossIdleRight", "bossTexture", 3, 2, 3, 5);
+	m_renderer->LoadAnimatedSprite("bossRunLeft", "bossTexture", 3, 2, 0, 2);
+	m_renderer->LoadAnimatedSprite("bossRunRight", "bossTexture", 3, 2, 3, 5);
 
 	m_renderer->LoadAnimatedSprite("healthPickup", "healthPickupTexture", 4, 1, 0, 3);
 
@@ -50,13 +55,18 @@ void GameScene::OnLoad()
 
 	m_renderer->LoadTilesheet("dungeonTilesheet", "dungeonTexture", 20, 24);
 
-	m_world.Load(m_renderer);
+	Utilities::LoadSound("gun.wav");
+	Utilities::LoadSound("slime.wav");
+	Utilities::LoadSound("pickup.wav");
+
+	m_world.LoadLevel(m_renderer);
 }
 
 void GameScene::OnUnload()
 {
-	m_world.Unload();
+	m_world.UnloadLevel();
 }
+
 
 void GameScene::OnStart()
 {
@@ -71,13 +81,14 @@ void GameScene::OnUpdate()
 	const HAPI_TKeyboardData& keyboard_data = HAPI.GetKeyboardData();
 
 	if (keyboard_data.scanCode[HK_F5])
-		m_sceneManager->ReloadScene();
-
-
+		SceneManager::Instance().ReloadScene();
+	if (keyboard_data.scanCode[HK_ESCAPE])
+		SceneManager::Instance().LoadScene("MenuScene",*m_renderer);
 }
 
 void GameScene::OnRender()
 {
 	m_renderer->ClearScreen(50);
 	m_world.Render();
+	UiManager::Instance().Render();
 }

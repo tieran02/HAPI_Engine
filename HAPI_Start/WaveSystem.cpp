@@ -6,6 +6,7 @@
 #include "SpawnerComponent.hpp"
 #include "UiManager.hpp"
 #include "UiTextElement.hpp"
+#include <iomanip>
 
 WaveSystem::WaveSystem() : System(TransformComponent::ID | WaveComponent::ID)
 {
@@ -58,22 +59,41 @@ void WaveSystem::Update(ECSManager& ecsManager, Entity& entity)
 
 	m_waveTimer = HAPI.GetTime() - m_startTime;
 
+
 	if (WaveFinished(ecsManager))
 	{
 		m_waveState = WaveState::Finished;
-		std::cout << "Wave " << m_currentWave << "ended" << std::endl;
-
 	}
+
+	UiTextElement* text_element = (UiTextElement*)UiManager::Instance().GetUIElement("WaveCountdownText").get();
+	float timeLeft = m_gracePeriod - (m_waveTimer / 1000.0f);
 
 	switch (m_waveState)
 	{
 	case WaveState::Setup:
+		//Update wave UI time till next wave
+		if (text_element != nullptr)
+		{
+			std::ostringstream strs;
+			strs << std::fixed << std::setprecision(1) << timeLeft;
+			text_element->SetText("Wave starting in " + strs.str());
+		}
+		if(m_currentWave > m_waveSpawners.size())
+		{
+			m_currentWave = 1;
+		}
+
 		if(m_waveTimer >= m_gracePeriod * 1000)
 		{
 			SpawnWave(m_currentWave, ecsManager);
 		}
 		break;
 	case WaveState::Started:
+		//update UI enemy count
+		if (text_element != nullptr)
+		{
+			text_element->SetText("Enemy Count: " + std::to_string(ecsManager.GetWorld()->GetEnemyCount()));
+		}
 		break;
 	case WaveState::Finished:
 		m_startTime = HAPI.GetTime();
@@ -113,6 +133,12 @@ void WaveSystem::SpawnWave(int wave, ECSManager& ecsManager)
 	if (text_element != nullptr) 
 	{
 		text_element->SetText("Wave: " + std::to_string(m_currentWave));
+	}
+	//Update wave UI
+	text_element = (UiTextElement*)UiManager::Instance().GetUIElement("WaveCountdownText").get();
+	if (text_element != nullptr)
+	{
+		text_element->SetText("");
 	}
 
 	std::cout << "Wave " << m_currentWave << "started" << std::endl;

@@ -1,31 +1,5 @@
+#include "ECS.hpp"
 #include "World.hpp"
-#include "TransformComponent.hpp"
-#include "MotionComponent.hpp"
-#include "Vector2.hpp"
-#include "SpriteComponent.hpp"
-#include "MovementSystem.hpp"
-#include "RenderSystem.hpp"
-#include "ControllerSystem.hpp"
-#include "AISystem.hpp"
-#include "AIControllerComponent.hpp"
-#include "ControllerComponent.hpp"
-#include "AnimationComponent.hpp"
-#include "AnimationSystem.hpp"
-#include "CollidableComponent.hpp"
-#include "CollisionSystem.hpp"
-#include "DamageComponent.hpp"
-#include "DamageSystem.hpp"
-#include "WeaponComponent.hpp"
-#include "WeaponSystem.hpp"
-#include "HealthComponent.hpp"
-#include "SpawnerComponent.hpp"
-#include "SpawnerSystem.hpp"
-#include "TileComponent.hpp"
-#include "HealthSystem.hpp"
-#include "PickupComponent.hpp"
-#include "PickupSystem.hpp"
-#include "WaveComponent.hpp"
-#include "WaveSystem.hpp"
 #include "UiManager.hpp"
 #include "UiTextElement.hpp"
 
@@ -38,7 +12,7 @@ World::~World()
 {
 }
 
-void World::Load(Renderer* renderer)
+void World::LoadLevel(Renderer* renderer)
 {
 	m_renderer = renderer;
 
@@ -50,13 +24,11 @@ void World::Load(Renderer* renderer)
 	initilise();
 
 	//Spawn entities
-	m_playerEntityID = SpawnEntity("Player", Vector2f(100, 200));
+	m_playerEntityID = SpawnEntity("Player", Vector2f(255, 1100));
 
 	m_objectiveEntityID = SpawnEntity("Objective", Vector2f(145.5, 1098.5));
 
 	SpawnEntity("Wave", Vector2f());
-
-	SpawnEntity("HealthPickup", Vector2f(300, 100));
 
 	//Enemy Paths
 	m_greenSlimePath.push_back({ 211.0f,728.0f });
@@ -78,14 +50,14 @@ void World::Load(Renderer* renderer)
 	WaveText->SetPosition(Vector2f{ 0.9f,0.0f });
 	UiManager::Instance().AddUIElement("WaveText", WaveText);
 
-	auto EnemyCountText = std::make_shared<UiTextElement>();
-	EnemyCountText->SetText("Enemy Count: 0");
-	EnemyCountText->SetFontSize(12);
-	EnemyCountText->SetPosition(Vector2f{ 0.9f,0.05f });
-	UiManager::Instance().AddUIElement("EnemyCountText", EnemyCountText);
+	auto WaveCountdownText = std::make_shared<UiTextElement>();
+	WaveCountdownText->SetText("");
+	WaveCountdownText->SetFontSize(24);
+	WaveCountdownText->SetPosition(Vector2f{ 0.45f,0.0f });
+	UiManager::Instance().AddUIElement("WaveCountdownText", WaveCountdownText);
 }
 
-void World::Unload()
+void World::UnloadLevel()
 {
 	m_ecsManager.Clear();
 	m_collision_system.Clear();
@@ -94,16 +66,6 @@ void World::Unload()
 
 void World::Update()
 {
-	//TESTS
-	auto& mouse = HAPI.GetMouseData();
-	Vector2f screenSpace = UiManager::Instance().PositionToScreenSpace(Vector2f{ (float)mouse.x,(float)mouse.y });
-
-	Vector2f worldSpace = UiManager::Instance().ScreenSpaceToWorld(screenSpace);
-
-
-	std::cout << worldSpace << std::endl;
-
-
 	//Update entity component system
 	HAPISPACE::DWORD timeSinceLastTick{ HAPI.GetTime() - m_lastTimeTicked };
 
@@ -113,14 +75,6 @@ void World::Update()
 
 		m_lastTimeTicked = HAPI.GetTime();
 		timeSinceLastTick = 0;
-
-
-		//update UI
-		UiTextElement* text_element = (UiTextElement*)UiManager::Instance().GetUIElement("EnemyCountText").get();
-		if (text_element != nullptr)
-		{
-			text_element->SetText("Enemy Count: " + std::to_string(m_currentEnimiesAlive));
-		}
 	}
 
 	m_interpolatedTime = timeSinceLastTick / (float)TICKTIME;
@@ -134,8 +88,6 @@ void World::Render()
 	m_tilemap.Draw(*m_renderer);
 
 	m_renderer->DrawInstancedSprites(m_interpolatedTime);
-
-	UiManager::Instance().Render();
 }
 
 
@@ -187,6 +139,7 @@ void World::setupComponents()
 	m_ecsManager.AddComponentToFactory<SpawnerComponent>("SpawnerComponent");
 	m_ecsManager.AddComponentToFactory<PickupComponent>("PickupComponent");
 	m_ecsManager.AddComponentToFactory<WaveComponent>("WaveComponent");
+	m_ecsManager.AddComponentToFactory<SoundComponent>("SoundComponent");
 }
 
 void World::setuSystems()
@@ -203,6 +156,7 @@ void World::setuSystems()
 	m_ecsManager.AddSystem<DamageSystem>();
 	m_ecsManager.AddSystem<HealthSystem>();
 	m_ecsManager.AddSystem<AnimationSystem>();
+	m_ecsManager.AddSystem<SoundSystem>();
 	m_ecsManager.AddSystem<RenderSystem>();
 }
 
@@ -253,6 +207,36 @@ void World::setupEntites()
 	}
 	m_ecsManager.MakeEntity(playerComponents, "Player");
 
+	//Make boss Entity
+	auto bossComponents = m_ecsManager.MakeComponents({ "TransformComponent","MotionComponent", "AnimationComponent", "SpriteComponent", "CollidableComponent", "HealthComponent", "AIControllerComponent", "WeaponComponent" });
+	if (!bossComponents.empty())
+	{
+		AnimationComponent* animation_component = (AnimationComponent*)bossComponents[2].get();
+		animation_component->Animations["idleLeft"] = std::make_tuple("bossIdleLeft", true);
+		animation_component->Animations["idleRight"] = std::make_tuple("bossIdleRight", true);
+		animation_component->Animations["walkLeft"] = std::make_tuple("bossRunLeft", true);
+		animation_component->Animations["walkRight"] = std::make_tuple("bossRunRight", true);
+		animation_component->Speed = 0.055f;
+
+		CollidableComponent* collidable_component = (CollidableComponent*)bossComponents[4].get();
+		collidable_component->Layer = CollidableComponent::CollisionLayer::Enemy;
+		collidable_component->CollideWith = (CollidableComponent::CollisionLayer::World | CollidableComponent::CollisionLayer::Player);
+
+		HealthComponent* health_component = (HealthComponent*)bossComponents[5].get();
+		health_component->SetMaxHealth(1000.0f);
+
+		AIControllerComponent* ai_component = (AIControllerComponent*)bossComponents[6].get();
+		ai_component->Enemy = AIControllerComponent::EnemyType::Boss;
+		ai_component->MoveSpeed = 1.5f;
+		ai_component->DetectRange = 20.0f;
+
+		WeaponComponent* weapon_component = (WeaponComponent*)bossComponents[7].get();
+		weapon_component->EntityToFire = "Bullet";
+		weapon_component->Firerate = 8;
+	}
+	m_ecsManager.MakeEntity(bossComponents, "Boss");
+	m_ecsManager.CreateEntityPool("Boss", 2);
+
 	//Make slime Entity
 	auto slimeComponents = m_ecsManager.MakeComponents({ "TransformComponent","MotionComponent", "AnimationComponent", "SpriteComponent", "CollidableComponent", "HealthComponent", "AIControllerComponent", "WeaponComponent" });
 	if (!slimeComponents.empty())
@@ -294,12 +278,12 @@ void World::setupEntites()
 		collidable_component->CollideWith = (CollidableComponent::CollisionLayer::World | CollidableComponent::CollisionLayer::Player);
 
 		HealthComponent* health_component = (HealthComponent*)purpleSlimeComponents[5].get();
-		health_component->SetMaxHealth(7.5f);
+		health_component->SetMaxHealth(10.0f);
 
 		AIControllerComponent* ai_component = (AIControllerComponent*)purpleSlimeComponents[6].get();
 		ai_component->Enemy = AIControllerComponent::EnemyType::GreenSlime;
 		ai_component->MoveSpeed = 2.5f;
-		ai_component->DetectRange = 10.0f;
+		ai_component->DetectRange = 15.0f;
 
 		WeaponComponent* weapon_component = (WeaponComponent*)purpleSlimeComponents[7].get();
 		weapon_component->EntityToFire = "PurpleBullet";
@@ -341,7 +325,7 @@ void World::setupEntites()
 	m_ecsManager.CreateEntityPool("Ogre", 32);
 
 	////Bullet Entity
-	auto bulletComponents = m_ecsManager.MakeComponents({ "TransformComponent","MotionComponent", "DamageComponent", "SpriteComponent", "CollidableComponent" });
+	auto bulletComponents = m_ecsManager.MakeComponents({ "TransformComponent","MotionComponent", "DamageComponent", "SpriteComponent", "CollidableComponent", "SoundComponent" });
 	if (!bulletComponents.empty())
 	{
 		SpriteComponent* sprite_component = (SpriteComponent*)bulletComponents[3].get();
@@ -355,14 +339,18 @@ void World::setupEntites()
 
 		DamageComponent* damage_component = (DamageComponent*)bulletComponents[2].get();
 		damage_component->DestroyOnHit = true;
-		damage_component->Damage = 10.0f;
+		damage_component->Damage = 7.5f;
 		damage_component->EntityToSpawnOnHit = "Explosion";
+
+		SoundComponent* sound_component = (SoundComponent*)bulletComponents[5].get();
+		sound_component->SetSound("gun.wav");
+		sound_component->SetVolume(10);
 	}
 	m_ecsManager.MakeEntity(bulletComponents, "Bullet");
 	//Create an entity pool for the bullets
 	m_ecsManager.CreateEntityPool("Bullet", 128);
 
-	auto slimeBulletComponents = m_ecsManager.MakeComponents({ "TransformComponent","MotionComponent", "DamageComponent", "SpriteComponent", "CollidableComponent" });
+	auto slimeBulletComponents = m_ecsManager.MakeComponents({ "TransformComponent","MotionComponent", "DamageComponent", "SpriteComponent", "CollidableComponent", "SoundComponent" });
 	if (!slimeBulletComponents.empty())
 	{
 		SpriteComponent* sprite_component = (SpriteComponent*)slimeBulletComponents[3].get();
@@ -378,12 +366,16 @@ void World::setupEntites()
 		damage_component->DestroyOnHit = true;
 		damage_component->Damage = 0.5f;
 		damage_component->EntityToSpawnOnHit = "GreenExplosion";
+
+		SoundComponent* sound_component = (SoundComponent*)slimeBulletComponents[5].get();
+		sound_component->SetSound("slime.wav");
+		sound_component->SetVolume(5);
 	}
 	m_ecsManager.MakeEntity(slimeBulletComponents, "GreenBullet");
 	//Create an entity pool for the bullets
 	m_ecsManager.CreateEntityPool("GreenBullet", 256);
 
-	auto purpleBulletComponents = m_ecsManager.MakeComponents({ "TransformComponent","MotionComponent", "DamageComponent", "SpriteComponent", "CollidableComponent" });
+	auto purpleBulletComponents = m_ecsManager.MakeComponents({ "TransformComponent","MotionComponent", "DamageComponent", "SpriteComponent", "CollidableComponent", "SoundComponent" });
 	if (!purpleBulletComponents.empty())
 	{
 		SpriteComponent* sprite_component = (SpriteComponent*)purpleBulletComponents[3].get();
@@ -399,6 +391,10 @@ void World::setupEntites()
 		damage_component->DestroyOnHit = true;
 		damage_component->Damage = 2.0f;
 		damage_component->EntityToSpawnOnHit = "PurpleExplosion";
+
+		SoundComponent* sound_component = (SoundComponent*)purpleBulletComponents[5].get();
+		sound_component->SetSound("slime.wav");
+		sound_component->SetVolume(5);
 	}
 	m_ecsManager.MakeEntity(purpleBulletComponents, "PurpleBullet");
 	//Create an entity pool for the bullets
@@ -444,7 +440,7 @@ void World::setupEntites()
 	m_ecsManager.CreateEntityPool("PurpleExplosion", 128);
 
 	//Health pickup Entity
-	auto healthPickupComponents = m_ecsManager.MakeComponents({ "TransformComponent", "SpriteComponent", "AnimationComponent", "CollidableComponent", "PickupComponent" });
+	auto healthPickupComponents = m_ecsManager.MakeComponents({ "TransformComponent", "SpriteComponent", "AnimationComponent", "CollidableComponent", "PickupComponent", "SoundComponent" });
 	if (!healthPickupComponents.empty())
 	{
 		AnimationComponent* animation_component = (AnimationComponent*)healthPickupComponents[2].get();
@@ -458,6 +454,12 @@ void World::setupEntites()
 		PickupComponent* pickup_component = (PickupComponent*)healthPickupComponents[4].get();
 		pickup_component->SetType(PickupComponent::PickupType::Health);
 		pickup_component->SetAmount(50.0f);
+
+
+		SoundComponent* sound_component = (SoundComponent*)healthPickupComponents[5].get();
+		sound_component->SetSound("pickup.wav");
+		sound_component->SetVolume(10);
+		sound_component->OnEnable(false);
 	}
 	m_ecsManager.MakeEntity(healthPickupComponents, "HealthPickup");
 	m_ecsManager.CreateEntityPool("HealthPickup", 32);
@@ -529,7 +531,7 @@ void World::setupEntites()
 
 		//Wave 5
 		WaveData wave5Slimes;
-		wave5Slimes.Wave = 4;
+		wave5Slimes.Wave = 5;
 		wave5Slimes.EnemyToSpawn = "PurpleSlime";
 		wave5Slimes.AmountToSpawn = 16;
 		wave5Slimes.SpawnRate = 50;
@@ -537,12 +539,21 @@ void World::setupEntites()
 		wave_component->AddWave(wave5Slimes);
 
 		WaveData wave5Ogres;
-		wave5Ogres.Wave = 4;
+		wave5Ogres.Wave = 5;
 		wave5Ogres.EnemyToSpawn = "Ogre";
 		wave5Ogres.AmountToSpawn = 8;
 		wave5Ogres.SpawnRate = 200;
 		wave5Ogres.SpawnPos = Vector2f(1041, 100);
 		wave_component->AddWave(wave5Ogres);
+
+		//Wave 6
+		WaveData wave6Boss;
+		wave6Boss.Wave = 6;
+		wave6Boss.EnemyToSpawn = "Boss";
+		wave6Boss.AmountToSpawn = 1;
+		wave6Boss.SpawnRate = 50;
+		wave6Boss.SpawnPos = Vector2f(624, 100);
+		wave_component->AddWave(wave6Boss);
 
 	}
 	m_ecsManager.MakeEntity(waveComponents, "Wave");

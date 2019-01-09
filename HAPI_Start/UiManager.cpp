@@ -27,12 +27,33 @@ Vector2f UiManager::ScreenSpaceToWorld(const Vector2f& position)
 	return worldPosition;
 }
 
+void UiManager::RectToScreenSpace(Rect& rect)
+{
+	rect.Left /= m_screenSize.x;
+	rect.Right /= m_screenSize.x;
+	rect.Top /= m_screenSize.y;
+	rect.Bottom /= m_screenSize.y;
+}
+
+void UiManager::Update()
+{
+	for (const auto& ui_element : m_uiElements)
+	{
+		ui_element.second->Update();
+	}
+}
+
 void UiManager::Render()
 {
 	for (const auto& ui_element : m_uiElements)
 	{
 		ui_element.second->Render();
 	}
+}
+
+void UiManager::Clear()
+{
+	m_uiElements.clear();
 }
 
 void UiManager::AddUIElement(const std::string& name, std::shared_ptr<UiElement> element)

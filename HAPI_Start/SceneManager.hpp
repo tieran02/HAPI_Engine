@@ -6,8 +6,18 @@ class SceneManager
 {
 	friend Game;
 public:
+	static SceneManager& Instance()
+	{
+		static SceneManager instance;
+		return instance;
+	}
+
+	SceneManager(SceneManager const&) = delete;
+	void operator=(SceneManager const&) = delete;
+
+private:
 	SceneManager() {}
-	~SceneManager();
+public:
 
 	template<typename T>
 	void AddScene();

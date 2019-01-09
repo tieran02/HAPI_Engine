@@ -15,7 +15,10 @@ public:
 	void Update(ECSManager& ecsManager, Entity & entity) override;
 
 private:
-	void Move(TransformComponent& transform_component, MotionComponent& motion_component, AIControllerComponent& ai_controller, ECSManager& ecsManager, Entity& entity);
+	void MoveTowardsTarget(TransformComponent& transform_component, MotionComponent& motion_component, AIControllerComponent& ai_controller, ECSManager& ecsManager, Entity& entity);
+	void MoveTowardsPlayer(TransformComponent& transform_component, MotionComponent& motion_component, AIControllerComponent& ai_controller, ECSManager& ecsManager, Entity& entity);
 	void AttackBase(TransformComponent& transform_component, MotionComponent& motion_component, AIControllerComponent& ai_controller, ECSManager& ecsManager, Entity& entity);
+
+	Vector2f DirectionToPlayer(TransformComponent& transform_component, ECSManager& ecsManager);
 };
 

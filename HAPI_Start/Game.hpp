@@ -16,7 +16,7 @@ public:
 	template <typename T>
 	void AddScene()
 	{
-		m_sceneMangager.AddScene<T>();
+		SceneManager::Instance().AddScene<T>();
 	}
 
 	void LoadScene(const std::string& sceneName);
@@ -24,7 +24,6 @@ public:
 private:
 	std::string m_name;
 	Renderer m_renderer;
-	SceneManager m_sceneMangager;
 
 	void update();
 };

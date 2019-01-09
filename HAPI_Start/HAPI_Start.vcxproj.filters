@@ -52,17 +52,11 @@
     <Filter Include="Header Files\World\ECS">
       <UniqueIdentifier>{b0555643-25f3-473c-9c19-ab5e5a7b42d5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\World\ECS">
-      <UniqueIdentifier>{f7f6e1a2-b567-40ee-abe9-17e519214e33}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\World\ECS\Components">
       <UniqueIdentifier>{41034610-6976-4c06-9eb3-1117e2710842}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\World\ECS\Systems">
       <UniqueIdentifier>{7c7cb06a-7b3e-44fb-aa77-7cfd9631ffc5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\World\ECS\Systems">
-      <UniqueIdentifier>{9d282d8f-96ba-421f-ac22-f559baed2438}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Physics">
       <UniqueIdentifier>{751a043a-a441-4cfa-ab83-8b199a345233}</UniqueIdentifier>
@@ -75,6 +69,18 @@
     </Filter>
     <Filter Include="Source Files\UI">
       <UniqueIdentifier>{f8e2b64e-afa7-4757-9b47-d0f3e4aecb25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utilities">
+      <UniqueIdentifier>{3c295ac7-00fe-4213-8807-1b917671acc6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utilities">
+      <UniqueIdentifier>{691f7b8e-5b6c-4933-977c-ee961e5be9a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\World\ECS">
+      <UniqueIdentifier>{f7f6e1a2-b567-40ee-abe9-17e519214e33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\World\ECS\Systems">
+      <UniqueIdentifier>{9d282d8f-96ba-421f-ac22-f559baed2438}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -179,6 +185,15 @@
     </ClCompile>
     <ClCompile Include="GameScene.cpp">
       <Filter>Source Files\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Utilities.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundSystem.cpp">
+      <Filter>Source Files\World\ECS\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="UiButtonElement.cpp">
+      <Filter>Source Files\UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -340,6 +355,24 @@
     </ClInclude>
     <ClInclude Include="MenuScene.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities.hpp">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundComponent.hpp">
+      <Filter>Header Files\World\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS.hpp">
+      <Filter>Header Files\World\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundSystem.hpp">
+      <Filter>Header Files\World\ECS\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="UiButtonElement.hpp">
+      <Filter>Header Files\UI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

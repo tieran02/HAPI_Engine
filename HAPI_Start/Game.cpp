@@ -28,12 +28,12 @@ void Game::Start()
 
 void Game::LoadScene(const std::string& sceneName)
 {
-	m_sceneMangager.LoadScene(sceneName,m_renderer);
+	SceneManager::Instance().LoadScene(sceneName,m_renderer);
 }
 
 void Game::update()
 {
-	m_sceneMangager.updateCurrentScene();
-	m_sceneMangager.renderCurrentScene();
+	SceneManager::Instance().updateCurrentScene();
+	SceneManager::Instance().renderCurrentScene();
 
 }

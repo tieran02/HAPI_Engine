@@ -21,7 +21,7 @@ public:
 	void OnDisable(ECSManager& ecsManager, Entity& entity) override;
 	void Update(ECSManager& ecsManager, Entity & entity) override;
 private:
-	int m_currentWave{1};
+	int m_currentWave{5};
 	bool m_setup{ false };
 	WaveState m_waveState{WaveState::Setup};
 	std::unordered_map<int, std::vector<Entity*>> m_waveSpawners;

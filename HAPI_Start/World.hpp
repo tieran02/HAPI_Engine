@@ -11,8 +11,8 @@ class World
 public:
 	World();
 	~World();
-	void Load(Renderer* renderer);
-	void Unload();
+	void LoadLevel(Renderer* renderer);
+	void UnloadLevel();
 
 	void Update();
 	void Render();

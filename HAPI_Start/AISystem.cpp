@@ -39,24 +39,28 @@ void AISystem::Update(ECSManager & ecsManager, Entity & entity)
 	switch (ai_component->CurrentState)
 	{
 	case AIControllerComponent::AIState::Moving:
-		Move(*transform_component, *motion_component, *ai_component, ecsManager, entity);
+		MoveTowardsTarget(*transform_component, *motion_component, *ai_component, ecsManager, entity);
 		break;
 	case AIControllerComponent::AIState::AtDestination:
 		AttackBase(*transform_component, *motion_component, *ai_component, ecsManager, entity);
+		break;
+	case AIControllerComponent::AIState::FollowPlayer:
+		MoveTowardsPlayer(*transform_component, *motion_component, *ai_component, ecsManager, entity);
 		break;
 	default: ;
 	}
 
 }
 
-void AISystem::Move(TransformComponent& transform_component, MotionComponent& motion_component,
+void AISystem::MoveTowardsTarget(TransformComponent& transform_component, MotionComponent& motion_component,
 	AIControllerComponent& ai_controller, ECSManager& ecsManager, Entity& entity)
 {
 	Vector2f AiPos = transform_component.GetPostion();
 
 
-	int playerID = ecsManager.GetWorld()->GetPlayerID();
-	Entity* playerEntity = ecsManager.GetEntity(playerID);
+	Entity* playerEntity = ecsManager.GetEntity(ecsManager.GetWorld()->GetPlayerID());
+	Vector2f directionToPlayer = DirectionToPlayer(transform_component, ecsManager);
+	const float distanceToPlayer = std::fabs(directionToPlayer.Magnitude());
 	if (playerEntity != nullptr && playerEntity->IsActive())
 	{
 		//check if the AI has a weapon component
@@ -64,14 +68,11 @@ void AISystem::Move(TransformComponent& transform_component, MotionComponent& mo
 		if (weapon_component != nullptr)
 		{
 			//Calculate direction to player
-			Vector2f PlayerPos = ((TransformComponent*)playerEntity->GetComponent(TransformComponent::ID).get())->GetPostion();
-			Vector2f Direction = PlayerPos - AiPos;
-			float distance = std::fabs(Direction.Magnitude());
-			if (distance <= ai_controller.DetectRange * 32)
+			if (distanceToPlayer <= ai_controller.DetectRange * 32)
 			{
-				Direction.Normalise();
+				directionToPlayer.Normalise();
 
-				weapon_component->Direction = Direction;
+				weapon_component->Direction = directionToPlayer;
 				weapon_component->Fire = true;
 			}
 		}
@@ -86,7 +87,14 @@ void AISystem::Move(TransformComponent& transform_component, MotionComponent& mo
 		path = &ecsManager.GetWorld()->GetGreenSlimePath();
 		break;
 	case AIControllerComponent::EnemyType::Ogre:
+		if (distanceToPlayer <= ai_controller.DetectRange * 64)
+			ai_controller.CurrentState = AIControllerComponent::AIState::FollowPlayer;
 		path = &ecsManager.GetWorld()->GetOgrePath();
+		break;
+	case AIControllerComponent::EnemyType::Boss:
+		if (distanceToPlayer <= ai_controller.DetectRange * 32)
+			ai_controller.CurrentState = AIControllerComponent::AIState::FollowPlayer;
+		path = &ecsManager.GetWorld()->GetOgrePath(); 
 		break;
 	default:
 		break;
@@ -116,6 +124,41 @@ void AISystem::Move(TransformComponent& transform_component, MotionComponent& mo
 	}
 }
 
+void AISystem::MoveTowardsPlayer(TransformComponent& transform_component, MotionComponent& motion_component,
+	AIControllerComponent& ai_controller, ECSManager& ecsManager, Entity& entity)
+{
+	Entity* player_entity = ecsManager.GetEntity(ecsManager.GetWorld()->GetPlayerID());
+	if(player_entity == nullptr || !player_entity->IsActive())
+		return;
+
+	//Calculate direction to player
+	Vector2f Direction = DirectionToPlayer(transform_component, ecsManager);
+	float distance = std::fabs(Direction.Magnitude());
+
+	if(distance > ai_controller.DetectRange * 64)
+	{
+		ai_controller.CurrentState = AIControllerComponent::AIState::Moving;
+		return;
+	}
+
+	Direction.Normalise();
+	motion_component.Direction = Direction;
+	motion_component.Velocity = ai_controller.MoveSpeed * 2.0f;
+
+
+	//check if the AI has a weapon component
+	WeaponComponent* weapon_component = (WeaponComponent*)entity.GetComponent(WeaponComponent::ID).get();
+	if (weapon_component != nullptr)
+	{
+		//Calculate direction to player
+		if (distance <= ai_controller.DetectRange * 32)
+		{
+			weapon_component->Direction = Direction;
+			weapon_component->Fire = true;
+		}
+	}
+}
+
 void AISystem::AttackBase(TransformComponent& transform_component, MotionComponent& motion_component,
 	AIControllerComponent& ai_controller, ECSManager& ecsManager, Entity& entity)
 {
@@ -129,11 +172,22 @@ void AISystem::AttackBase(TransformComponent& transform_component, MotionCompone
 	if (weapon_component != nullptr)
 	{
 		//Calculate direction to player
-		Vector2f PlayerPos = ((TransformComponent*)base_entity->GetComponent(TransformComponent::ID).get())->GetPostion();
-		Vector2f Direction = PlayerPos - transform_component.GetPostion();
+		Vector2f BasePos = ((TransformComponent*)base_entity->GetComponent(TransformComponent::ID).get())->GetPostion();
+		Vector2f Direction = BasePos - transform_component.GetPostion();
 		Direction.Normalise();
 
 		weapon_component->Direction = Direction;
 		weapon_component->Fire = true;
 	}
+}
+
+Vector2f AISystem::DirectionToPlayer(TransformComponent& transform_component, ECSManager& ecsManager)
+{
+	Entity* player_entity = ecsManager.GetEntity(ecsManager.GetWorld()->GetPlayerID());
+	if (player_entity == nullptr)
+		return Vector2f();
+
+	//Calculate direction to player
+	Vector2f PlayerPos = ((TransformComponent*)player_entity->GetComponent(TransformComponent::ID).get())->GetPostion();
+	return PlayerPos - transform_component.GetPostion();
 }
