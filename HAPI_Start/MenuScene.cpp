@@ -7,6 +7,9 @@ using namespace HAPISPACE;
 
 void MenuScene::OnLoad()
 {
+	m_renderer->LoadTexture("backgroundTexture", "Data\\background.png");
+	m_renderer->LoadSprite("background", "backgroundTexture");
+
 	auto playButton = std::make_shared<UiButtonElement>();
 	playButton->SetText("Play");
 	playButton->SetFontSize(45);
@@ -47,7 +50,7 @@ void MenuScene::OnUpdate()
 
 void MenuScene::OnRender()
 {
-	m_renderer->ClearScreen(50);
+	m_renderer->ClearScreen("background");
 	UiManager::Instance().Render();
 }
 
