@@ -374,5 +374,8 @@
     <ClInclude Include="UiButtonElement.hpp">
       <Filter>Header Files\UI</Filter>
     </ClInclude>
+    <ClInclude Include="ScoreComponent.hpp">
+      <Filter>Header Files\World\ECS\Components</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

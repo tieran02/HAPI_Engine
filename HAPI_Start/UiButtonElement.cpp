@@ -6,11 +6,6 @@ UiButtonElement::~UiButtonElement()
 {
 }
 
-void UiButtonElement::Setup()
-{
-
-}
-
 void UiButtonElement::Update()
 {
 	const auto& mouse_data = HAPI.GetMouseData();
@@ -43,6 +38,7 @@ bool UiButtonElement::IsSelected() const
 {
 	if (this == nullptr)
 		return false;
+
 	const auto& mouse_data = HAPI.GetMouseData();
 	return m_selected && mouse_data.leftButtonDown;
 }

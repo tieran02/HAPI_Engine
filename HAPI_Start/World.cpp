@@ -2,6 +2,7 @@
 #include "World.hpp"
 #include "UiManager.hpp"
 #include "UiTextElement.hpp"
+#include <algorithm>
 
 World::World() 
 {
@@ -21,7 +22,7 @@ void World::LoadLevel(Renderer* renderer)
 	//load tilemap
 	m_tilemap.LoadFromFile("Data\\Level1.xml", m_collision_system);
 
-	initilise();
+	initiliseECS();
 
 	//Spawn entities
 	m_playerEntityID = SpawnEntity("Player", Vector2f(255, 1100));
@@ -50,6 +51,12 @@ void World::LoadLevel(Renderer* renderer)
 	WaveText->SetPosition(Vector2f{ 0.9f,0.0f });
 	UiManager::Instance().AddUIElement("WaveText", WaveText);
 
+	auto ScoreText = std::make_shared<UiTextElement>();
+	ScoreText->SetText("Score = 0");
+	ScoreText->SetFontSize(16);
+	ScoreText->SetPosition(Vector2f{ 0.9f,0.04f });
+	UiManager::Instance().AddUIElement("ScoreText", ScoreText);
+
 	auto WaveCountdownText = std::make_shared<UiTextElement>();
 	WaveCountdownText->SetText("");
 	WaveCountdownText->SetFontSize(24);
@@ -62,6 +69,8 @@ void World::UnloadLevel()
 	m_ecsManager.Clear();
 	m_collision_system.Clear();
 	m_greenSlimePath.clear();
+	m_gameOver = false;
+	m_highScore = 0;
 }
 
 void World::Update()
@@ -77,7 +86,7 @@ void World::Update()
 		timeSinceLastTick = 0;
 	}
 
-	m_interpolatedTime = timeSinceLastTick / (float)TICKTIME;
+	m_interpolatedTime = std::clamp(timeSinceLastTick / (float)TICKTIME,0.1f,1.0f);
 
 }
 
@@ -111,7 +120,7 @@ int World::SpawnEntity(const std::string & entityName, Vector2f pos, Vector2f di
 	return entity->ID();
 }
 
-void World::initilise()
+void World::initiliseECS()
 {
 	m_ecsManager.SetRenderer(m_renderer);
 	m_ecsManager.SetWorld(this);
@@ -140,6 +149,7 @@ void World::setupComponents()
 	m_ecsManager.AddComponentToFactory<PickupComponent>("PickupComponent");
 	m_ecsManager.AddComponentToFactory<WaveComponent>("WaveComponent");
 	m_ecsManager.AddComponentToFactory<SoundComponent>("SoundComponent");
+	m_ecsManager.AddComponentToFactory<ScoreComponent>("ScoreComponent");
 }
 
 void World::setuSystems()
@@ -208,7 +218,7 @@ void World::setupEntites()
 	m_ecsManager.MakeEntity(playerComponents, "Player");
 
 	//Make boss Entity
-	auto bossComponents = m_ecsManager.MakeComponents({ "TransformComponent","MotionComponent", "AnimationComponent", "SpriteComponent", "CollidableComponent", "HealthComponent", "AIControllerComponent", "WeaponComponent" });
+	auto bossComponents = m_ecsManager.MakeComponents({ "TransformComponent","MotionComponent", "AnimationComponent", "SpriteComponent", "CollidableComponent", "HealthComponent", "AIControllerComponent", "WeaponComponent", "ScoreComponent" });
 	if (!bossComponents.empty())
 	{
 		AnimationComponent* animation_component = (AnimationComponent*)bossComponents[2].get();
@@ -233,12 +243,15 @@ void World::setupEntites()
 		WeaponComponent* weapon_component = (WeaponComponent*)bossComponents[7].get();
 		weapon_component->EntityToFire = "Bullet";
 		weapon_component->Firerate = 8;
+
+		ScoreComponent* score_component = (ScoreComponent*)bossComponents[8].get();
+		score_component->SetScore(500);
 	}
 	m_ecsManager.MakeEntity(bossComponents, "Boss");
 	m_ecsManager.CreateEntityPool("Boss", 2);
 
 	//Make slime Entity
-	auto slimeComponents = m_ecsManager.MakeComponents({ "TransformComponent","MotionComponent", "AnimationComponent", "SpriteComponent", "CollidableComponent", "HealthComponent", "AIControllerComponent", "WeaponComponent" });
+	auto slimeComponents = m_ecsManager.MakeComponents({ "TransformComponent","MotionComponent", "AnimationComponent", "SpriteComponent", "CollidableComponent", "HealthComponent", "AIControllerComponent", "WeaponComponent", "ScoreComponent" });
 	if (!slimeComponents.empty())
 	{
 		AnimationComponent* animation_component = (AnimationComponent*)slimeComponents[2].get();
@@ -260,13 +273,16 @@ void World::setupEntites()
 		WeaponComponent* weapon_component = (WeaponComponent*)slimeComponents[7].get();
 		weapon_component->EntityToFire = "GreenBullet";
 		weapon_component->Firerate = 8;
+
+		ScoreComponent* score_component = (ScoreComponent*)slimeComponents[8].get();
+		score_component->SetScore(10);
 	}
 	m_ecsManager.MakeEntity(slimeComponents, "Slime");
 	//Create an entity pool for the bullets
 	m_ecsManager.CreateEntityPool("Slime", 32);
 
 	//Make slime Entity
-	auto purpleSlimeComponents = m_ecsManager.MakeComponents({ "TransformComponent","MotionComponent", "AnimationComponent", "SpriteComponent", "CollidableComponent", "HealthComponent", "AIControllerComponent", "WeaponComponent" });
+	auto purpleSlimeComponents = m_ecsManager.MakeComponents({ "TransformComponent","MotionComponent", "AnimationComponent", "SpriteComponent", "CollidableComponent", "HealthComponent", "AIControllerComponent", "WeaponComponent", "ScoreComponent" });
 	if (!purpleSlimeComponents.empty())
 	{
 		AnimationComponent* animation_component = (AnimationComponent*)purpleSlimeComponents[2].get();
@@ -288,13 +304,16 @@ void World::setupEntites()
 		WeaponComponent* weapon_component = (WeaponComponent*)purpleSlimeComponents[7].get();
 		weapon_component->EntityToFire = "PurpleBullet";
 		weapon_component->Firerate = 8;
+
+		ScoreComponent* score_component = (ScoreComponent*)purpleSlimeComponents[8].get();
+		score_component->SetScore(25);
 	}
 	m_ecsManager.MakeEntity(purpleSlimeComponents, "PurpleSlime");
 	//Create an entity pool for the purple slimes
 	m_ecsManager.CreateEntityPool("PurpleSlime", 32);
 
 	//Make ogre Entity
-	auto ogreComponents = m_ecsManager.MakeComponents({ "TransformComponent","MotionComponent", "AnimationComponent", "SpriteComponent", "CollidableComponent", "HealthComponent", "AIControllerComponent", "WeaponComponent" });
+	auto ogreComponents = m_ecsManager.MakeComponents({ "TransformComponent","MotionComponent", "AnimationComponent", "SpriteComponent", "CollidableComponent", "HealthComponent", "AIControllerComponent", "WeaponComponent", "ScoreComponent" });
 	if (!ogreComponents.empty())
 	{
 		AnimationComponent* animation_component = (AnimationComponent*)ogreComponents[2].get();
@@ -319,6 +338,9 @@ void World::setupEntites()
 		WeaponComponent* weapon_component = (WeaponComponent*)ogreComponents[7].get();
 		weapon_component->EntityToFire = "Bullet";
 		weapon_component->Firerate = 25;
+
+		ScoreComponent* score_component = (ScoreComponent*)ogreComponents[8].get();
+		score_component->SetScore(50);
 	}
 	m_ecsManager.MakeEntity(ogreComponents, "Ogre");
 	//Create an entity pool for the bullets

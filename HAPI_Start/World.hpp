@@ -26,8 +26,13 @@ public:
 
 	void SetEnemyCount(int count) { m_currentEnimiesAlive = count; }
 	int GetEnemyCount() const { return m_currentEnimiesAlive; }
+	int GetHighScore() const { return m_highScore; }
+	void AddScore(int amount) { m_highScore += amount; }
+
+	bool IsGameOver()const { return m_gameOver; }
+	void GameOver() { m_gameOver = true; }
 private:
-	void initilise();
+	void initiliseECS();
 	void setupComponents();
 	void setuSystems();
 	void setupEntites();
@@ -42,6 +47,8 @@ private:
 	int m_playerEntityID{ -1 };
 	int m_objectiveEntityID{ -1 };
 	int m_currentEnimiesAlive{ 0 };
+	int m_highScore{ 0 };
+	bool m_gameOver{ false };
 
 	std::vector<Vector2f> m_greenSlimePath;
 	std::vector<Vector2f> m_ogrePath;

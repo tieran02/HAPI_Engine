@@ -27,3 +27,4 @@
 #include "WaveSystem.hpp"
 #include "SoundComponent.hpp"
 #include "SoundSystem.hpp"
+#include "ScoreComponent.hpp"

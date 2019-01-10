@@ -6,7 +6,6 @@ class UiTextElement : public UiElement
 {
 public:
 	UiTextElement(){}
-	void Setup() override;
 	void Update() override;
 	void Render() override;
 

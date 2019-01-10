@@ -28,6 +28,7 @@ public:
 	void Update();
 	void Render();
 	void Clear();
+	void DisableAll();
 
 	void AddUIElement(const std::string& name, std::shared_ptr<UiElement> element);
 	std::shared_ptr<UiElement> GetUIElement(const std::string& name);

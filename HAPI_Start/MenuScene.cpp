@@ -10,13 +10,13 @@ void MenuScene::OnLoad()
 	auto playButton = std::make_shared<UiButtonElement>();
 	playButton->SetText("Play");
 	playButton->SetFontSize(45);
-	playButton->SetPosition(Vector2f(0.45f, 0.45f));
+	playButton->SetPosition(Vector2f(0.45f, 0.25f));
 	UiManager::Instance().AddUIElement("playButton",playButton);
 
 	auto quitButton = std::make_shared<UiButtonElement>();
 	quitButton->SetText("Quit");
 	quitButton->SetFontSize(45);
-	quitButton->SetPosition(Vector2f(0.45f, 0.55f));
+	quitButton->SetPosition(Vector2f(0.45f, 0.35f));
 	UiManager::Instance().AddUIElement("quitButton", quitButton);
 }
 

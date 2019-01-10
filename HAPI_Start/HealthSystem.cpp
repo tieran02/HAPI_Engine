@@ -2,6 +2,7 @@
 #include "TransformComponent.hpp"
 #include "HealthComponent.hpp"
 #include "ECSManager.hpp"
+#include "World.hpp"
 
 
 HealthSystem::HealthSystem() : System(TransformComponent::ID | HealthComponent::ID)
@@ -34,6 +35,16 @@ void HealthSystem::Update(ECSManager& ecsManager, Entity& entity)
 {
 	TransformComponent* transform_component = (TransformComponent*)entity.GetComponent(TransformComponent::ID).get();
 	HealthComponent* health_component = (HealthComponent*)entity.GetComponent(HealthComponent::ID).get();
+
+	if(health_component->GetHealth() <= 0)
+	{
+		if(entity.GetName() == "Player" || entity.GetName() == "Objective")
+		{
+			ecsManager.GetWorld()->GameOver();
+		}
+		ecsManager.SetEntityActive(entity.ID(), false);
+
+	}
 
 	Vector2f pos = transform_component->GetPostion() - Vector2f(0, 40);
 	Vector2f lastPos = transform_component->GetLastPosition() - Vector2f(0, 40);

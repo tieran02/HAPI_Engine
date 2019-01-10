@@ -6,6 +6,9 @@
 #include "TransformComponent.hpp"
 #include "AIControllerComponent.hpp"
 #include "World.hpp"
+#include "ScoreComponent.hpp"
+#include "UiManager.hpp"
+#include "UiTextElement.hpp"
 
 
 DamageSystem::DamageSystem() : System(TransformComponent::ID | CollidableComponent::ID | DamageComponent::ID)
@@ -59,12 +62,17 @@ void DamageSystem::Update(ECSManager & ecsManager, Entity & entity)
 			health_component->TakeDamage(damage_component->Damage);
 			if (!health_component->IsAlive())
 			{
-				ecsManager.SetEntityActive(collidable_component->CollidedEntity->ID(), false);
-
 				//Reduce enemy count by one
 				if(collidable_component->CollidedEntity->GetComponent(AIControllerComponent::ID) != nullptr)
 				{
 					ecsManager.GetWorld()->SetEnemyCount(ecsManager.GetWorld()->GetEnemyCount() - 1);
+					//check the enemy has a score component
+					ScoreComponent* score_component = (ScoreComponent*)collidable_component->CollidedEntity->GetComponent(ScoreComponent::ID).get();
+					if (score_component != nullptr) 
+					{
+						ecsManager.GetWorld()->AddScore(score_component->GetScore());
+						((UiTextElement*)UiManager::Instance().GetUIElement("ScoreText").get())->SetText("Score = " + std::to_string(ecsManager.GetWorld()->GetHighScore()));
+					}
 				}
 
 				//Spawn random pickups when an entity dies

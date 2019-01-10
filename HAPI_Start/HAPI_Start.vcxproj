@@ -97,6 +97,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="Scene.hpp" />
     <ClInclude Include="SceneManager.hpp" />
+    <ClInclude Include="ScoreComponent.hpp" />
     <ClInclude Include="SoundComponent.hpp" />
     <ClInclude Include="SoundSystem.hpp" />
     <ClInclude Include="SpawnerComponent.hpp" />

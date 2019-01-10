@@ -2,6 +2,8 @@
 #include "SceneManager.hpp"
 #include "UiManager.hpp"
 #include "Utilities.hpp"
+#include "UiTextElement.hpp"
+#include "UiButtonElement.hpp"
 
 using namespace HAPISPACE;
 
@@ -60,6 +62,22 @@ void GameScene::OnLoad()
 	Utilities::LoadSound("pickup.wav");
 
 	m_world.LoadLevel(m_renderer);
+
+	//GameOver UI
+	auto gameOverText = std::make_shared<UiTextElement>();
+	gameOverText->SetText("Gameover!");
+	gameOverText->SetFontSize(100);
+	gameOverText->SetPosition(Vector2f(0.3f, 0.4f));
+	gameOverText->SetActive(false);
+	UiManager::Instance().AddUIElement("gameOverText", gameOverText);
+
+	//GameOver UI
+	auto continueText = std::make_shared<UiButtonElement>();
+	continueText->SetText("Continue");
+	continueText->SetFontSize(50);
+	continueText->SetPosition(Vector2f(0.4f, 0.55f));
+	continueText->SetActive(false);
+	UiManager::Instance().AddUIElement("continueText", continueText);
 }
 
 void GameScene::OnUnload()
@@ -75,8 +93,20 @@ void GameScene::OnStart()
 
 void GameScene::OnUpdate()
 {
-	//Update world
-	m_world.Update();
+	UiManager::Instance().Update();
+
+	if (!m_world.IsGameOver()) {
+		//Update world
+		m_world.Update();
+	}else
+	{
+		UiManager::Instance().GetUIElement("gameOverText")->SetActive(true);
+		UiManager::Instance().GetUIElement("continueText")->SetActive(true);
+
+		UiButtonElement* button = (UiButtonElement*)UiManager::Instance().GetUIElement("continueText").get();
+		if(button->IsSelected())
+			SceneManager::Instance().LoadScene("MenuScene", *m_renderer);
+	}
 
 	const HAPI_TKeyboardData& keyboard_data = HAPI.GetKeyboardData();
 
@@ -84,11 +114,15 @@ void GameScene::OnUpdate()
 		SceneManager::Instance().ReloadScene();
 	if (keyboard_data.scanCode[HK_ESCAPE])
 		SceneManager::Instance().LoadScene("MenuScene",*m_renderer);
+
 }
 
 void GameScene::OnRender()
 {
 	m_renderer->ClearScreen(50);
-	m_world.Render();
+
+	if (!m_world.IsGameOver())
+		m_world.Render();
+
 	UiManager::Instance().Render();
 }

@@ -2,11 +2,6 @@
 #include "HAPI_lib.h"
 #include "UiManager.hpp"
 
-void UiTextElement::Setup()
-{
-
-}
-
 void UiTextElement::Update()
 {
 }
